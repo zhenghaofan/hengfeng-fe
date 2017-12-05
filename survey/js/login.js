@@ -24,8 +24,10 @@ $("#login_bt").click(function () {
     //         }
     //     }
     // })
-
-    $.get("./mock-data.json",function (data, status) {
+    $.get("/manage/account/user/preview/{{userId}}",{
+        username: username,
+        pwd: pwd
+    },function (data, status) {
         alert(data,status);
         if(username === "" && pwd === ""){//判断输入框是否为空值
             $("#err_tips").text("*请输入正确的账号和密码");
