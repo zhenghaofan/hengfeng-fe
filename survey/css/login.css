@@ -42,7 +42,7 @@
 .login_word input{
     float: left;
     /*background-color: green;*/
-    width: 55%;
+    width: 100%;
     height: 100%;
     font-size: 16px;
     font-family: "Microsoft YaHei UI Light";
@@ -51,13 +51,14 @@
 /*错误*/
 .login_err{
     float: right;
-    width: 130px;
-    height: 100%;
+    width: 100%;
+    height: 5%;
     font-size: 14px;
     font-family: "Microsoft YaHei";
-    line-height: 350%;
+    line-height: 250%;
     color: #ff4e4e;
-
+    text-align: center;
+    /*visibility: hidden;*/
 }
 
 /*按钮*/
@@ -74,20 +75,20 @@
 }
 
 /*复选框和忘记密码*/
-.login_cb{
-    width: 100%;
-    height: 20px;
-    margin: 0;
-    margin-top: 14px;
-    font-size: 15px;
-    font-family: "Microsoft YaHei UI Light";
-    color: #999999;
-}
-.login_fg{
-    float: right;
-    text-decoration: none;
-    color: #999999;
-}
+/*.login_cb{*/
+    /*width: 100%;*/
+    /*height: 20px;*/
+    /*margin: 0;*/
+    /*margin-top: 14px;*/
+    /*font-size: 15px;*/
+    /*font-family: "Microsoft YaHei UI Light";*/
+    /*color: #999999;*/
+/*}*/
+/*.login_fg{*/
+    /*float: right;*/
+    /*text-decoration: none;*/
+    /*color: #999999;*/
+/*}*/
 
 /*页尾*/
 .login_foot img{
