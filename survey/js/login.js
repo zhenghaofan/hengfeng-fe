@@ -14,9 +14,15 @@ $("#login_bt").click(function () {
         success: function () {
             if(data){
                 if(data.username.message === "false"){
+<<<<<<< HEAD
                     $("#err_tips").text("*请输入正确的账号和密码");
                     if(data.password.message === "false"){
                         $("#err_tips").text("*请输入正确的密码");
+=======
+                    $("#err_name").val("*请输入正确的账号");
+                    if(data.password.message === "false"){
+                        $("#err_word").val("*请输入正确的密码");
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
                     }
                 }else {
                     window.location.href="main.html"
