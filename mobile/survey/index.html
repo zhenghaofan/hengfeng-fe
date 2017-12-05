@@ -7,11 +7,11 @@
     <title>问卷调查系统</title>
     <link href="css/login.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="js/jquery-3.2.1.js"></script>
-    <script type="text/javascript" src="js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="js/jquery.base64.js"></script>
+    <!--<script type="text/javascript" src="js/jquery.cookie.js"></script>-->
+    <!--<script type="text/javascript" src="js/jquery.base64.js"></script>-->
     <script type="text/javascript" src="js/login.js"></script>
 </head>
-<body onload="getCookie()">
+<body>
     <div class="login">
         <div class="login_title">
             <img src="img/tittle@2x.png" class="login_title_img">
@@ -19,13 +19,13 @@
         <div class="login_content">
             <div class="login_name">
                 <input type="text" placeholder=" &nbsp;&nbsp;&nbsp;输入账号">
-                <p class="login_err">*请输入正确的账号</p>
+                <p class="login_err" id="err_name">*请输入正确的账号</p>
             </div>
             <div class="login_word">
                 <input type="password" placeholder=" &nbsp;&nbsp;&nbsp;输入密码">
-                <p class="login_err">*请输入正确的密码</p>
+                <p class="login_err" id="err_word">*请输入正确的密码</p>
             </div>
-            <button class="login_bt">登录</button>
+            <button class="login_bt" id="login_bt">登录</button>
             <p class="login_cb"><input type="checkbox" name="checkbox">下次自动登录
             <a class="login_fg" href="">忘记密码？</a></p>
         </div>
