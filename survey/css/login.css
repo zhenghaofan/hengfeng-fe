@@ -74,20 +74,20 @@
 }
 
 /*复选框和忘记密码*/
-.login_cb{
-    width: 100%;
-    height: 20px;
-    margin: 0;
-    margin-top: 14px;
-    font-size: 15px;
-    font-family: "Microsoft YaHei UI Light";
-    color: #999999;
-}
-.login_fg{
-    float: right;
-    text-decoration: none;
-    color: #999999;
-}
+/*.login_cb{*/
+    /*width: 100%;*/
+    /*height: 20px;*/
+    /*margin: 0;*/
+    /*margin-top: 14px;*/
+    /*font-size: 15px;*/
+    /*font-family: "Microsoft YaHei UI Light";*/
+    /*color: #999999;*/
+/*}*/
+/*.login_fg{*/
+    /*float: right;*/
+    /*text-decoration: none;*/
+    /*color: #999999;*/
+/*}*/
 
 /*页尾*/
 .login_foot img{
