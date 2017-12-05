@@ -24,7 +24,6 @@ $("#login_bt").click(function () {
     //         }
     //     }
     // })
-
     $.get("./mock-data.json",function (data, status) {
         alert(data,status);
         if(username === "" && pwd === ""){//判断输入框是否为空值
