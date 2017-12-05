@@ -40,7 +40,9 @@ header img{
     margin-right: 10px;
     vertical-align:sub;
 }
-
+#stop-sel,#del_sel,#modify_sel{
+    display: none;
+}
 .list{
     background-color:white;
     border-top: #e5e5e5;
