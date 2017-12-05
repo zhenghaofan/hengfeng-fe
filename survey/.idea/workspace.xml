@@ -15,11 +15,31 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
+<<<<<<< HEAD
+      <file leaf-file-name="login.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/login.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="275">
+              <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+=======
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="13" column="25" lean-forward="false" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="login.js" pinned="false" current-in-tab="false">
+=======
       <file leaf-file-name="release.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/release.html">
 =======
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
       <file leaf-file-name="login.js" pinned="false" current-in-tab="true">
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
         <entry file="file://$PROJECT_DIR$/js/login.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="275">
@@ -198,25 +218,36 @@
       <workItem from="1512443904041" duration="483000" />
 =======
       <workItem from="1512436987657" duration="3276000" />
+<<<<<<< HEAD
+      <workItem from="1512443024497" duration="413000" />
+>>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
+=======
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
       <workItem from="1512443024497" duration="2632000" />
 =======
       <workItem from="1512443024497" duration="413000" />
 >>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
 >>>>>>> 004d7bc2427f953b5b479e2da56875990caf0c00:survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
+<<<<<<< HEAD
+=======
     <option name="totallyTimeSpent" value="34765000" />
 =======
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
     <option name="totallyTimeSpent" value="34681000" />
 =======
     <option name="totallyTimeSpent" value="32546000" />
 >>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
+<<<<<<< HEAD
+=======
 >>>>>>> 004d7bc2427f953b5b479e2da56875990caf0c00:survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -421,6 +452,11 @@
 =======
     <entry file="file://$PROJECT_DIR$/css/release.css">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+>>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
+=======
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
         <state relative-caret-position="352">
           <caret line="43" column="18" lean-forward="true" selection-start-line="43" selection-start-column="18" selection-end-line="43" selection-end-column="18" />
@@ -429,6 +465,7 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
 >>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
 >>>>>>> 004d7bc2427f953b5b479e2da56875990caf0c00:survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
           <folding />
         </state>
       </provider>
@@ -436,10 +473,13 @@
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
+<<<<<<< HEAD
+=======
         <state relative-caret-position="220">
           <caret line="10" column="12" lean-forward="false" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="34" />
 =======
 <<<<<<< HEAD:mobile/survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
         <state relative-caret-position="275">
           <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
 =======
@@ -475,7 +515,10 @@
         <state relative-caret-position="251">
           <caret line="86" column="1" lean-forward="true" selection-start-line="86" selection-start-column="1" selection-end-line="86" selection-end-column="1" />
 >>>>>>> 8b4c64efa27f7770aba5272fbc44b5b67f0d0874:survey/.idea/workspace.xml
+<<<<<<< HEAD
+=======
 >>>>>>> 004d7bc2427f953b5b479e2da56875990caf0c00:survey/.idea/workspace.xml
+>>>>>>> e9835297b4d892d647d7574aee859d3a0dfec3b3
           <folding />
         </state>
       </provider>
