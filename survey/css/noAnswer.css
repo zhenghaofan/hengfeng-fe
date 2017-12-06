@@ -1,91 +1,84 @@
 html {
-    font-size: 20px}
-body{
-    width: 100%;
-    height: 100%;
-    background-color: #dddddd;
-    margin: 0;
-    font-family: Microsoft YaHei;
+  font-size: 20px
 }
 
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #dddddd;
+  margin: 0;
+  font-family: Microsoft YaHei;
+}
+
+
 /*页面顶部*/
+
 header {
-    height: 2.5rem;
-    background-color: #232323;
-    color: white;
-    text-align: center;
+  height: 2.5rem;
+  background-color: #232323;
+  color: white;
+  text-align: center;
 }
 
 .back {
-    position: absolute;
-    left: 1.4rem;
-    line-height: 2.5rem;
+  position: absolute;
+  left: 1.4rem;
+  line-height: 2.5rem;
 }
 
 .back img {
-    margin-right: 0.3rem;
-    width: 0.5rem;
-    vertical-align: top;
-    margin-top: 0.9rem;
+  margin-right: 0.3rem;
+  width: 0.5rem;
+  vertical-align: top;
+  margin-top: 0.9rem;
 }
 
 .title {
-    line-height: 2.5rem
+  line-height: 2.5rem
 }
 
 
 /*页面内容*/
 
-.center{
-    background-color:#dddddd;
-    width: 100%;
-    height: auto;
-}
-.list{
-    background-color:white;
-    border-top: #e5e5e5;
-    height: 4.6rem;
-    font-family: Microsoft YaHei;
-
-}
-.list:hover{
-    background-color: #f5f5f5;
-}
-.time{
-    color: #999999;
-    font-size: 0.7rem;
-    font-family: Microsoft YaHei;
-    text-align: right;
-    position: relative;
-    top: 3.05rem;
-    margin-right: 1.5rem;
- }
-.line{
-    background-color: white;
-    margin: 0 auto;
-    width: 100%;
-    height: 1px;
+.center {
+  background-color: #dddddd;
+  width: 100%;
+  height: auto;
 }
 
-hr{
-    width:35.5rem;
-    size:1px ;
-    color:#e5e5e5 ;
-    margin: 0 auto;
-
+.list {
+  background-color: white;
+  border-top: 1px solid #e5e5e5;
+  height: 4.6rem;
 }
-.box{
-    margin:0rem 1.5rem;
-    margin-top: 0px;
-    font-size: 1rem;
-    /*max-height: 2rem;*/
-    /*line-height: 0.8rem;*/
-    /*overflow: hidden;*/
 
-
+.list:hover {
+  background-color: #f5f5f5;
 }
-footer{
-    color: #999999;
-    font-size: 12rem;
-    font-family: Microsoft YaHei;
+
+.time {
+  color: #999999;
+  font-size: 0.7rem;
+  text-align: right;
+  position: relative;
+  top: 3.05rem;
+  margin-right: 1.5rem;
+}
+
+.line {
+  background-color: white;
+  margin: 0 auto;
+  width: 100%;
+  height: 1px;
+}
+
+.box {
+  margin: 0 1.5rem;
+  margin-top: 0px;
+  font-size: 0.8rem;
+}
+
+footer {
+  color: #999999;
+  font-size: 12rem;
 }
