@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta content="initial-scale=1.0,
+    user-scalable=no,maximum-scale=1,width=device-width" name="viewport"/>
     <title>问卷调查系统已发布</title>
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/style.js"></script>
     <link href="css/release.css" type="text/css" rel="stylesheet"/>
-
 </head>
 <body>
     <header>
-        <p><img src="img/back@2x.png"> 返回</p><div class="h">已发布</div>
+        <div class="back">
+            <img src="./img/back@2x.png">返回
+        </div>
+        <span class="title">已发布</span>
     </header>
         <div class="list">
             <span class="small">
                 <img src="img/icon_Questionnaireinformation@2x.png">
-                <p>问卷信息 <br>11-11 18:00</p>
+                <p>问卷信息 <br><span>11-11 18:00</span></p>
             </span>
             <div class="box">
                 英语老师的公开课接受情况问卷调查
@@ -31,30 +35,72 @@
                 </div>
             </div>
             <hr>
-            <div id="stop" class="button">
+            <div  class="button" class="stop">
                 <div class="bt-box">
-                    <img id="stop-sel" src="img/stop_sel@2x.png">
-                    <img id="pic-stop" src="img/stop@2x.png">
+                    <img class="stop-sel" src="img/stop_sel@2x.png">
+                    <img class="pic-stop" src="img/stop@2x.png">
                     停止作答
                 </div>
                 <div class="line"></div>
             </div>
-            <div id="del" class="button">
+            <div  class="button" class="del">
                 <div class="bt-box">
-                    <img id="del_sel" src="img/del_sel@2x.png">
-                    <img id="pic-del" src="img/del@2x.png">
+                    <img class="del-sel" src="img/del_sel@2x.png">
+                    <img class="pic-del" src="img/del@2x.png">
                     删除问卷
                 </div>
                 <div class="line"></div>
             </div>
-            <div id="modify" class="button">
+            <div class="button" class="modify">
                 <div class="bt-box">
-                    <img id="modify_sel" src="img/modify_sel@2x.png">
-                    <img id="pic-modify" src="img/modify@2x.png">
+                    <img class="modify-sel" src="img/modify_sel@2x.png">
+                    <img class="pic-modify" src="img/modify@2x.png">
                     修改时间
                 </div>
             </div>
         </div>
-    <!--<input type="datetime-local" />-->
+        <div class="list">
+            <span class="small">
+                <img src="img/icon_Questionnaireinformation@2x.png">
+                <p>问卷信息 <br>11-11 18:00</p>
+            </span>
+        <div class="box">
+            英语老师的公开课接受情况问卷调查
+            <div class="list-li">
+                <ul>
+                    <li>问卷发起时间：2017-11-11 18:00</li>
+                    <li>问卷截止时间：2017-11-11 18:00</li>
+                    <li>问卷指派人数：30人</li>
+                    <li>问卷作答人数：18人</li>
+                    <li>未答问卷人数：12人</li>
+                    <li>有效问卷份数: 18份</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div  class="button" class="stop">
+            <div class="bt-box">
+                <img class="stop-sel" src="img/stop_sel@2x.png">
+                <img class="pic-stop" src="img/stop@2x.png">
+                停止作答
+            </div>
+            <div class="line"></div>
+        </div>
+        <div  class="button" class="del">
+            <div class="bt-box">
+                <img class="del-sel" src="img/del_sel@2x.png">
+                <img class="pic-del" src="img/del@2x.png">
+                删除问卷
+            </div>
+            <div class="line"></div>
+        </div>
+        <div class="button" class="modify">
+            <div class="bt-box">
+                <img class="modify-sel" src="img/modify_sel@2x.png">
+                <img class="pic-modify" src="img/modify@2x.png">
+                修改时间
+            </div>
+        </div>
+    </div>
 </body>
 </html>
