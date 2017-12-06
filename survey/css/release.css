@@ -38,36 +38,36 @@ header {
 .list{
     background-color:white;
     border-top: #e5e5e5;
-    height: 26.25rem;
-    font-size: 32px;
+    height: 14.2rem;
+    font-size: 1rem;
     font-family: Microsoft YaHei;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 .list img{
-    margin-right: 2rem;
-    margin-top: 1rem;
-    margin-left: 1rem;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
     float: left;
 }
 .small{
     color: #999999;
-    font-size: 22px;
+    font-size: 0.5rem;
     font-family: Microsoft YaHei;
     margin-top: 0.6rem;
 }
 .small p{
     float: left;
     margin-top: 1rem;
-    width: 10rem;
+    width: 13rem;
 }
 .small span{
-    font-size: 20px;
+    font-size: 0.3px;
 }
 .list-li{
     color: #999999;
-    font-size: 22px;
+    font-size: 0.5rem;
     font-family: Microsoft YaHei;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
     float: left;
 }
 .list-li ul{
@@ -75,25 +75,28 @@ header {
 }
 .list-li li{
     list-style-type: none;
-    margin-bottom: 1rem;
+    /*margin-bottom: 1rem;*/
 }
 .box{
-    width: 27.5rem;
-    font-size: 32px;
+    width: 14rem;
+    font-size: 0.8rem;
     font-family: Microsoft YaHei;
     color: #232323;
     margin:0 auto;
-    height: 17.5rem;
-    padding-top: 5rem;
+    height: 9rem;
+    padding-top: 2.5rem;
 
 }
+.box p{
+    margin: 0;
+}
 .button{
-    font-size: 22px;
+    font-size: 0.5rem;
     color: #999999;
     font-family: Microsoft YaHei;
     width: 33.3%;
     text-align: center;
-    height:2.5rem;
+    height:1.25rem;
     padding-top: 1rem;
     float: left;
 }
@@ -102,7 +105,7 @@ header {
     margin-right: 0.5rem;
     vertical-align:sub;
     position: relative;
-    top: 5px;
+    /*top: 2.5px;*/
     display: block;
 }
 .button .stop-sel{
@@ -115,7 +118,7 @@ header {
     display: none;
 }
 .button:hover{
-    font-size: 22px;
+    font-size: 0.5rem;
     color: #64aad5;
     font-family: Microsoft YaHei;
 }
@@ -145,14 +148,13 @@ header {
 hr{
     margin: 0px;
     color:#999999 ;
-    margin-top: 2rem;
 }
 .line{
-    height: 3rem;
+    height: 1.5rem;
     width: 1px;
     background: #999999;
     display:inline-block;
     vertical-align:middle;
     float: right;
-    margin-top: -10px;
+    margin-top: -7px;
 }
