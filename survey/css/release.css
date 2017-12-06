@@ -45,9 +45,10 @@ header {
 }
 .list img{
     margin-right: 0.5rem;
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
     float: left;
+    width: 1rem;
 }
 .small{
     color: #999999;
@@ -58,7 +59,7 @@ header {
 .small p{
     float: left;
     margin-top: 1rem;
-    width: 13rem;
+    width: 14rem;
 }
 .small span{
     font-size: 0.3px;
@@ -66,7 +67,6 @@ header {
 .list-li{
     color: #999999;
     font-size: 0.5rem;
-    font-family: Microsoft YaHei;
     margin-top: 0.5rem;
     float: left;
 }
@@ -75,7 +75,7 @@ header {
 }
 .list-li li{
     list-style-type: none;
-    /*margin-bottom: 1rem;*/
+    margin-bottom: 0.2rem;
 }
 .box{
     width: 14rem;
@@ -102,10 +102,11 @@ header {
 }
 .button img{
     margin: 0px;
+    width: 0.5rem;
+    height: 0.5rem;
     margin-right: 0.5rem;
     vertical-align:sub;
     position: relative;
-    /*top: 2.5px;*/
     display: block;
 }
 .button .stop-sel{
