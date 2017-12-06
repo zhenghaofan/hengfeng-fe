@@ -56,6 +56,7 @@
   <footer class="main_footer">恒峰问卷调查系统</footer>
   <script type="text/javascript" src="./js/jquery.min.js"></script>
   <script type="text/javascript">
+  $(document).ready(function() {
     var urlPre = 'http://192.168.13.233';
     $.ajax({
       url: urlPre + '/survey/qnaire/count',
@@ -70,6 +71,7 @@
         }
       }
     })
+  })
   </script>
 </body>
 </html>

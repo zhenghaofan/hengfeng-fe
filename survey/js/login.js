@@ -13,7 +13,7 @@ $(document).ready(function() {
             url: url,
             data: {
                 username: username,
-                password: password,
+                password: password
             },
             type: 'POST',
             success: function(data) {
