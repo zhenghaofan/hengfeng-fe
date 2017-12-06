@@ -1,10 +1,11 @@
 $(document).ready(function() {
-    let url = '/login';
+    var urlPre = 'http://192.168.13.233';
+    var url = urlPre + '/login';
     $('.login_bt').click(function() {
-        let username = $('.login_name').val();
-        let password = $('.login_word').val();
+        var username = $('.login_name').val();
+        var password = $('.login_word').val();
         if (username === '' || password === '') {
-            $(".err_tips").html("请输入正确的账号和密码");
+            $(".login_err").text("请输入正确的账号和密码");
             return;
         }
 
@@ -17,7 +18,7 @@ $(document).ready(function() {
             type: 'POST',
             success: function(data) {
                 if (data.resultCode != 'SUCCESS') {
-                    $(".err_tips").html(data.message);
+                    $(".login_err").text(data.message);
                 } else {
                     window.location.href = 'main.html'
                 }
