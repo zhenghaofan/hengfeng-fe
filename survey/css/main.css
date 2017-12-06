@@ -11,7 +11,9 @@ body {
 }
 
 a {
-  text-decoration: none
+    display: block;
+    text-decoration: none;
+    width: 100%;
 }
 
 /*页面顶部*/
@@ -100,28 +102,7 @@ header {
   text-align: center;
   line-height: 0.75rem;
 }
-.main_news{
-    font-size: 0px;
-    width: 1rem;
-    height: 1rem;
-    background-color: red;
-    border-radius: 0.5rem;
-    position: absolute;
-    margin: 0;
-    margin-top: 2%;
-    margin-left: 14%;
-}
-.main_news p{
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0;
-    margin-bottom: 0;
-    font-family: "Microsoft YaHei";
-    color: #fff;
-    font-size: 16px;
-    line-height: 1rem;
-    text-align: center;
-}
+
 .main_tob {
   line-height: 4.15rem;
 }
@@ -143,7 +124,6 @@ header {
   width: 2%;
   height: 25%;
   vertical-align: 1.5rem;
-  vertical-align: 30px;
   float: right;
   margin-top: 7%;
   margin-right: 6%;
