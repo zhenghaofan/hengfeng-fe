@@ -55,23 +55,6 @@
   </div>
   <footer class="main_footer">恒峰问卷调查系统</footer>
   <script type="text/javascript" src="./js/jquery.min.js"></script>
-  <script type="text/javascript">
-  $(document).ready(function() {
-    var urlPre = 'http://192.168.13.233';
-    $.ajax({
-      url: urlPre + '/survey/qnaire/count',
-      type: 'GET',
-      xhrFields: {
-        withCredentials: true
-      },
-      success: function(data) {
-        if(data.resultCode === 'SUCCESS') {
-          var res = data.data;
-          $('.num').html(res.todoQnaireCount);
-        }
-      }
-    })
-  })
-  </script>
+  <script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>

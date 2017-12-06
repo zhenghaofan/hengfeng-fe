@@ -15,6 +15,9 @@ $(document).ready(function() {
                 username: username,
                 password: password
             },
+            xhrFields: {
+              withCredentials: true
+            },
             type: 'POST',
             success: function(data) {
                 if (data.resultCode != 'SUCCESS') {
