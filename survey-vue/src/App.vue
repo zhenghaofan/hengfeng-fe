@@ -60,5 +60,7 @@ i {
 .i-play:before {
   content: '\e65d';
   color: #64aad5;
+  font-size: 12px;
+  vertical-align: middle;
 }
 </style>

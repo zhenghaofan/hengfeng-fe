@@ -1,18 +1,18 @@
 <template lang="html">
   <div class="login">
-      <div class="login_title">
-            <img src="./title@2x.png" class="login_title_img">
-        </div>
-        <div class="login_content">
-            <input class="login_name" type="text" placeholder="输入账号" v-model="form.username">
-            <input class="login_word" type="password" placeholder="输入密码" v-model="form.password">
-            <p class="login_err">{{error}}</p>
-            <button class="login_bt" @click="login">登录</button>
-        </div>
-        <div class="login_foot">
-            <img src="./logo@2x.png" class="login_foot_img">
-        </div>
+    <div class="login_title">
+        <img src="./title.png" class="login_title_img">
     </div>
+    <div class="login_content">
+        <input class="login_name" type="text" placeholder="输入账号" v-model="form.username">
+        <input class="login_word" type="password" placeholder="输入密码" v-model="form.password">
+        <p class="login_err">{{error}}</p>
+        <button class="login_bt" @click="login">登录</button>
+    </div>
+    <div class="login_foot">
+        <img src="./logo.png" class="login_foot_img">
+    </div>
+  </div>
 </template>
 
 <script>
@@ -41,7 +41,7 @@ export default {
     },
     login() {
       if (this.checkLogin()) {
-        api.login(this.form).then((data)=>{
+        api.login(this.form).then((data) => {
           if (data.resultCode === 'SUCCESS') {
             this.$router.push('/home')
           } else {
@@ -105,7 +105,6 @@ export default {
 .login_bt{
     width: 100%;
     height: 16%;
-    /*margin-top: 0.75rem;*/
     font-size: 18px;
     color: #ffffff;
     border-radius: 0.25rem;
@@ -114,13 +113,12 @@ export default {
 
 /*页尾*/
 .login_foot_img{
-    width: 100%;
+    width: 3.5rem;
 }
 .login_foot{
-    font-size: 0;
-    width: 4rem;
-    height: 1.5rem;
-    margin: 0 auto;
-    margin-top: 38%;
+  width: 100%;
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
 }
 </style>

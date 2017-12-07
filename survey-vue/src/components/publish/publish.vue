@@ -23,26 +23,28 @@
         </ul>
       </div>
       <div class="buttons">
-        <div class="stop-answer btn" @click="toggleStop">
-          <i class="iconf" :class="stop ? 'i-play':'i-stop'"></i>
-          <span v-if="!stop">停止作答</span>
+        <div class="stop-answer btn" @click="toggleStop(item)">
+          <i class="iconf" :class="item.disabled ? 'i-play':'i-stop'"></i>
+          <span v-if="!item.disabled">停止作答</span>
           <span v-else class="editing">开始作答</span>
         </div>
-        <div class="delete-paper btn" @click="deletePaper">
+        <div class="delete-paper btn" @click="deletePaper(item.id)">
           <i class="iconf i-delete"></i> 删除问卷
         </div>
-        <div class="change-time btn" :class="{'editing': editing}" @click="changeTime">
-          <i class="iconf i-modify"></i> 修改时间
+        <div class="change-time btn" :class="{'editing': item.editing}" @click="changeTime(item)">
+          <i class="iconf i-modify" :class="{'editing': item.editing}"></i> 修改时间
         </div>
       </div>
     </div>
+    <mt-datetime-picker ref="picker" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
   </div>
 </template>
 
 <script>
 import api from 'api/url'
-import util from 'utils/dom'
+import util from 'utils/index'
 import gHeader from 'components/base/header/header'
+import {MessageBox} from 'mint-ui'
 
 export default {
   data() {
@@ -51,17 +53,45 @@ export default {
       title: '已发布',
       stop: false,
       editing: false,
+      type: 1,
+      datetime:null,
+      selectedItem: null
     }
   },
   methods: {
-    toggleStop() {
-      this.stop = !this.stop;
+    toggleStop(item) {
+      let message = item.disabled ? '确定开始作答该问卷吗' : '确定停止作答该问卷吗';
+      MessageBox.confirm(message).then(() => {
+        api.stopPaper({
+          disabled: !item.disabled
+        }, item.id).then((data) => {
+          if (data.resultCode === 'SUCCESS') {
+            this.getPublishList(this.type)
+          }
+        })
+      }).catch((err) => {});
     },
-    deletePaper() {
-
+    deletePaper(id) {
+      MessageBox.confirm("确定删除该问卷吗").then(action => {
+        api.deletePaper(id).then((data) => {
+          if (data.resultCode === 'SUCCESS') {
+            this.getPublishList(this.type)
+          }
+        })
+      })
     },
-    changeTime() {
-      this.editing = true;
+    changeTime(item) {
+      item.editing = true;
+      this.selectedItem = item;
+      this.$refs.picker.open();
+    },
+    confirmDatetime(data) {
+      this.selectedItem.editing = false;
+      api.changeTime({endDate: util.formateDate(data)}, this.selectedItem.id).then((res) => {
+        if (res.resultCode === 'SUCCESS') {
+          this.getPublishList(this.type);
+        }
+      })
     },
     getPublishList(type) {
       api.getPublishList({
@@ -69,20 +99,24 @@ export default {
       }).then((data) => {
         if (data.resultCode === 'SUCCESS') {
           let res = data.data || {};
+          res.qnaireList.forEach((item) => {
+            item.editing = false
+          });
           this.datalist = res.qnaireList;
         }
       })
     }
   },
   components: {
-    gHeader
+    gHeader,
+    MessageBox
   },
   mounted() {
-    let type = this.$route.params.type || 1;
-    if (type === 2) {
+    this.type = this.$route.params.type;
+    if (this.type === 2) {
       this.title = '已回收';
     }
-    this.getPublishList(type)
+    this.getPublishList(this.type)
   }
 }
 </script>
@@ -91,7 +125,6 @@ export default {
 body {
     background-color: #dddddd;
 }
-
 .item {
   margin-top: 0.5rem;
   background: white;

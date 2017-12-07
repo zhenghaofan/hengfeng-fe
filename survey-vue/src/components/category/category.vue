@@ -3,16 +3,16 @@
       <div class="main_link">
           <div class="main_ap">
             <router-link class="link" :to="{name: 'publish', params: {type: 1}}">
-                <img src="./pid_Alreadypublished@2x.png" class="main_img">
-                <img src="./icon_in@2x.png" class="main_icon">
+                <img src="./pid_Alreadypublished.png" class="main_img">
+                <img src="./icon_in.png" class="main_icon">
               </router-link>
           </div>
       </div>
       <div class="main_link">
           <div class="main_rec">
             <router-link class="link" :to="{name: 'publish', params: {type: 2}}">
-              <img src="./pic_Recovered@2x.png" class="main_img">
-              <img src="./icon_in@2x.png" class="main_icon">
+              <img src="./pic_Recovered.png" class="main_img">
+              <img src="./icon_in.png" class="main_icon">
             </router-link>
           </div>
       </div>
@@ -24,15 +24,15 @@
                   <div class="num">{{num}}</div>
                   </div>
                   <img src="./answering.png" class="answering">
-                  <img src="./icon_in@2x.png" class="main_icon">
+                  <img src="./icon_in.png" class="main_icon">
               </router-link>
           </div>
       </div>
       <div class="main_link">
           <div class="main_ans">
             <router-link class="link" :to="{name: 'answer', params: {type: 4}}">
-                  <img src="./pic_Answered@2x.png"  class="main_img">
-                  <img src="./icon_in@2x.png" class="main_icon">
+                  <img src="./pic_Answered.png"  class="main_img">
+                  <img src="./icon_in.png" class="main_icon">
               </router-link>
           </div>
       </div>
@@ -64,6 +64,9 @@ export default {
 </script>
 
 <style lang="css">
+body {
+    background-color: #dddddd;
+}
 .link {
   display: block;
   width: 100%;
@@ -145,7 +148,6 @@ export default {
   margin-top: 5%;
 }
 
-
 .main_icon {
   width: 2%;
   height: 25%;
@@ -154,5 +156,6 @@ export default {
   margin-top: 7%;
   margin-right: 6%;
 }
+
 
 </style>

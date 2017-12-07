@@ -8,8 +8,8 @@ export default {
       newobj = JSON.parse(str); //还原
     } else {
       for(var i in obj){
-        newobj[i] = typeof obj[i] === 'object' ? 
-        this.cloneObj(obj[i]) : obj[i]; 
+        newobj[i] = typeof obj[i] === 'object' ?
+        this.cloneObj(obj[i]) : obj[i];
       }
     }
     return newobj;
@@ -70,7 +70,7 @@ export default {
       var hours = _addZore(time.getHours());
       var minutes = _addZore(time.getMinutes());
       var seconds = _addZore(time.getSeconds());
-      return year + '-' + month + '-' + date;
+      return year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + seconds;
       // return {
       //     year: year,
       //     month: month,

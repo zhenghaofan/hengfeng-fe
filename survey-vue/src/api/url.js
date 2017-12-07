@@ -19,5 +19,17 @@ export default {
 
   getAnswerList(params) {
     return axios.post('/survey/qnaire/list', params)
+  },
+
+  deletePaper(id) {
+    return axios.get('/survey/qnaire/' + id + '/delete')
+  },
+
+  stopPaper(params, id) {
+    return axios.post('/survey/qnaire/'+ id +'/enable', params)
+  },
+
+  changeTime(params, id) {
+    return axios.post('/survey/qnaire/'+ id +'/delay', params)
   }
 };

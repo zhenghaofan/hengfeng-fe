@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="head">
     <div class="back" @click="goBack">
-      <img src="./back@2x.png">返回
+      <img src="./back.png">返回
     </div>
     <span class="title">{{title}}</span>
   </div>
