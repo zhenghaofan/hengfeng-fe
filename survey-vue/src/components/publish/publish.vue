@@ -1,7 +1,8 @@
 <template lang="html">
   <div>
     <g-header :title="title"></g-header>
-    <div class="item" v-for="(item, index) in datalist" :key="item.id">
+    <template v-if="datalist.length > 0">
+      <div class="item" v-for="(item, index) in datalist" :key="item.id">
       <div class="item-head">
         <img src="./info.png" alt="">
         <div class="info">
@@ -36,6 +37,8 @@
         </div>
       </div>
     </div>
+    </template>
+    <empty v-else></empty>
     <mt-datetime-picker ref="picker" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
   </div>
 </template>
@@ -44,6 +47,7 @@
 import api from 'api/url'
 import util from 'utils/index'
 import gHeader from 'components/base/header/header'
+import empty from 'components/base/empty/empty'
 import {MessageBox} from 'mint-ui'
 
 export default {
@@ -109,7 +113,8 @@ export default {
   },
   components: {
     gHeader,
-    MessageBox
+    MessageBox,
+    empty
   },
   mounted() {
     this.type = this.$route.params.type;

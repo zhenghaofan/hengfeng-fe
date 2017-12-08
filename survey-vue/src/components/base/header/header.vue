@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="head">
-    <div class="back" @click="goBack">
+    <div v-show="showBack" class="back" @click="goBack">
       <img src="./back.png">返回
     </div>
     <span class="title">{{title}}</span>
@@ -15,6 +15,10 @@ export default {
       default: '问卷调查系统',
       require: true
     },
+    showBack: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     goBack() {

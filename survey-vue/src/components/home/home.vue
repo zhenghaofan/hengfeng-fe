@@ -1,6 +1,6 @@
 <template lang="html">
   <div>
-    <g-header></g-header>
+    <g-header :show-back="showBack"></g-header>
     <category></category>
     <footer>恒峰问卷调查系统</footer>
   </div>
@@ -10,6 +10,11 @@
 import gHeader from 'components/base/header/header'
 import category from 'components/category/category'
 export default {
+  data() {
+    return {
+      showBack: false
+    }
+  },
   components: {
     gHeader,
     category

@@ -1,17 +1,21 @@
 <template lang="html">
   <div class="container">
     <g-header :title="title"></g-header>
+    <template v-if="datalist.length > 0">
       <div class="list" v-for="item in datalist">
           <div class="time">截止时间：{{item.endDate}}</div>
           <div class="box">
               {{item.title}}
           </div>
       </div>
+    </template>
+    <empty v-else></empty>
   </div>
 </template>
 
 <script>
 import gHeader from 'components/base/header/header'
+import empty from 'components/base/empty/empty'
 import api from 'api/url'
 
 export default {
@@ -32,7 +36,8 @@ export default {
     }
   },
   components: {
-    gHeader
+    gHeader,
+    empty
   },
   mounted() {
     let defaultParams = {
