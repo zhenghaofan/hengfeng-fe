@@ -106,17 +106,17 @@ body {
     width: 33%;
 }
 .pen {
-  width: 1.92rem;
   height: 2rem;
 }
 .answering {
-  width: 3.57rem;
-  margin-left: 0.8rem;
+  width: 21%;
+  margin-left: -2%;
 }
 .wrapper {
   display: inline-block;
   position: relative;
-  margin-left: 6%;
+  width: 24%;
+  text-align: center;
 }
 .num {
   border-radius: 10px;
@@ -126,7 +126,7 @@ body {
   height: 15px;
   position: absolute;
   top: -2px;
-  right: -9px;
+  right: 14%;
   font-size: 12px;
   text-align: center;
   line-height: 0.75rem;

@@ -5,6 +5,7 @@ const Login = () => import ('components/login/login.vue')
 const Home = () => import ('components/home/home.vue')
 const Publish = () => import ('components/publish/publish.vue')
 const Answer = () => import ('components/answer/answer.vue')
+const Summary = () => import ('components/summary/summary.vue')
 
 Vue.use(Router)
 
@@ -31,6 +32,11 @@ export default new Router({
       path: '/answer',
       name: 'answer',
       component: Answer
+    },
+    {
+      path: '/summary',
+      name: 'summary',
+      component: Summary
     }
   ]
 })

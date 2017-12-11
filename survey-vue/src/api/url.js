@@ -31,5 +31,9 @@ export default {
 
   changeTime(params, id) {
     return axios.post('/survey/qnaire/'+ id +'/delay', params)
+  },
+
+  getPaperSummary(params) {
+    return axios.postJson('/survey/stat/answer/view', params)
   }
 };
