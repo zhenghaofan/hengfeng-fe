@@ -21,7 +21,7 @@
               <router-link class="link" :to="{name: 'answer', params: {type: 3}}">
                 <div class="wrapper">
                   <img src="./answering-pen.png" class="pen">
-                  <div class="num">{{num}}</div>
+                  <div class="num" v-if="num !== 0">{{num}}</div>
                   </div>
                   <img src="./answering.png" class="answering">
                   <img src="./icon_in.png" class="main_icon">
@@ -64,8 +64,9 @@ export default {
 </script>
 
 <style lang="css">
-body {
-    background-color: #dddddd;
+#app {
+  height: 100%;
+  background-color: #dddddd;
 }
 .link {
   display: block;
@@ -122,12 +123,12 @@ body {
   border-radius: 10px;
   color: white;
   background: red;
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   position: absolute;
-  top: -2px;
+  top: -3px;
   right: 14%;
-  font-size: 12px;
+  font-size: 7px;
   text-align: center;
   line-height: 0.75rem;
 }

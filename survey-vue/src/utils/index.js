@@ -46,15 +46,13 @@ export default {
   	return decodeURIComponent(this.strToObj(searchStr)[name]) || '';
 	},
 
-  formateDate: function (time) {
-
+  formateDateToStr: function (time) {
       function _addZore(num) {
           if (num < 10) {
               num = '0' + num;
           }
           return num;
       }
-
       if (typeof time != 'object') {
           time = '' + time;
           if (time.length > 12) {
@@ -63,7 +61,6 @@ export default {
               time = new Date(parseInt(time) * 1000);
           }
       }
-
       var year = time.getFullYear();
       var month = _addZore(time.getMonth() + 1);
       var date = _addZore(time.getDate());
@@ -81,6 +78,15 @@ export default {
       //     short_str: year + '-' + month + '-' + date,
       //     str: year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + seconds
       // };
+  },
+
+  formateStrToDate: function(dateString) {
+    if (dateString) {
+      var arr1 = dateString.split(" ");
+      var sdate = arr1[0].split('-');
+      var date = new Date(sdate[0], sdate[1]-1, sdate[2]);
+      return date;
+    }
   },
 
   removeByValue: function(arr, val) {

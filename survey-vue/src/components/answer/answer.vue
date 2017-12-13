@@ -1,13 +1,13 @@
 <template lang="html">
   <div class="container">
-    <g-header :title="title"></g-header>
+    <g-header :title="title" :url="backUrl"></g-header>
     <template v-if="datalist.length > 0">
-      <div class="list" v-for="item in datalist">
+      <a :href="getAnswerUrl(item.id)" class="list" v-for="item in datalist">
           <div class="time">截止时间：{{item.endDate}}</div>
           <div class="box">
               {{item.title}}
           </div>
-      </div>
+      </a>
     </template>
     <empty v-else></empty>
   </div>
@@ -21,11 +21,16 @@ import api from 'api/url'
 export default {
   data(){
     return {
-      title: '待回答',
-      datalist: []
+      title: '',
+      datalist: [],
+      baseAnswerUrl: '',
+      backUrl: {path: '/home'}
     }
   },
   methods: {
+    getAnswerUrl(id) {
+      return this.baseAnswerUrl + window.btoa(id)
+    },
     getAnswerList(params) {
       api.getAnswerList(params).then((data) => {
         if (data.resultCode === 'SUCCESS') {
@@ -44,8 +49,12 @@ export default {
       pageNo: 1
     }
     let type = this.$route.params.type || 3;
-    if (type === 4) {
+    if (type === 3) {
+      this.title = '待回答';
+      this.baseAnswerUrl = '/views/ques/answer.html?id='
+    } else {
       this.title = '已回答';
+      this.baseAnswerUrl = '/views/ques/answerdet.html?id='
     }
     defaultParams.status = type;
     this.getAnswerList(defaultParams)
@@ -62,10 +71,12 @@ export default {
   background-color: white;
   border-top: 1px solid #e5e5e5;
   height: 4.6rem;
+  display: block;
+  text-decoration: none;
 }
 
 .list:hover {
-  background-color: #f5f5f5;
+  /*background-color1: #f5f5f5;*/
 }
 
 .time {

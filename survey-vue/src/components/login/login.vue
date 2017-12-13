@@ -58,6 +58,9 @@ export default {
 </script>
 
 <style lang="css">
+.login {
+  background: white;
+}
 /*标题图*/
 .login_title{
     margin-left: 5%;

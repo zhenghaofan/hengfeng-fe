@@ -18,11 +18,19 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    },
+    url: {
+      type: Object,
+      default: null
     }
   },
   methods: {
     goBack() {
-      window.history.go(-1)
+      if(this.url) {
+        this.$router.push(this.url)
+      } else {
+        this.$router.back();
+      }
     }
   }
 }

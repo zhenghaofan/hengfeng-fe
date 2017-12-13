@@ -1,10 +1,10 @@
 <template lang="html">
-  <div>
-    <g-header :title="title"></g-header>
+  <div class="publish">
+    <g-header :title="title" :url="backUrl"></g-header>
     <!-- <div v-if="datalist.length > 0" :style="{ height: wrapperHeight + 'px' }" style="-webkit-overflow-scrolling: auto" ref="wrapper"> -->
       <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="allLoaded" ref="loadmore"> -->
     <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
-      <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id}}">
+      <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id, status: params.status}}">
         <div class="item-head">
           <img src="./info.png" alt="">
           <div class="info">
@@ -25,24 +25,12 @@
             <li>有效问卷份数: {{item.vaildNum}}份</li>
           </ul>
         </div>
-        <div class="buttons">
-          <div class="stop-answer btn" @click="toggleStop(item)">
-            <i class="iconf" :class="item.disabled ? 'i-play':'i-stop'"></i>
-            <span v-if="!item.disabled">停止作答</span>
-            <span v-else class="editing">开始作答</span>
-          </div>
-          <div class="delete-paper btn" @click="deletePaper(item.id)">
-            <i class="iconf i-delete"></i> 删除问卷
-          </div>
-          <div class="change-time btn" :class="{'editing': item.editing}" @click="changeTime(item)">
-          <i class="iconf i-modify" :class="{'editing': item.editing}"></i> 修改时间
-        </div>
-        </div>
+        <paper-op :item="item" :callback="refresh" :isFixedBottom="isFixedBottom" @time-changed="changeTime"></paper-op>
       </router-link>
+      <mt-datetime-picker ref="datetime" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
       <!-- </mt-loadmore> -->
     </div>
     <empty v-else></empty>
-    <mt-datetime-picker ref="picker" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
   </div>
 </template>
 
@@ -51,8 +39,10 @@ import api from 'api/url'
 import util from 'utils/index'
 import gHeader from 'components/base/header/header'
 import empty from 'components/base/empty/empty'
-// import {MessageBox, Loadmore} from 'mint-ui'
-import {MessageBox, InfiniteScroll} from 'mint-ui'
+import paperOp from 'components/base/paper-op/paper-op'
+import {
+  MessageBox
+} from 'mint-ui'
 
 export default {
   data() {
@@ -61,93 +51,92 @@ export default {
       title: '已发布',
       stop: false,
       editing: false,
-      datetime:null,
+      datetime: null,
+      isFixedBottom: false,
       selectedItem: null,
       params: {
         status: 1,
         pageNo: 1
       },
-      allLoaded: true,
-      scrollMode:"auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
-      wrapperHeight: 0,
-      loading: false
+      // loading: true,
+      backUrl: {
+        path: '/home'
+      }
+      // allLoaded: true,
+      // scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
+      // wrapperHeight: 0,
     }
   },
   methods: {
-    toggleStop(item) {
-      let message = item.disabled ? '确定开始作答该问卷吗' : '确定停止作答该问卷吗';
-      MessageBox.confirm(message).then(() => {
-        api.stopPaper({
-          disabled: !item.disabled
-        }, item.id).then((data) => {
-          if (data.resultCode === 'SUCCESS') {
-            this.getPublishList(this.params)
-          }
-        })
-      }).catch((err) => {});
-    },
-    deletePaper(id) {
-      MessageBox.confirm("确定删除该问卷吗").then(action => {
-        api.deletePaper(id).then((data) => {
-          if (data.resultCode === 'SUCCESS') {
-            this.getPublishList(this.params)
-          }
-        })
-      })
+    refresh() {
+      this.params.pageNo = 1;
+      this.getPublishList(false);
     },
     changeTime(item) {
       item.editing = true;
       this.selectedItem = item;
-      this.$refs.picker.open();
+      this.datetime = util.formateStrToDate(this.selectedItem.startDate)
+      this.$refs.datetime.open();
     },
     confirmDatetime(data) {
       this.selectedItem.editing = false;
-      api.changeTime({endDate: util.formateDate(data)}, this.selectedItem.id).then((res) => {
+      api.changeTime({
+        endDate: util.formateDateToStr(data)
+      }, this.selectedItem.id).then((res) => {
         if (res.resultCode === 'SUCCESS') {
-          this.getPublishList(this.params);
+          MessageBox.alert('修改成功')
+          this.refresh();
         }
+      }).catch((err) => {
+        MessageBox.alert(err.message)
       })
     },
-    getPublishList(params) {
+    getPublishList(multi) {
       this.loading = true;
-      api.getPublishList(params).then((data) => {
+      api.getPublishList(this.params).then((data) => {
         if (data.resultCode === 'SUCCESS') {
           let res = data.data || {};
           res.qnaireList.forEach((item) => {
             item.editing = false
           });
-          this.datalist = this.datalist.concat(res.qnaireList);
+          if (multi) {
+            this.datalist = this.datalist.concat(res.qnaireList);
+          } else {
+            this.datalist = res.qnaireList
+          }
           this.loading = false;
           // this.$nextTick(() => {
           //   this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
           // })
         }
+      }).catch((err) => {
+        MessageBox.alert(err.message)
       })
     },
     loadMore() {
       this.params.pageNo++;
-      this.getPublishList(this.params);
+      this.getPublishList(true);
       // this.$refs.loadmore.onBottomLoaded();
     },
   },
   components: {
     gHeader,
-    MessageBox,
     empty,
-    InfiniteScroll
+    MessageBox,
+    paperOp
   },
   mounted() {
     this.params.status = this.$route.params.type;
     if (this.params.status === 2) {
       this.title = '已回收';
     }
-    this.getPublishList(this.params)
+    this.getPublishList(true)
   }
 }
 </script>
 
 <style lang="css">
-body {
+.publish {
     background-color: #dddddd;
 }
 .item {
@@ -193,26 +182,5 @@ body {
 .item-detail ul li {
   line-height: 1.2rem;
   color: #999;
-}
-.btn {
-  width: 32%;
-  padding: 0.6rem 0;
-  text-align: center;
-  display: inline-block;
-  color: #999;
-}
-.buttons {
-  border-top: 1px solid #e5e5e5;
-  padding: 0.3rem 0;
-}
-.buttons img{
-    width: 0.4rem;
-    height: 0.5rem;
-}
-.stop-answer, .delete-paper {
-  border-right: 1px solid #e5e5e5;
-}
-.editing {
-  color: #64aad5;
 }
 </style>

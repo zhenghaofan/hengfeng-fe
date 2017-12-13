@@ -10,7 +10,8 @@ const Summary = () => import ('components/summary/summary.vue')
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
+  base: '/mobile/', //上线必须配置
   routes: [{
       path: '/',
       redirect: '/login'

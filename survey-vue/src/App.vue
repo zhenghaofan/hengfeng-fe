@@ -19,11 +19,18 @@ export default {
 
 html {
     font-size: 20px;
+    height: 100%;
+}
+
+body {
+  height: 100%;
 }
 
 i {
   font-style: normal;
 }
+
+a:hover, a:visited, a:link, a:active { text-decoration:none; color:#232323 }
 
 @font-face {
   font-family: 'iconfont';

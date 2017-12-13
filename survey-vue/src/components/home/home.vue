@@ -1,5 +1,5 @@
 <template lang="html">
-  <div>
+  <div class="home">
     <g-header :show-back="showBack"></g-header>
     <category></category>
     <footer>恒峰问卷调查系统</footer>
@@ -23,7 +23,10 @@ export default {
 </script>
 
 <style lang="css">
-
+.home {
+  height: 100%;
+  background: #ddd;
+}
 footer{
   width: 100%;
   font-size: 14px;
