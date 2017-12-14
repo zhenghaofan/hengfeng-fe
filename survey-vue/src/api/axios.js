@@ -6,6 +6,8 @@ import axios from 'axios';
 import util from '../utils/index.js';
 
 import Vue from 'vue';
+
+import { Indicator } from 'mint-ui'
 //API接口地址配置
 import urlConfig from '../../config/url.config.js';
 
@@ -35,6 +37,11 @@ var requestInterceptSuc = function (config) {
   }
   //加载loading图 TODO
 
+  Indicator.open({
+    text: '加载中...',
+    spinnerType: 'fading-circle'
+  });
+
   return config;
 }
 var requestInterceptErr = function (error) {
@@ -52,6 +59,7 @@ var responseInterceptSuc = function (res) {
   var flag = res.data.resultCode,
       popMsg = ['FAIL', 'NO_AUTH', 'SYSTEM_ERROR', 'DUPLICATION', 'NO_EXISTS'];
       // 操作失败 权限不够 系统出错 数据重复、重复操作 数据不存在
+      Indicator.close();
   //登录成功
   if (popMsg.indexOf(flag) !== -1) {
   //操作失败等

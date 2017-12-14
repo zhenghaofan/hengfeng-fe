@@ -1,34 +1,35 @@
 <template lang="html">
   <div class="main_content">
-      <div class="main_link">
-          <div class="main_ap">
-            <router-link class="link" :to="{name: 'publish', params: {type: 1}}">
-                <img src="./pid_Alreadypublished.png" class="main_img">
-                <img src="./icon_in.png" class="main_icon">
-              </router-link>
-          </div>
-      </div>
-      <div class="main_link">
-          <div class="main_rec">
-            <router-link class="link" :to="{name: 'publish', params: {type: 2}}">
-              <img src="./pic_Recovered.png" class="main_img">
+    <g-header :show-back="showBack"></g-header>
+    <div class="main_link">
+        <div class="main_ap">
+          <router-link class="link" :to="{name: 'publish', params: {type: 1}}">
+              <img src="./pid_Alreadypublished.png" class="main_img">
               <img src="./icon_in.png" class="main_icon">
             </router-link>
-          </div>
-      </div>
-      <div class="main_link">
-          <div class="main_tob">
-              <router-link class="link" :to="{name: 'answer', params: {type: 3}}">
-                <div class="wrapper">
-                  <img src="./answering-pen.png" class="pen">
-                  <div class="num" v-if="num !== 0">{{num}}</div>
-                  </div>
-                  <img src="./answering.png" class="answering">
-                  <img src="./icon_in.png" class="main_icon">
-              </router-link>
-          </div>
-      </div>
-      <div class="main_link">
+        </div>
+    </div>
+    <div class="main_link">
+        <div class="main_rec">
+          <router-link class="link" :to="{name: 'publish', params: {type: 2}}">
+            <img src="./pic_Recovered.png" class="main_img">
+            <img src="./icon_in.png" class="main_icon">
+          </router-link>
+        </div>
+    </div>
+    <div class="main_link">
+        <div class="main_tob">
+            <router-link class="link" :to="{name: 'answer', params: {type: 3}}">
+              <div class="wrapper">
+                <img src="./answering-pen.png" class="pen">
+                <div class="num" v-if="num !== 0">{{num}}</div>
+                </div>
+                <img src="./answering.png" class="answering">
+                <img src="./icon_in.png" class="main_icon">
+            </router-link>
+        </div>
+    </div>
+    <div class="main_link">
           <div class="main_ans">
             <router-link class="link" :to="{name: 'answer', params: {type: 4}}">
                   <img src="./pic_Answered.png"  class="main_img">
@@ -36,14 +37,19 @@
               </router-link>
           </div>
       </div>
+
+    <footer>恒峰问卷调查系统</footer>
+
   </div>
 </template>
 
 <script>
+import gHeader from 'components/base/header/header'
 import api from 'api/url'
 export default {
   data() {
     return {
+      showBack: false,
       num: null
     }
   },
@@ -56,6 +62,9 @@ export default {
         }
       })
     }
+  },
+  components: {
+    gHeader
   },
   created() {
     this.getTodoCount()
@@ -75,6 +84,7 @@ export default {
 }
 .main_content{
     width: 100%;
+    padding-top: 2.5rem;
     background-color: #ffffff;
 }
 .main_link{
@@ -128,9 +138,9 @@ export default {
   position: absolute;
   top: -3px;
   right: 14%;
-  font-size: 7px;
+  font-size: 12px;
   text-align: center;
-  line-height: 0.75rem;
+  line-height: 0.95rem;
 }
 
 .main_tob {
@@ -158,5 +168,13 @@ export default {
   margin-right: 6%;
 }
 
+footer{
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+  color: #999999;
+  position: fixed;
+  bottom: 10px;
+}
 
 </style>

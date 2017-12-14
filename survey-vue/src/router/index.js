@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const Login = () => import ('components/login/login.vue')
-const Home = () => import ('components/home/home.vue')
+const Category = () => import ('components/category/category.vue')
 const Publish = () => import ('components/publish/publish.vue')
 const Answer = () => import ('components/answer/answer.vue')
 const Summary = () => import ('components/summary/summary.vue')
@@ -21,8 +21,8 @@ export default new Router({
       component: Login
     },
     {
-      path: '/home',
-      component: Home
+      path: '/category',
+      component: Category
     },
     {
       path: '/publish',

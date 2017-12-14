@@ -6,15 +6,22 @@
 </template>
 
 <script>
-export default {
-}
+export default {}
 </script>
 
 <style lang="css">
 .empty {
   text-align: center;
   font-size: 16px;
-  margin: 50% auto;
+  margin: auto;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 50%;
 }
 .empty img {
   width: 42%;

@@ -1,9 +1,9 @@
 <template lang="html">
   <div class="head">
     <div v-show="showBack" class="back" @click="goBack">
-      <img src="./back.png">返回
+      <i class="iconf i-back"></i>返回
     </div>
-    <span class="title">{{title}}</span>
+    <span class="title">{{title.length > 10 ? formateTitle(title) : title}}</span>
   </div>
 </template>
 
@@ -31,6 +31,9 @@ export default {
       } else {
         this.$router.back();
       }
+    },
+    formateTitle(title) {
+      return title.substr(0, 10) + '...'
     }
   }
 }
@@ -43,11 +46,15 @@ export default {
   background-color: #232323;
   color: white;
   text-align: center;
+  width: 100%;
+  z-index: 10;
+  position: fixed;
+  top: 0
 }
 
 .back {
   position: absolute;
-  left: 1.4rem;
+  left: 1rem;
   line-height: 2.5rem;
 }
 

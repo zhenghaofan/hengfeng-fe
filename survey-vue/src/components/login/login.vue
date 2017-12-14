@@ -43,7 +43,7 @@ export default {
       if (this.checkLogin()) {
         api.login(this.form).then((data) => {
           if (data.resultCode === 'SUCCESS') {
-            this.$router.push('/home')
+            this.$router.push('/category')
           } else {
             this.error = data.message
           }
@@ -59,68 +59,69 @@ export default {
 
 <style lang="css">
 .login {
+  height: 100%;
   background: white;
+  padding-top: 12%;
 }
 /*标题图*/
 .login_title{
-    margin-left: 5%;
-    margin-top: 12%;
+  margin-left: 5%;
 }
 .login_title_img{
-    width: 55%;
+  width: 55%;
 }
 
 /*内容区*/
 .login_content{
-    width: 90%;
-    margin: 0 auto;
-    height: 15rem;
+  width: 90%;
+  margin: 0 auto;
+  height: 15rem;
 }
 .login_name,
 .login_word{
-    margin: 0 auto;
-    width: 95%;
-    height: 16%;
-    border: 1px solid #e5e5e5;
-    border-radius: 0.25rem;
-    margin-top: 0.8rem;
-    padding-left: 0.8rem;
-    font-size: 16px;
-    font-family: "Microsoft YaHei UI Light";
+  margin: 0 auto;
+  width: 95%;
+  height: 16%;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.25rem;
+  margin-top: 0.8rem;
+  padding-left: 0.8rem;
+  font-size: 16px;
+  font-family: "Microsoft YaHei UI Light";
 }
 
 .login_name{
-    margin-top: 1.6rem;
+  margin-top: 1.6rem;
 }
 
 /*错误*/
 .login_err{
-    width: 100%;
-    height: 10%;
-    font-size: 14px;
-    line-height: 200%;
-    color: #ff4e4e;
-    text-align: center;
-    margin-top: 2%;
+  width: 100%;
+  height: 10%;
+  font-size: 14px;
+  line-height: 200%;
+  color: #ff4e4e;
+  text-align: center;
+  margin-top: 2%;
 }
 
 /*按钮*/
 .login_bt{
-    width: 100%;
-    height: 16%;
-    font-size: 18px;
-    color: #ffffff;
-    border-radius: 0.25rem;
-    background: -webkit-linear-gradient(left, #00b4ff, #1da1f2);
+  width: 100%;
+  height: 16%;
+  font-size: 18px;
+  color: #ffffff;
+  border-radius: 0.25rem;
+  background: -webkit-linear-gradient(left, #00b4ff, #1da1f2);
 }
 
 /*页尾*/
 .login_foot_img{
-    width: 3.5rem;
+  width: 3.5rem;
 }
 .login_foot{
   width: 100%;
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   text-align: center;
 }

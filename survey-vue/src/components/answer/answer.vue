@@ -1,14 +1,14 @@
 <template lang="html">
   <div class="container">
     <g-header :title="title" :url="backUrl"></g-header>
-    <template v-if="datalist.length > 0">
+    <div v-if="datalist.length > 0" class="answer-list">
       <a :href="getAnswerUrl(item.id)" class="list" v-for="item in datalist">
           <div class="time">截止时间：{{item.endDate}}</div>
           <div class="box">
               {{item.title}}
           </div>
       </a>
-    </template>
+    </div>
     <empty v-else></empty>
   </div>
 </template>
@@ -24,12 +24,12 @@ export default {
       title: '',
       datalist: [],
       baseAnswerUrl: '',
-      backUrl: {path: '/home'}
+      backUrl: {path: '/category'}
     }
   },
   methods: {
     getAnswerUrl(id) {
-      return this.baseAnswerUrl + window.btoa(id)
+      return this.baseAnswerUrl + encodeURIComponent(window.btoa(id))
     },
     getAnswerList(params) {
       api.getAnswerList(params).then((data) => {
@@ -66,7 +66,9 @@ export default {
 .container {
   background-color: #dddddd;
 }
-
+.answer-list {
+  padding-top: 2.5rem;
+}
 .list {
   background-color: white;
   border-top: 1px solid #e5e5e5;

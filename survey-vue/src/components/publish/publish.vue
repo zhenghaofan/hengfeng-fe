@@ -3,7 +3,7 @@
     <g-header :title="title" :url="backUrl"></g-header>
     <!-- <div v-if="datalist.length > 0" :style="{ height: wrapperHeight + 'px' }" style="-webkit-overflow-scrolling: auto" ref="wrapper"> -->
       <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="allLoaded" ref="loadmore"> -->
-    <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
+    <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="publish-list">
       <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id, status: params.status}}">
         <div class="item-head">
           <img src="./info.png" alt="">
@@ -60,7 +60,7 @@ export default {
       },
       // loading: true,
       backUrl: {
-        path: '/home'
+        path: '/category'
       }
       // allLoaded: true,
       // scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
@@ -139,10 +139,13 @@ export default {
 .publish {
     background-color: #dddddd;
 }
+.publish-list {
+  padding-top: 2.5rem;
+}
 .item {
   margin-top: 0.5rem;
   background: white;
-  font-size: 0.55rem;
+  font-size: 0.75rem;
   text-decoration: none;
   display: block;
 }

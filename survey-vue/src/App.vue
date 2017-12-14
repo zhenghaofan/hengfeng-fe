@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view/>
+    <transition name="fade">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -11,15 +13,15 @@ export default {
 </script>
 
 <style>
-*{
-    margin: 0;
-    padding: 0;
-    border: none;
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 html {
-    font-size: 20px;
-    height: 100%;
+  font-size: 20px;
+  height: 100%;
 }
 
 body {
@@ -30,7 +32,20 @@ i {
   font-style: normal;
 }
 
-a:hover, a:visited, a:link, a:active { text-decoration:none; color:#232323 }
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+  opacity: 0;
+}
+
+a:hover,
+a:visited,
+a:link,
+a:active {
+  text-decoration: none;
+  color: #232323
+}
 
 @font-face {
   font-family: 'iconfont';
@@ -43,11 +58,12 @@ a:hover, a:visited, a:link, a:active { text-decoration:none; color:#232323 }
 
 .iconf {
   display: inline-block;
-  font-family: 'iconfont';/*'FontAwesome'*/
+  font-family: 'iconfont';
+  /*'FontAwesome'*/
   font-size: 14px;
   width: 16px;
   text-align: right;
-  vertical-align: middle;
+  /*vertical-align: middle;*/
   position: relative;
   color: #999;
 }
@@ -56,7 +72,7 @@ a:hover, a:visited, a:link, a:active { text-decoration:none; color:#232323 }
   content: '\e66a';
 }
 
-.i-delete:before{
+.i-delete:before {
   content: '\e614';
 }
 
@@ -69,5 +85,11 @@ a:hover, a:visited, a:link, a:active { text-decoration:none; color:#232323 }
   color: #64aad5;
   font-size: 12px;
   vertical-align: middle;
+}
+
+.i-back:before {
+  content: '\e600';
+  color: white;
+  margin-right: 0.1rem;
 }
 </style>
