@@ -92,4 +92,13 @@ a:active {
   color: white;
   margin-right: 0.1rem;
 }
+
+.i-exit {
+  margin-right: 0.2rem;
+}
+
+.i-exit:before {
+  content: '\e684';
+  color: white;
+}
 </style>

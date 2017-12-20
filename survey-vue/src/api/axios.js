@@ -7,7 +7,7 @@ import util from '../utils/index.js';
 
 import Vue from 'vue';
 
-import { Indicator } from 'mint-ui'
+import { Indicator, MessageBox } from 'mint-ui'
 //API接口地址配置
 import urlConfig from '../../config/url.config.js';
 
@@ -77,7 +77,11 @@ var responseInterceptSuc = function (res) {
     //     window.location.href = '/views/login.html';
     //   }
     // });//要配置
-    window.location.href = '/'
+    MessageBox.alert(res.data.message).then(action => {
+      if(action) {
+        window.location.href = '/'
+      }
+    });
     return Promise.reject(res.data);
   } else if (flag === 'PARAM_ERROR') {
   //参数有误，参数违背协议要求

@@ -4,12 +4,12 @@
         <img src="./title.png" class="login_title_img">
     </div>
     <div class="login_content">
-        <input class="login_name" type="text" placeholder="输入账号" v-model="form.username">
-        <input class="login_word" type="password" placeholder="输入密码" v-model="form.password">
+        <input class="login_name" type="text" placeholder="输入账号" v-model="form.username" @focus="inputFocus" @input="handleInput($event)" @blur="inputBlur">
+        <input class="login_word" type="password" placeholder="输入密码" v-model="form.password" @focus="inputFocus" @blur="inputBlur">
         <p class="login_err">{{error}}</p>
         <button class="login_bt" @click="login">登录</button>
     </div>
-    <div class="login_foot">
+    <div class="login_foot" :class="isFocus? 'static' : 'fixed' ">
         <img src="./logo.png" class="login_foot_img">
     </div>
   </div>
@@ -25,10 +25,14 @@ export default {
       form: {
         username: '',
         password: ''
-      }
+      },
+      isFocus: false
     }
   },
   methods: {
+    handleInput(e) {
+      this.form.username = this.form.username.replace(/[^\w\.\/]/ig, '');
+    },
     checkLogin() {
       if (this.form.username === '') {
         this.error = '请输入您的账号名';
@@ -43,7 +47,13 @@ export default {
       if (this.checkLogin()) {
         api.login(this.form).then((data) => {
           if (data.resultCode === 'SUCCESS') {
-            this.$router.push('/category')
+            let res = data.data || {};
+            let user = res.user || {};
+            let isStudent = user.roleList.map((item) => (item.type)).indexOf('STUDENT') !== -1;
+            // let isStudent = false;
+            localStorage.setItem('userId', user.id);
+            localStorage.setItem('isStudent', JSON.stringify({'isStudent': isStudent}))
+            this.$router.push({ name: 'category'})
           } else {
             this.error = data.message
           }
@@ -51,6 +61,12 @@ export default {
           this.error = err.message
         })
       }
+    },
+    inputFocus() {
+      this.isFocus = true;
+    },
+    inputBlur() {
+      this.isFocus = false
     }
   },
 
@@ -121,8 +137,13 @@ export default {
 }
 .login_foot{
   width: 100%;
+  text-align: center;
+}
+.fixed {
   position: fixed;
   bottom: 10px;
-  text-align: center;
+}
+.static {
+  position: static;
 }
 </style>

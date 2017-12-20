@@ -1,10 +1,10 @@
 <template lang="html">
   <div class="publish">
-    <g-header :title="title" :url="backUrl"></g-header>
+    <g-header :title="title"></g-header>
     <!-- <div v-if="datalist.length > 0" :style="{ height: wrapperHeight + 'px' }" style="-webkit-overflow-scrolling: auto" ref="wrapper"> -->
       <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="allLoaded" ref="loadmore"> -->
     <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="publish-list">
-      <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id, status: params.status}}">
+      <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id, type: $route.params.type}}">
         <div class="item-head">
           <img src="./info.png" alt="">
           <div class="info">
@@ -15,19 +15,19 @@
         <div class="item-title">
           {{item.qnaireTitle}}
         </div>
-        <div class="item-detail">
+        <div class="item-detail" :class="{'item-padding' : $route.params.type == 2}">
           <ul>
             <li>问卷发起时间：{{item.startDate}}</li>
             <li>问卷截止时间：{{item.endDate}}</li>
-            <li v-if="item.qnaireType !== 1">问卷指派人数：{{item.assignNum}}人</li>
+            <li v-if="item.qnaireType !== 1 && item.really !== 1">问卷指派人数：{{item.assignNum}}人</li>
             <li>问卷作答人数：{{item.doneNum}}人</li>
-            <li v-if="item.qnaireType !== 1">未答问卷人数：{{item.todoNum}}人</li>
-            <li>有效问卷份数: {{item.vaildNum}}份</li>
+            <li v-if="item.qnaireType !== 1 && item.really !== 1">未答问卷人数：{{item.todoNum}}人</li>
+            <li>有效问卷份数：{{item.vaildNum}}份</li>
           </ul>
         </div>
-        <paper-op :item="item" :callback="refresh" :isFixedBottom="isFixedBottom" @time-changed="changeTime"></paper-op>
+        <paper-op :item="item" :callback="refresh" :isFixedBottom="isFixedBottom" v-if="$route.params.type == 1" @time-changed="changeTime"></paper-op>
       </router-link>
-      <mt-datetime-picker ref="datetime" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
+      <mt-datetime-picker ref="datetime" type="datetime" v-model="datetime" :start-date="now" @confirm="confirmDatetime"></mt-datetime-picker>
       <!-- </mt-loadmore> -->
     </div>
     <empty v-else></empty>
@@ -58,10 +58,7 @@ export default {
         status: 1,
         pageNo: 1
       },
-      // loading: true,
-      backUrl: {
-        path: '/category'
-      }
+      now: new Date,
       // allLoaded: true,
       // scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
       // wrapperHeight: 0,
@@ -75,7 +72,7 @@ export default {
     changeTime(item) {
       item.editing = true;
       this.selectedItem = item;
-      this.datetime = util.formateStrToDate(this.selectedItem.startDate)
+      // this.datetime = util.formateStrToDate(this.selectedItem.startDate)
       this.$refs.datetime.open();
     },
     confirmDatetime(data) {
@@ -126,7 +123,7 @@ export default {
     paperOp
   },
   mounted() {
-    this.params.status = this.$route.params.type;
+    this.params.status = parseInt(this.$route.params.type);
     if (this.params.status === 2) {
       this.title = '已回收';
     }
@@ -185,5 +182,8 @@ export default {
 .item-detail ul li {
   line-height: 1.2rem;
   color: #999;
+}
+.item-padding {
+  padding: 0 0 1.2rem;
 }
 </style>

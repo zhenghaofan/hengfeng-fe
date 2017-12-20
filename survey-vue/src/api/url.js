@@ -21,8 +21,12 @@ export default {
     return axios.post('/survey/qnaire/list', params)
   },
 
-  deletePaper(id) {
-    return axios.get('/survey/qnaire/' + id + '/delete')
+  getUserAnswerList(params) {
+    return axios.post('/survey/answer/list', params)
+  },
+
+  recyclePaper(id) {
+    return axios.get('/survey/qnaire/' + id + '/recovery')
   },
 
   stopPaper(params, id) {
@@ -35,5 +39,9 @@ export default {
 
   getPaperSummary(params) {
     return axios.postJson('/survey/stat/answer/view', params)
+  },
+
+  getAnswerDetail(params) {
+    return axios.postJson('/survey/stat/answerdetail', params)
   }
 };

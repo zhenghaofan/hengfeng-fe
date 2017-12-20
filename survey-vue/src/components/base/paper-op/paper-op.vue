@@ -6,14 +6,14 @@
         <span v-if="!item.disabled">停止作答</span>
         <span v-else class="editing">开始作答</span>
       </div>
-      <div class="delete-paper btn" @click.stop.prevent="deletePaper(item.id)">
-        <i class="iconf i-delete"></i> 删除问卷
+      <div class="delete-paper btn" @click.stop.prevent="recyclePaper(item.id)">
+        <i class="iconf i-delete"></i> 回收问卷
       </div>
       <div class="change-time btn" :class="{'editing': item.editing}" @click.stop.prevent="changeTime(item)">
       <i class="iconf i-modify" :class="{'editing': item.editing}"></i> 修改时间
       </div>
     </div>
-    <mt-datetime-picker v-if="isFixedBottom" ref="picker" type="datetime" v-model="datetime" @confirm="confirmDatetime"></mt-datetime-picker>
+    <mt-datetime-picker v-if="isFixedBottom" ref="picker" type="datetime" v-model="datetime" :start-date="now" @confirm="confirmDatetime"></mt-datetime-picker>
   </div>
 </template>
 
@@ -42,6 +42,7 @@ export default {
   data() {
     return {
       datetime: null,
+      now: new Date()
     }
   },
   methods: {
@@ -56,21 +57,21 @@ export default {
           }
         })
       }).catch((err) => {
-        MessageBox.alert(err.message)
+        // MessageBox.alert(err.message)
       });
     },
-    deletePaper(id) {
-      MessageBox.confirm("确定删除该问卷吗").then(action => {
-        api.deletePaper(id).then((data) => {
+    recyclePaper(id) {
+      MessageBox.confirm("确定回收该问卷吗").then(action => {
+        api.recyclePaper(id).then((data) => {
           if (data.resultCode === 'SUCCESS') {
-            if (isFixedBottom) {
-              this.router.back();
+            if (this.isFixedBottom) {
+              this.$router.back();
             } else {
               this.callback();
             }
           }
         }).catch((err) => {
-          MessageBox.alert(err.message)
+          // MessageBox.alert(err.message)
         })
       })
     },
@@ -78,7 +79,7 @@ export default {
       if (this.isFixedBottom) {
         item.editing = true;
         this.selectedItem = item;
-        this.datetime = util.formateStrToDate(this.selectedItem.startDate)
+        // this.datetime = util.formateStrToDate(this.selectedItem.startDate)
         this.$refs.picker.open();
       } else {
         this.$emit('time-changed', item)

@@ -1,11 +1,15 @@
 <template lang="html">
   <div class="container">
     <g-header :title="title" :url="backUrl"></g-header>
-    <div v-if="datalist.length > 0" class="answer-list">
+    <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="answer-list">
       <a :href="getAnswerUrl(item.id)" class="list" v-for="item in datalist">
-          <div class="time">截止时间：{{item.endDate}}</div>
+          <div class="time">
+            <span v-if="type == 3">截止时间：{{item.endDate}}</span>
+            <span v-else>回答时间：{{item.answerTime}}</span>
+          </div>
           <div class="box">
-              {{item.title}}
+              <span v-if="type == 3">{{item.title}}</span>
+              <span v-else>{{item.qnTitle}}</span>
           </div>
       </a>
     </div>
@@ -24,20 +28,47 @@ export default {
       title: '',
       datalist: [],
       baseAnswerUrl: '',
-      backUrl: {path: '/category'}
+      type: '',
+      backUrl: {path: '/category'},
+      params: {
+        pageNo: 1
+      }
     }
   },
   methods: {
     getAnswerUrl(id) {
-      return this.baseAnswerUrl + encodeURIComponent(window.btoa(id))
+      let url = '';
+      if (this.type == 3) {
+        url = this.baseAnswerUrl + encodeURIComponent(window.btoa(id)) + '&type=3';
+      } else {
+        url = this.baseAnswerUrl + id + '&userId=' + localStorage.getItem('userId') + '&type=4'
+      }
+      return url;
     },
-    getAnswerList(params) {
-      api.getAnswerList(params).then((data) => {
-        if (data.resultCode === 'SUCCESS') {
-          let res = data.data || {};
-          this.datalist = res.qnaireList;
-        }
-      })
+    getAnswerList() {
+      this.loading = true;
+      if (this.type == 3) {
+        api.getAnswerList(this.params).then((data) => {
+          if (data.resultCode === 'SUCCESS') {
+            let res = data.data || {};
+            // this.datalist = res.qnaireList;
+            this.datalist = this.datalist.concat(res.qnaireList);
+            this.loading = false;
+          }
+        })
+      } else {
+        api.getUserAnswerList(this.params).then((data) => {
+          if (data.resultCode === 'SUCCESS') {
+            let res = data.data || {};
+            this.datalist = this.datalist.concat(res.answerRecordList);
+            this.loading = false;
+          }
+        })
+      }
+    },
+    loadMore() {
+      this.params.pageNo++;
+      this.getAnswerList()
     }
   },
   components: {
@@ -45,19 +76,17 @@ export default {
     empty
   },
   mounted() {
-    let defaultParams = {
-      pageNo: 1
-    }
-    let type = this.$route.params.type || 3;
-    if (type === 3) {
+    this.type = this.$route.params.type || 3;
+    if (this.type == 3) {
       this.title = '待回答';
+      this.params.status = this.type;
       this.baseAnswerUrl = '/views/ques/answer.html?id='
     } else {
       this.title = '已回答';
+      delete this.params.status;
       this.baseAnswerUrl = '/views/ques/answerdet.html?id='
     }
-    defaultParams.status = type;
-    this.getAnswerList(defaultParams)
+    this.getAnswerList()
   }
 }
 </script>
