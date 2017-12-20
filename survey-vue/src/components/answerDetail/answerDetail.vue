@@ -1,24 +1,26 @@
 <template lang="html">
   <div class="answer-detail">
     <g-header :title="title"></g-header>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>用户名</th>
-          <th>手机</th>
-          <th>内容</th>
-          <th>回答时间</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="datalist.length > 0" v-for="item in datalist">
-          <td>{{item.userName}}</td>
-          <td>{{item.phone}}</td>
-          <td>{{item.content}}</td>
-          <td>{{item.answerTime}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="container">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>手机</th>
+            <th>内容</th>
+            <th>回答时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="datalist.length > 0" v-for="item in datalist">
+            <td>{{item.userName}}</td>
+            <td>{{item.phone}}</td>
+            <td>{{item.content}}</td>
+            <td>{{item.answerTime}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 </div>
 </template>
 
@@ -58,13 +60,12 @@ export default {
   background: white;
   height: 100%;
 }
-.answer-detail table {
-  width: 88%;
+.container {
   padding-top: 3.5rem;
-  margin: 1.5rem 1.5rem 0;
 }
-thead {
-  border-bottom: 1px solid #ccc;
+.container table {
+  width: 88%;
+  margin: 0 auto;
 }
 thead tr {
   font-size: 14px;

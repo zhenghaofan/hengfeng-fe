@@ -96,7 +96,8 @@ export default {
   margin-top: 1rem;
 }
 .title {
-  line-height: 2.5rem
+  line-height: 2.5rem;
+  display: inline-block;
 }
 .exit {
   position: absolute;
