@@ -58,7 +58,7 @@ export default {
         status: 1,
         pageNo: 1
       },
-      now: new Date,
+      now: new Date
       // allLoaded: true,
       // scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
       // wrapperHeight: 0,
@@ -72,7 +72,7 @@ export default {
     changeTime(item) {
       item.editing = true;
       this.selectedItem = item;
-      // this.datetime = util.formateStrToDate(this.selectedItem.startDate)
+      this.now = new Date();
       this.$refs.datetime.open();
     },
     confirmDatetime(data) {

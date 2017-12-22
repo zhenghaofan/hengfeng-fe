@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+  <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+  <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+  <title>首页-账号管理-账号分组</title>
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+  <style>
+    .back {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="g-app" id="g-app" v-cloak>
+    <!-- 头部 -->
+    <g-header :sel-class="headerSel"></g-header>
+
+    <!-- 主内容区 -->
+    <div class="g-content">
+      <!-- 左边栏 -->
+      <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+      <!-- 右边内容区 -->
+      <div class="g-right">
+        <div class="g-tab">
+          <span class="g-tab-item" href="#" :class="{'z-selected': currentView === 'grouptypelist' || currentView === 'groupedit'}">
+            <span v-if="currentView === 'groupedit'" @click="toggleList('groupedit')">小组编辑</span>
+            <span v-else @click="toggleList('grouptypelist')">小组列表</span>
+          </span>
+          <span class="g-tab-item" :class="{'z-selected': currentView === 'groupcreate'}" href="#" @click="toggleList('groupcreate')">新建小组</span>
+          <span v-if="currentView === 'groupedit'" class="g-fr back" @click="toggleList('grouptypelist')">返回</span>
+        </div>
+        <!-- <keep-alive> -->
+          <component :is="currentView" @edit-group="showGroupEdit" @show-list="showGroupList" :group-data="editViewData"></component>
+        <!-- </keep-alive> -->
+      </div>
+      <!-- 右边内容区/ -->
+    </div>
+    <!-- 主内容区/ -->
+  </div>
+</body>
+
+</html>

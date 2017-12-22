@@ -16,13 +16,13 @@ const AnswerDetail = () =>
 
 Vue.use(Router)
 
-// function loginCheck(to, from, next) {
-//   if(localStorage.getItem('userId')) {
-//     next('/category')
-//   } else {
-//     next()
-//   }
-// }
+function loginCheck(to, from, next) {
+  if(localStorage.getItem('userId')) {
+    next('/category')
+  } else {
+    next()
+  }
+}
 
 function requireLogin(to, from, next) {
   if (!localStorage.getItem('userId')) {
@@ -49,7 +49,7 @@ const router = new Router({
     {
       path: '/login',
       component: Login,
-      // beforeEnter: loginCheck
+      beforeEnter: loginCheck
     },
     {
       path: '/category',
