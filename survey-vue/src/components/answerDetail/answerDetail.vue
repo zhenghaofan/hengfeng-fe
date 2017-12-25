@@ -42,7 +42,7 @@ export default {
       if (data.resultCode === 'SUCCESS') {
         let res = data.data || {};
         this.datalist = res.answeredUserList;
-        this.title = res.questionTitle;
+        this.title = res.questionTitle.replace(/[\r\n]/g, "");
       }
     })
   },

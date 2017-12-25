@@ -145,6 +145,10 @@ export default {
   font-size: 0.75rem;
   text-decoration: none;
   display: block;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-user-select: none;
+  -moz-user-focus: none;
+  -moz-user-select: none;
 }
 
 .item-head {

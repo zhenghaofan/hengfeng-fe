@@ -79,7 +79,9 @@ var responseInterceptSuc = function (res) {
     // });//要配置
     MessageBox.alert(res.data.message).then(action => {
       if(action) {
-        window.location.href = '/'
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.href = '/mobile/'
       }
     });
     return Promise.reject(res.data);
