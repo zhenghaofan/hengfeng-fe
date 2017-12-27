@@ -62,6 +62,7 @@ export default {
 }
 .container {
   padding-top: 3.5rem;
+  background-color: white;
 }
 .container table {
   width: 88%;

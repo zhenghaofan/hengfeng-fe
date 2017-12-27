@@ -2,7 +2,7 @@
   <div class="container">
     <g-header :title="title" :url="backUrl"></g-header>
     <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="answer-list">
-      <a :href="getAnswerUrl(item.id)" class="list" v-for="item in datalist">
+      <a :href="getAnswerUrl(item)" class="list" v-for="item in datalist">
           <div class="time">
             <span v-if="type == 3">截止时间：{{item.endDate}}</span>
             <span v-else>回答时间：{{item.answerTime}}</span>
@@ -36,12 +36,12 @@ export default {
     }
   },
   methods: {
-    getAnswerUrl(id) {
+    getAnswerUrl(item) {
       let url = '';
       if (this.type == 3) {
-        url = this.baseAnswerUrl + encodeURIComponent(window.btoa(id)) + '&type=3';
+        url = this.baseAnswerUrl + encodeURIComponent(window.btoa(item.id)) + '&type=3';
       } else {
-        url = this.baseAnswerUrl + id + '&userId=' + localStorage.getItem('userId') + '&type=4'
+        url = this.baseAnswerUrl + item.qnId + '&userId=' + localStorage.getItem('userId') + '&type=4'
       }
       return url;
     },

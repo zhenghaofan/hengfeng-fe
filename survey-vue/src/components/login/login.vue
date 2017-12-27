@@ -53,7 +53,12 @@ export default {
             // let isStudent = false;
             localStorage.setItem('userId', user.id);
             localStorage.setItem('isStudent', JSON.stringify({'isStudent': isStudent}))
-            this.$router.push({ name: 'category'})
+            console.log(this.$route);
+            if(this.$route.query.backUrl) {
+              window.location.href = this.$route.query.backUrl
+            } else {
+              this.$router.push({ name: 'category'})
+            }
           } else {
             this.error = data.message
           }
