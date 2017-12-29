@@ -53,7 +53,6 @@ export default {
             // let isStudent = false;
             localStorage.setItem('userId', user.id);
             localStorage.setItem('isStudent', JSON.stringify({'isStudent': isStudent}))
-            console.log(this.$route);
             if(this.$route.query.backUrl) {
               window.location.href = this.$route.query.backUrl
             } else {
