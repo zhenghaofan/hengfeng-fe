@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>知识点树-编辑知识点树</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+    <style>
+      .tips {
+        margin: 15px;
+      }
+      .tips > h2 {
+        font-size: .8rem;
+        margin-bottom: 15px;
+      }
+      .tips > p {
+        line-height: 1.5;
+        font-size: .6rem;
+        color: #807575;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel" @setauthdone="checkAuth"></g-header>
+      
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+        <!-- 右边内容区 -->
+        <div class="g-right" v-if="hasPageAuth">
+          <!-- 路径 -->
+          <div class="g-breadnav">
+          	<a href="knwlgtreelist.html">知识点树</a><span class="g-ml10- g-mr10">&gt;</span>{{tabName}}
+          </div>
+          <!-- 重要告知 -->
+          <div class="tips">
+            <h2>重要告知：</h2>
+            <p>1.原生节点不支持删除，新增未保存节点支持删除。<br/>2.知识点树当前支持五级设置，不支持调动知识点级别。<br/>3.支持对知识点命名进行修改，支持在同级内进行排序调整。<br/>4.若页面提示未登录或登录已超时，未保存的信息会丢失，请注意在五分钟内完成编辑并保存。</p>
+          </div>
+          <!-- 过滤 -->
+          <div class="g-filters g-ml20 g-mt30 g-mb50">
+            <i class="icon i-info g-mr10"></i>基本信息
+            <div class="m-select g-ml30">
+              <template v-if="type==='add'">
+                <el-select @change="getSubjectList" v-model="addLearnStageId" placeholder="选择学段">
+                  <el-option
+                    v-for="(learnstage, index) in learnStageList"
+                    :key="index"
+                    :label="learnstage.name"
+                    :value="learnstage.id">
+                  </el-option>
+                </el-select>
+                <el-select @change="getSubjectName" :disabled="!addLearnStageId"  v-model="addSubjectId" placeholder="选择学科">
+                  <el-option
+                    v-for="(subject, index) in subjectList"
+                    :key="index"
+                    :label="subject.name"
+                    :value="subject.id">
+                  </el-option>
+                </el-select>
+              </template>
+              
+              <template v-else>
+                <el-select v-model="editLearnStageName" disabled>
+                  <el-option
+                    v-for="(learnstage, index) in learnStageList"
+                    :key="index"
+                    :label="learnstage.name"
+                    :value="learnstage.id">
+                  </el-option>
+                </el-select>
+                <el-select v-model="editSubjectName" disabled>
+                  <el-option
+                    v-for="(subject, index) in subjectList"
+                    :key="index"
+                    :label="subject.name"
+                    :value="subject.id">
+                  </el-option>
+                </el-select>
+              </template>
+            </div>
+          </div>
+
+          <!-- 知识层级 -->
+          <div class="g-knwtree g-ml20">
+            <p><i class="icon i-book2 g-mr10"></i>知识层级</p>
+            <!-- 知识点树结构图 -->
+            <edit-tree :knw-id="knwId" :type="type" :lstage-name="addLearnStageName" :sub-name="addSubjectName" v-on:save-tree="getChildTree"></edit-tree>
+            <div class="g-tc g-mt30">
+              <p class="g-mb10 t-error" v-show="hasError && type=='add'">*{{errorTips}}</p>
+            </div>
+          </div>
+          
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+  <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+  <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+  <title>首页-资源管理-上传资源</title>
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+  <!-- PDF -->
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf_viewer.css" />
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf.min.js"></script>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf_viewer.js"></script>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf.worker.min.js"></script>
+  <!-- PDF\ -->
+  <!-- office -->
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/jquery.min.js"></script>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/pageoffice.js" id="po_js_main"></script>
+  <link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/pobstyle.css">
+  <!-- 编辑器 -->
+  <link rel="stylesheet" href="../../../static/libs/umeditor/themes/default/css/umeditor.css" />
+  <script type="text/javascript" src="../../../static/libs/umeditor/third-party/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.config.js"></script>
+  <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.js"></script>
+  <script type="text/javascript" src="../../../static/libs/umeditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+  <div class="g-app" id="g-app" v-cloak>
+    <!-- 头部 -->
+    <g-header :sel-class="headerSel"></g-header>
+
+    <!-- 主内容区 -->
+    <div class="g-wrap g-mt30 f-clearfix">
+      <!-- 左边栏 -->
+      <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+      <!-- 右边表单 -->
+      <div class="g-right">
+        <uploadform></uploadform>
+      </div>
+
+    </div>
+    <!-- 右边内容区/ -->
+  </div>
+  <!-- 主内容区/ -->
+
+  <!-- 尾部 -->
+  <g-footer></g-footer>
+
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>首页-建设管理-课本信息</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+  </head>
+  <body>
+    <div class="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel" @setauthdone="checkAuth"></g-header>
+      
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+        <!-- 右边内容区 -->
+        <div class="g-right" v-if="hasPageAuth">
+          <!-- 过滤列表 -->
+          <div class="g-filters">
+            <div class="m-select">
+              <el-select @change="getLearnStageList" v-model="requireInfo.textbookDictId" placeholder="选择类别">
+                <el-option
+                  v-for="textbook in textbookDictList"
+                  :key="textbook.id"
+                  :label="textbook.name"
+                  :value="textbook.id">
+                </el-option>
+              </el-select>
+              <el-select @change="getGradeList" :disabled="!requireInfo.textbookDictId" v-model="requireInfo.learnStageId" placeholder="选择学段">
+                <el-option
+                  v-for="learnstage in learnStageList"
+                  :key="learnstage.id"
+                  :label="learnstage.name"
+                  :value="learnstage.id">
+                </el-option>
+              </el-select>
+              <el-select @change="getSubjectList" :disabled="!requireInfo.learnStageId"  v-model="requireInfo.gradeId" placeholder="选择年级">
+                <el-option
+                  v-for="grade in gradeList"
+                  :key="grade.id"
+                  :label="grade.name"
+                  :value="grade.id">
+                </el-option>
+              </el-select>
+              <el-select @change="getTermList" :disabled="!requireInfo.gradeId" v-model="requireInfo.subjectId" placeholder="选择学科">
+                <el-option
+                  v-for="subject in subjectList"
+                  :key="subject.id"
+                  :label="subject.name"
+                  :value="subject.id">
+                </el-option>
+              </el-select>
+              <el-select @change="getPublisherList" :disabled="!requireInfo.subjectId" v-model="requireInfo.termDictId" placeholder="选择学期">
+                <el-option
+                  v-for="term in termList"
+                  :key="term.id"
+                  :label="term.name"
+                  :value="term.id">
+                </el-option>
+              </el-select>
+              <el-select :disabled="!requireInfo.termDictId" v-model="requireInfo.publisher" placeholder="选择出版社">
+                <el-option
+                  v-for="publ in publisherList"
+                  :key="publ"
+                  :label="publ"
+                  :value="publ">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+
+          <!-- 列表 -->
+          <list :require-info="requireInfo"></list>
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+    </div>
+  </body>
+</html>

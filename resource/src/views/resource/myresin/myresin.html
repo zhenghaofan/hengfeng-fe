@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>首页-资源库-我的资源-已经入库</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+  </head>
+  <body>
+    <div class="g-app" id="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel"></g-header>
+      
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+        <!-- 右边内容区 -->
+        <div class="g-right">
+          <div class="g-avai-top f-clearfix">
+            <!-- tab -->
+            <div class="g-tab f-l">
+              <a class="g-tab-item" :class="{'z-selected': chapterEnabled}" href="#" @click.prevent="toggleList(true)">按章节筛选</a>
+              <a class="g-tab-item" :class="{'z-selected': !chapterEnabled}" href="#" @click.prevent="toggleList(false)">按知识树筛选</a>
+            </div>
+
+            <search @getkeywords="setFilters"></search>
+          </div>
+          
+          <filters @filtered="search" :search-type="searchType"></filters>
+
+          <!-- 列表 -->
+          <list :condition="searchCondition"></list>
+
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+
+    </div>
+  </body>
+</html>

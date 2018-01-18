@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>课本信息-编辑课本信息</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+    <style>
+      .breadcrumb {
+        font-size: .7rem;
+        color: #999;
+      }
+      .breadcrumb a{
+        color: black;
+      }
+      .tips {
+        margin: 15px;
+      }
+      .tips > h2 {
+        font-size: .8rem;
+        margin-bottom: 15px;
+      }
+      .tips > p {
+        line-height: 1.5;
+        font-size: .6rem;
+        color: #807575;
+      }
+      /*为了对付麻烦的选择器的样式*/
+      .m-select .el-select .el-input__inner {
+        height: 40px !important;
+      }
+      .el-cascader__label span {
+        color: #b4bccc !important;
+      }
+      .tit {
+        font-size:;
+      }
+      .el-cascader {
+        margin-right: 10px;
+      }
+      .el_displayName {
+        display: inline-block !important;
+        width: 260px !important;
+      }
+      .el_publisher {
+        width: 120px !important;
+      }
+      .el_version {
+        width: 80px !important;
+        margin: 0 10px;
+      }
+      .el_bookname {
+        width: 150px !important;
+      }
+      .g-filters {
+        display: inline-block;
+      }
+      .baseInfo {
+        margin: 10px 0;
+      }
+      .cengji {
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel" @setauthdone="checkAuth"></g-header>
+      
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+        <!-- 右边内容区 -->
+        <div class="g-right" v-if="hasPageAuth">
+          <div class="breadcrumb">
+            <a href="classeslist.html">课本信息&nbsp;&nbsp;&gt;</a>&nbsp;&nbsp;编辑课本信息
+          </div>
+          <!-- 重要告知 -->
+          <div class="tips">
+            <h2>重要告知：</h2>
+            <p>1.课本章节信息内容被添加后，未生成前支持删除操作。<br/>2.课本章节信息层级添加后，不支持级别调整。<br/>3.章节信息当前支持五级设置，展示顺序为：单元，章，节/课，时。<br/>4.允许对课本命名进行自定义修改，支持在同级内进行排序调整。</p>
+          </div>
+          <!-- 课本命名 -->
+          <div>
+            <span class="tit">教材命名：</span>
+            <el-input
+              class="el_displayName"
+              placeholder="无数据"
+              v-model="textbook.displayName"
+              clearable>
+            </el-input>
+          </div>
+          <!-- 基本信息 -->
+          <div class="baseInfo">
+            <span class="tit">基本信息：</span>
+            <!-- 修改列表 -->
+            <div class="g-filters">
+              <div class="m-select">
+                <!-- 学段/年级/学科，三级联动 -->
+                <el-cascader
+                  :options="learnStageOption"
+                  v-model="tmpTextbook.learnStageChoice"
+                  placeholder="无数据"
+                  expand-trigger="hover"
+                  :change-on-select="true"
+                  @change="handleChange"
+                  :disabled="true">
+                </el-cascader>
+                <!-- 学期 -->
+                <el-select v-model="tmpTextbook.tmpTermDictId" disabled placeholder="无数据">
+                  <el-option
+                    v-for="term in termOption"
+                    :key="term.value"
+                    :label="term.value"
+                    :value="term.value">
+                  </el-option>
+                </el-select>
+                <!-- 册数 -->
+                <el-select v-model="tmpTextbook.tmpVolumeDictId" disabled placeholder="无数据">
+                  <el-option
+                    v-for="term in VolumeOption"
+                    :key="term.value"
+                    :label="term.value"
+                    :value="term.value">
+                  </el-option>
+                </el-select>
+                <!-- 出版社 -->
+                <el-input
+                  class="el_publisher"
+                  placeholder="无数据"
+                  v-model="textbook.publisher"
+                  :disabled="true">
+                </el-input>
+                <!-- 版本，如2006 -->
+                <el-input
+                  class="el_version"
+                  placeholder="无数据"
+                  v-model="textbook.version"
+                  :disabled="true">
+                </el-input>
+                <!-- 课本题名 -->
+                <el-input
+                  class="el_bookname"
+                  placeholder="无数据"
+                  v-model="textbook.name"
+                  :disabled="true">
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <!-- 课本层级 -->
+          <div class="cengji">
+            <span class="tit">课本层级：</span>
+            <!-- 树 -->
+            <edit-tree :b-id="bId" :display-name="textbook.displayName" v-on:save-tree="getChildTree"></edit-tree>
+          </div>
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+    </div>
+  </body>
+</html>

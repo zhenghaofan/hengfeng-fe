@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"
+            integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i"
+            crossorigin="anonymous"></script>
+    <title>测试跨域</title>
+</head>
+<body>
+第一步登陆：
+<button id="login" type="button">登陆</button>
+<br>
+第二部上传数据：
+<button id="pushData" type="button">上传数据</button>
+<br>
+或者获取数据：
+<button id="getData" type="button">获取数据</button>
+<br>
+上传文件：
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" value="选择文件"><button type="submit">上传</button>
+</form>
+</body>
+<script>
+    $(function () {
+        var baseUrl = "http://192.168.13.137:8080";
+
+        //ajax 全局设置
+        $.ajaxSetup({
+            type: "POST",
+            dataType: "json",
+            crossDomain: true,//支持跨域
+            xhrFields: {
+                withCredentials: true//Cookie验证需要设置为true
+            }
+            /*headers:{//设置验证头
+                Authorization:appId+"="+md5AppIdConcatSecretKey
+            }*/
+        });
+
+        //登陆
+        var loginApi = baseUrl + "/login";
+        var loginApiData = {username: "header", password: "123456"};
+        $("#login").click(function () {
+            $.ajax({
+                url: loginApi,
+                contentType: "application/x-www-form-urlencoded",//获取数据无需设置，jQuery默认值。数据同步时请设置为application/json
+                data: loginApiData,
+                success: function (data) {
+                    alert(JSON.stringify(data));
+                }
+            });
+        });
+
+        //上传数据
+        var uploadResourceApi = baseUrl + "/manage/resource/push/";
+        var uploadResourceApiData = {
+            "name": "微课上传测试" + new Date().getTime(),
+            "sourceFileId": "77F7344D77E4FEE542C92741756670CC",
+            "backgroundFileId": "83EB975F97FFC2BD0A32D0644F0EE5AF",
+            "subjectId": "language",
+            "gradeId": "g_p_one",
+            "description": "赛车视频，精彩万分。",
+            "knowledgePointCatalogIds": ["primary_01a40455812e49868ec9373b89e6f08b", "primary_0ae8ee7e15d14498919bf6ed45722f83"],
+            "textbookCatalogId": "primary_0466356f907b446eb955f2335ba3ec33"
+        }
+        $("#pushData").click(function () {
+            $.ajax({
+                url: uploadResourceApi + "MICRO_LESSON",//上传微课
+                contentType: "application/json",
+                data: JSON.stringify(uploadResourceApiData),
+                success: function (data) {
+                    alert(JSON.stringify(data));
+                }
+            });
+        });
+
+        //获取数据
+        var getDataApi = baseUrl + "/manage/resource/menuoption/querydict";
+        $("#getData").click(function () {
+            $.ajax({
+                url: getDataApi,
+                success: function (data) {
+                    alert(JSON.stringify(data));
+                }
+            });
+        });
+
+        $('form').on('submit', function (e) {
+            e.preventDefault(); // prevent native submit
+            $(this).ajaxSubmit({
+                url: baseUrl + "/manage/resource/upload/file",
+                success: function (data) {
+                    alert(JSON.stringify(data));
+                }
+            })
+        });
+    });
+</script>
+</html>

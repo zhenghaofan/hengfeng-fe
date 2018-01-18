@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>账号管理-权限配置</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+  </head>
+  <body>
+    <div class="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel" @setauthdone="checkAuth"></g-header>
+      
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+        <!-- 右边内容区 -->
+        <div class="g-right" v-if="hasPageAuth">
+          <div class="g-breadnav">
+            <a href="accountlist.html">账号列表</a>
+            <span class="g-ml10- g-mr10">&gt;</span>
+            权限配置
+          </div>
+
+          <!-- 内容区 -->
+          <configauth></configauth>
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+    </div>
+  </body>
+</html>

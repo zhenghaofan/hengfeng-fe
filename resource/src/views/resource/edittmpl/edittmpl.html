@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="<%= htmlWebpackPlugin.options.keywords %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>">
+    <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
+    <title>编辑器使用示例</title>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+    <link rel="stylesheet" href="../../../static/libs/umeditor/themes/default/css/umeditor.css" />
+    <script type="text/javascript" src="../../../static/libs/umeditor/third-party/jquery.min.js"></script>
+    <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.config.js"></script>
+    <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.js"></script>
+    <script type="text/javascript" src="../../../static/libs/umeditor/lang/zh-cn/zh-cn.js"></script>
+  </head>
+  <body>
+    <div class="g-app" id="g-app" v-cloak>
+      <!-- 头部 -->
+      <g-header :sel-class="headerSel"></g-header>
+
+      <!-- 主内容区 -->
+      <div class="g-wrap g-mt30 f-clearfix">
+        <!-- 左边栏 -->
+        <g-leftbar :init-data="leftbarData"></g-leftbar>
+
+        <!-- 右边内容区 -->
+        <div class="g-right">
+          <!-- 显示 -->
+          <edittmpl></edittmpl>
+
+        </div>
+        <!-- 右边内容区/ -->
+      </div>
+      <!-- 主内容区/ -->
+
+      <!-- 尾部 -->
+      <g-footer></g-footer>
+
+    </div>
+  </body>
+</html>
