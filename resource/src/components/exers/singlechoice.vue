@@ -59,11 +59,11 @@ export default {
       this.$emit('contentchange', this.contents);
     },
     analysischange(e) {
-      this.contents.analysis = e.target.innerText;
+      this.contents.analysis = e.target.innerHTML;
       this.$emit('contentchange', this.contents);
     },
     optionschange(e, item) {
-      this.$emit('optionschange', item, e.target.innerText);
+      this.$emit('optionschange', item, e.target.innerHTML);
     },
     addOption(index) {
       this.$emit('addoption', index);

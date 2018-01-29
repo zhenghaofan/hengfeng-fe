@@ -128,15 +128,15 @@ export default {
 }
 .m-popup-close {
   position: absolute;
-  right: 20px;
-  top: 10px;
+  right: 15px;
+  top: 15px;
   width: 14px;
   height: 16px;
   font-size: .8rem;
   cursor: pointer;
 }
 .m-popup-tit {
-  padding: 20px 10px;
+  padding: 15px 10px 25px;
   font-size: 1rem;
   text-align: center;
 }
@@ -155,6 +155,13 @@ export default {
   width: 26rem;
   height: 18rem;
   margin: -9rem 0 0 -13rem;
+  text-align: center;
+}
+/* 登录弹窗 */
+.m-login {
+  width: 20rem;
+  height: 14rem;
+  margin: -7rem 0 0 -10rem;
   text-align: center;
 }
 </style>

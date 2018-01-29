@@ -8,12 +8,12 @@
 
       <div class="control" v-if="type != 5">
         <label class="label g-vertop">选择文件：</label>
-        <el-upload :action="uploadFileUrl" :on-success="uploadSuccess" :on-error="uploadFail" :with-credentials="true" :data="checkRepeat" :before-upload="beforeUploadCheck" :accept="acceptTypes" :on-remove="removeFile" :file-list="fileList" :multiple="isMultiple"
+        <el-upload :action="uploadFileUrl" :on-success="uploadSuccess" :on-error="uploadFail" :with-credentials="true" :data="checkRepeat" :before-upload="beforeUploadCheck" :accept="acceptTypes" :on-remove="removeFile" :file-list="fileList" :multiple="isMultiple" :on-progress="uploading" :before-remove="beforeRemove"
           :on-change="uploadFileChange" ref="uploadResource" class="upload-area">
           <!-- <el-button slot="trigger" class="upload-select">选择前，请对文档进行规范命名，支持{{upload_text}}文件</el-button>
         <el-button style="margin-left: 10px;" type="primary" :disabled="uploadButtonDisabled" @click="uploadFile">上传</el-button> -->
-          <a href="#" class="upload-btn">上传</a>
-          <div slot="tip" class="el-upload__tip">*选择前，请对文件进行规范命名，支持{{upload_text}}文件<a href="/static/filedemo/demo.zip" class="download" v-if="type == 6">下载模板</a></div>
+          <a href="#" class="upload-btn" @click.prevent>上传</a>
+          <div slot="tip" class="el-upload__tip">*选择前，请对文件进行规范命名，支持{{upload_text}}文件{{videofile_text}}<a href="/static/filedemo/demo.zip" class="download" v-if="type == 6">下载模板</a></div>
         </el-upload>
       </div>
 
@@ -39,11 +39,11 @@
 
 <!-- 微课、课堂实录类型 -->
 <div class="panel" v-if="type == 3 || type == 4">
-  <videopreview :datas="datas" @deleteHandle="deleteHandle" @desChanged="desChanged" @coverchanged="coverChanged"></videopreview>
+  <videopreview :datas="datas" @deleteHandle="deleteHandle" @desChanged="desChanged" :type="type" @coverchanged="coverChanged"></videopreview>
 </div>
 <!-- 微课、课堂实录类型/ -->
 
-<div class="panel" v-show="type == 5 && !multiExers">
+<div class="panel" v-if="type == 5 && !multiExers">
   <el-button class="batchUploadExer" type="primary" size="small" @click="toggleMultiExers">批量上传习题文档</el-button>
   <exercise @exerChanged="exerChanged" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="sourceData" :template="template"></exercise>
 </div>
@@ -61,20 +61,20 @@
 <!-- <div class="g-tc g-mt20" v-show="(type == 5 && !multiExers) || (type != 5)"> -->
   <a v-if="type == 5 " href="#" class="btn btn-green" @click.prevent="togglePreviewingExer">预览</a>
 
-  <a href="#" class="btn btn-green" @click.prevent="beforeSubmit" :class="{'btn-disabled': isSaveing}">{{txtSave}}</a>
+  <a href="#" class="btn btn-green g-ml10" @click.prevent="beforeSubmit" :class="{'btn-disabled': isSaveing}">{{txtSave}}</a>
 </div>
 </el-form>
 
 <div class="g-tc" v-show="previewing">
   <div class="pdf-preview" id="pageContainer">
   </div>
-  <a href="#" class="btn btn-green g-mt20" @click="togglePreviewing">返回</a>
+  <a href="#" class="btn btn-green g-mt20" @click.prevent="togglePreviewing">返回</a>
 </div>
 
 <div v-show="previewingExam">
-  <examdetail :resource="resource" @back="togglePreviewingExam" @beforeSubmit="examSubmit"></examdetail>
+  <examdetail :resource="resource" :status="'upload'" :resource_id="resource_id" @back="togglePreviewingExam" @beforeSubmit="examSubmit"></examdetail>
 </div>
-<div v-show="previewingExer">
+<div v-if="previewingExer">
   <exerdetail :qus="exerObj" :previewingExer="previewingExer" @back="togglePreviewingExer" @beforeSubmit="beforeSubmit"></exerdetail>
 </div>
 </div>
@@ -94,7 +94,7 @@ import exampreview from './exam/exam'
 import types from './types'
 import Vue from 'vue'
 import MyMsgBox from '@/components/MyMsgBox/index.js'
-import editor from '@/components/umeditor/Editor'
+//import editor from '@/components/umeditor/Editor'
 import exercise from '@/components/Exercise/main'
 
 Vue.use(MyMsgBox)
@@ -105,7 +105,7 @@ export default {
     textpreview,
     videopreview,
     exampreview,
-    editor,
+    //editor,
     exercise,
     examdetail,
     exerdetail
@@ -149,6 +149,7 @@ export default {
       exams: [],
       previewing: false,
       resource: {}, //预览试卷详情
+      resource_id: '', //预览试卷id
       previewingExam: false,
       exercise: {},
       previewingExer: false,
@@ -160,6 +161,7 @@ export default {
       attr: '',
       fileList: [],
       isUploaded: false,
+      isUploading: false,
       file: '',
       template: '',
       exerObj: {},
@@ -179,7 +181,9 @@ export default {
       checkTemplate: '',
       hasError: false, //是否有错
       // uploadButtonDisabled: true
-      previewDocLink: ''
+      previewDocLink: '',
+      //是否已检查完习题
+      hasCheckedExercise: false,
     };
   },
 
@@ -221,6 +225,13 @@ export default {
       } else {
         return '一次上传单个或多个'
       }
+    },
+    videofile_text() {
+      if (this.type == 3 || this.type == 4) {
+        return "，文件大小不能超过50M"
+      } else {
+        return ""
+      }
     }
   },
 
@@ -232,6 +243,7 @@ export default {
         this.multiExers = true;
       }
       this.isUploaded = false;
+      this.hasError = false;
       this.form.names = [];
       this.form.sourceFileIds = [];
       this.form.backgroundFileIds = [];
@@ -250,8 +262,15 @@ export default {
   },
 
   methods: {
-    togglePreviewingExam() {
+    togglePreviewingExam(id) {
       this.previewingExam = false;
+      uploads.deleteExam(id).then((res) => {
+        if(!res.resultCode == 'SUCCESS') {
+          this.$message.error('请求失败')
+        }
+      }, (err) => {
+        this.$message.error('请求失败')
+      })
     },
     togglePreviewingExer() {
       this.previewingExer = !this.previewingExer;
@@ -291,7 +310,6 @@ export default {
       //   Vue.set(this.exerObj, key, exerObj[key])
       // }
       this.exerObj.template = this.template;
-      console.log(this.exerObj);
       for (var i in exerObj) {
         if (exerObj[i] || typeof (exerObj[i]) === 'boolean' && !exerObj[i]) {
           this.form[i] = exerObj[i];
@@ -302,6 +320,8 @@ export default {
       this.isUploaded = true;
     },
     beforeSubmit() {
+      this.hasCheckedExercise = false;
+
       //其他模型,走老规则
       if (this.type != 5) {
         this.hasError = false;
@@ -349,9 +369,15 @@ export default {
         return;
       }
 
+      if (!this.checkForm()) {
+        return;
+      }
 
       this.checkTemplate = this.template;
-      if (!this.checkForm()) {
+      //单个习题上传的 且未检查完的 等子模块的返回(先改连线题的)
+      if (this.type == 5 && !this.multiExers 
+        && !this.hasCheckedExercise
+        && this.template === 'LIGATURE') {
         return;
       }
 
@@ -359,6 +385,18 @@ export default {
         this.saveResources();
       }
     },
+
+    trimHTMLSpace(str) {
+      if (typeof(str) === 'string') {
+        return str.replace(/&nbsp;/ig,'')
+      }
+      return str;
+    },
+
+    checkTrim(arrs) {
+      return typeof(arrs) === 'object' && arrs === null || typeof(arrs) === 'object' && Object.values(arrs).filter((item) => {return this.trimHTMLSpace(item) === ''}).length !== 0 || Array.isArray(arrs) && arrs.filter((item) => {return this.trimHTMLSpace(item) === ''}).length !== 0 || this.trimHTMLSpace(arrs) === '' || Array.isArray(arrs) && arrs.length === 0
+    },
+
     //表单校验
     checkForm() {
       //TODO
@@ -377,16 +415,42 @@ export default {
         }
 
         //题干
-        if (!this.form.name) {
+        if (!this.trimHTMLSpace(this.form.name)) {
           this.$message.error('题干不能为空!');
           return false;
         }
-      }
 
+        if (this.template !== 'SYNTHESIS') {
+          if (this.template !== 'JUDGE') {
+            if(this.checkTrim(this.form.topics)) {
+              this.$message.error('请完善题目信息！')
+              return false
+            }
+          }
+          if (this.checkTrim(this.form.answers)) {
+            this.$message.error('答案不能为空！')
+            return false;
+          }
+        } else {
+          if (this.form.children.filter((item) => {return this.trimHTMLSpace(item.name) === ''}).length !== 0 ) {
+            this.$message.error('子题目标题不能为空！')
+            return false;
+          }
+          if (this.form.children.filter((item) => {if(item.template !== 'JUDGE') {return this.checkTrim(item.topics)}}).length !== 0 ) {
+            this.$message.error('子题目信息不能为空！')
+            return false;
+          }
+          if (this.form.children.filter((item) => {return this.checkTrim(item.answers)}).length !== 0 ) {
+            this.$message.error('子题目答案不能为空！')
+            return false;
+          }
+        }
+      }
 
       return true;
     },
     getCheckResult(val) {
+      this.hasCheckedExercise = true;
       this.hasError = !val;
       this.checkTemplate = '';
 
@@ -435,12 +499,17 @@ export default {
     beforeUploadCheck: function (file) {
       var type = this.type,
         _type = file.type;
+        // console.log(file.type);
       if (!_type) {
         this.$message.error('暂时不支持该类型的文件');
         return false;
       }
       if (this.type == 6 && this.isUploaded) {
         this.$message.error('只能上传一个文件，若要重新上传，请先删除已经上传的')
+        return false;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        this.$message.error('文件过大，请重新上传')
         return false;
       }
       return this.checkType(this.acceptTypes, _type)
@@ -479,12 +548,25 @@ export default {
     uploadFail: function (err, file) {
       alert(JSON.parse(err))
     },
+    uploading(e, file, fileList) {
+      if (e.percent < 100) {
+        this.isUploading = true;
+      } else {
+        this.isUploading = false;
+      }
+    },
+    beforeRemove() {
+      if (this.type == 6 && this.isUploaded) {
+        return false;
+      }
+      if(this.isUploading) return false;
+    },
     removeFile: function (file, filelist) {
       if (!filelist.length > 0) {
         this.isUploaded = false;
       }
       let index = this.datas.map((item) => item.name).indexOf(file.name);
-      if (index >= 0) {
+      if (index >= -1) {
         this.deleteHandle(file);
         this.datas.splice(index, 1)
       }
@@ -508,7 +590,11 @@ export default {
     },
     coverChanged(index, background) {
       if (!background) {
-        this.form.backgroundFileIds[index] = '1C69333862F34237A32B9A552280FE99';
+        if (this.type == 3) {
+          this.form.backgroundFileIds[index] = '1C69333862F34237A32B9A552280FE99';
+        } else if (this.type == 4) {
+          this.form.backgroundFileIds[index] = '8AEB12CD7263743716A537AC55E7C4F7';
+        }
       } else {
         this.form.backgroundFileIds[index] = background;
       }
@@ -532,6 +618,14 @@ export default {
 
       self.isSaveing = true;
       self.txtSave = '正在保存中...';
+      if (this.type != 6) {
+        let arr_len = this.form.names.length;
+        if(this.form.descriptions && this.form.descriptions.length != arr_len) {
+          for (var i = 0; i < arr_len - this.form.descriptions.length + 1; i++) {
+            this.form.descriptions.push("");
+          }
+        }
+      }
       uploads.uploadResources(this.attr, this.form, this.template).then(function (res) {
         self.isSaveing = false;
         self.txtSave = '保存';
@@ -561,6 +655,7 @@ export default {
           let id = res.data[0];
           apiUrl.getResourceDetail(id).then((res) => {
             let data = res.data;
+            self.resource_id = id;
             self.resource = data.resource;
             self.previewingExam = true;
           })
@@ -573,51 +668,51 @@ export default {
     },
     previewFile(file) {
       //office文档预览
-      if (file && (file.type === 'WORD' || file.type === 'PPT' || file.type === 'EXCEL')) {
-        // self.previewDocLink = "POBrowser.openWindow(" + file.path + ", 'width=1200px;height=800px;')";
-        this.previewDocLink = "POBrowser.openWindow('" + file.path + "', 'width=1200px;height=800px;')";
-        // self.isOfficeDoc = true;
-      }
+      // if (file && (file.type === 'WORD' || file.type === 'PPT' || file.type === 'EXCEL')) {
+      //   this.previewDocLink = "POBrowser.openWindow('" + file.path + "', 'width=1200px;height=800px;')";
+      // }
       //PDF预览
       if (file && file.type === 'PDF') {
-        // self.previewing = true;
-        this.previewPDF(file);
+        // this.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(file.officeViewSourceFile.path);
+        window.open('pdfview.html?file=' + encodeURIComponent(file.path))
       }
     },
-    previewPDF(file) {
-      this.previewing = true;
-      var DEFAULT_URL = file.path;
-      var DEFAULT_SCALE = 1;
-
-      var container = document.getElementById('pageContainer');
-
-      // Fetch the PDF document from the URL using promises.
-      PDFJS.getDocument(DEFAULT_URL).then(function (doc) {
-        // Use a promise to fetch and render the next page.
-        var promise = Promise.resolve();
-
-        for (var i = 1; i <= doc.numPages; i++) {
-          promise = promise.then(function (pageNum) {
-            return doc.getPage(pageNum).then(function (pdfPage) {
-              // Create the page view.
-              var pdfPageView = new PDFJS.PDFPageView({
-                container: container,
-                id: pageNum,
-                scale: DEFAULT_SCALE,
-                defaultViewport: pdfPage.getViewport(DEFAULT_SCALE),
-                annotationLayerFactory: new PDFJS.DefaultAnnotationLayerFactory(),
-                renderInteractiveForms: true,
-              });
-
-              // Associate the actual page with the view and draw it.
-              pdfPageView.setPdfPage(pdfPage);
-              return pdfPageView.draw();
-            });
-          }.bind(null, i));
-        }
-      });
-
-    },
+    // previewPDF(file) {
+    //   var self = this;
+    //   var DEFAULT_URL = file.path;
+    //   var DEFAULT_SCALE = 1;
+    //
+    //   var container = document.getElementById('pageContainer');
+    //   container.innerHTML = '';
+    //
+    //   // Fetch the PDF document from the URL using promises.
+    //   PDFJS.getDocument(DEFAULT_URL).then(function (doc) {
+    //     // Use a promise to fetch and render the next page.
+    //     var promise = Promise.resolve();
+    //
+    //     for (var i = 1; i <= doc.numPages; i++) {
+    //       promise = promise.then(function (pageNum) {
+    //         return doc.getPage(pageNum).then(function (pdfPage) {
+    //           // Create the page view.
+    //           var pdfPageView = new PDFJS.PDFPageView({
+    //             container: container,
+    //             id: pageNum,
+    //             scale: DEFAULT_SCALE,
+    //             defaultViewport: pdfPage.getViewport(DEFAULT_SCALE),
+    //             annotationLayerFactory: new PDFJS.DefaultAnnotationLayerFactory(),
+    //             renderInteractiveForms: true,
+    //           });
+    //
+    //           // Associate the actual page with the view and draw it.
+    //           pdfPageView.setPdfPage(pdfPage);
+    //           self.previewing = true;
+    //           return pdfPageView.draw();
+    //         });
+    //       }.bind(null, i));
+    //     }
+    //   });
+    //
+    // },
     // uploadImgSuccess: function (res, file) {
     //   var self = this;
     //   if (res.resultCode == 'SUCCESS') {
@@ -643,7 +738,16 @@ export default {
     // },
   },
   mounted: function () {
-    var self = this;
+    let resource_id = util.getUrlParams('resource_id');
+    let self = this;
+    if (resource_id) {
+      apiUrl.getResourceDetail(resource_id).then((res) => {
+        let data = res.data;
+        self.resource_id = resource_id;
+        self.resource = data.resource;
+        self.previewingExam = true;
+      })
+    }
     //获取资源类型及二级标签
     // this.getTypes();
   }
@@ -760,13 +864,6 @@ export default {
   background-color: #00d487;
   color: #fff;
 }
-
-
-
-
-
-
-
 
 
 /*.add-option {

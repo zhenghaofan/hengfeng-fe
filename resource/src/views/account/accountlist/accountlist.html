@@ -30,7 +30,7 @@
             <span class="f-r">
               <template v-if="accountEnabled">有效帐号</template>
               <template v-else>冻结帐号</template>{{count}}
-              <a href="createaccount.html" v-if="hasPageAuth && authList.account && authList.account.add" class="btn btn-m btn-green btn-newacc g-ml10">新建账号</a>
+              <a href="createaccount.html" v-show="hasAddAuth" class="btn btn-m btn-green btn-newacc g-ml10">新建账号</a>
             </span>
           </div>
 

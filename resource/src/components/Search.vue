@@ -13,6 +13,11 @@ export default {
       keyword: ''
     };
   },
+  watch: {
+    keywords() {
+      this.keyword = '';
+    },
+  },
   methods: {
     //获取列表
     getList: function () {

@@ -19,16 +19,17 @@
       <div class="control">
         <label class="label">资源描述：</label>
         <div class="txts">
-        	<textarea class="g-form-txtarea" v-model="description"></textarea>
+        	<textarea class="g-form-txtarea" v-model="description" maxlength="500"></textarea>
         </div>
       </div>
   	</div>
 
-  	<div class="g-form" v-if="coverLink">
+    <!-- 微课、课堂实录封面才有 -->
+  	<div class="g-form" v-if="coverLink && (resourceDictId === 'MICRO_LESSON' || resourceDictId === 'COURSE_VIDEO')">
       <div class="control">
         <label class="label">封面图片：</label>
         <div class="txts">
-        	<el-upload :action="uploadFileUrl" :on-success="uploadImgSuccess" :on-error="uploadFail" :show-file-list="false" :before-upload="beforeImgUpload" :with-credentials="true">
+        	<el-upload :action="uploadFileUrl" :on-success="uploadImgSuccess" :on-error="uploadFail" :accept="acceptImageTypes" :show-file-list="false" :before-upload="beforeImgUpload" :with-credentials="true">
 						<img v-if="coverLink" :src="coverLink" class="imgPreview" alt="">
 						<i v-else class="upload-pic"></i>
 						<span class="emphasis">*点击选择本地图片文件，大小要求2MB</span>
@@ -45,41 +46,57 @@
         </div>
       </div>
   	</div>
-  	<div class="g-form" v-show="sourceFileId">
+
+  	<!-- 封面图 -->
+  	<!-- <div class="g-form" v-if="backgroundFile">
+  		<div class="control">
+        <label class="label">封面</label>
+        <div class="txts">
+        	<div class="cover_area" @click="selectCover(backgroundFile.id)">
+		        <img :src="backgroundFile.path" alt="" />
+		        <i v-if="!defaultChecked" class="iconf i-tick"></i>
+		      </div>
+		      <div class="cover_area" @click="selectCover(false)">
+		        <img v-if="resourceDictId === 'MICRO_LESSON'" src="../../../../static/images/cover_microclass.jpg" alt="">
+		        <img v-if="resourceDictId === 'COURSE_VIDEO'" src="../../../../static/images/cover_coursevideo.jpg" alt="">
+		        <i v-if="defaultChecked" class="iconf i-tick"></i>
+		      </div>
+        </div>
+      </div>
+    </div> -->
+
+  	<div class="g-form" v-show="sourceFileId || resourceDictId === 'EXAM_PAPER'">
       <div class="control">
         <label class="label">资源文件：</label>
         <div class="txts resource-file-txts">
-        	<div>
+        	<div class="g-clearfix">
         		<span class="source-img"></span>
 						{{name}}
+						<!-- pdf预览 -->
+          	<a v-if="officeViewLink" :href="officeViewLink" target="_blank" class="btn btn-s btn-green f-r">预览</a>
 					</div>
 
-					<!-- office 文件 -->
-          <div v-if="isOfficeDoc">
-            <a :href="previewDocLink" target="_blank" class="btn btn-green btn-s">预览</i></a>
-          </div>
+					<div v-if="resourceDictId === 'EXAM_PAPER'">
+						<examdetail :resource="resource" :status="pageStatus" :resource_id="resourceId" :justpreview="true"></examdetail>
+					</div>
 
-					<div class="g-mb10" v-if="resource.sourceFile && (resource.sourceFile.type === 'IMAGE' || resource.sourceFile.type === 'VIDEO' || resource.sourceFile.type === 'AUDIO')">
-						<img v-if="resource.sourceFile" class="g-block" :src="resource.sourceFile.path" width="150" />
+					<div class="g-mb10" v-if="resource.sourceFile && resource.sourceFile.type === 'IMAGE'">
+						<img v-if="resource.sourceFile" class="g-block" :src="sourceFilePath" width="150" />
 						<template v-else><i class="icon i-img"></i>无指定</template>
 					</div>
 
-					<!-- pdf预览 试卷的先加预览 -->
-			    <div class="pdf-preview" id="pageContainer" v-show="resourceDictId==='TEACHING_PLAN' || resourceDictId==='LEARNING_GUIDE' || resourceDictId==='COURSEWARE' || resourceDictId ==='EXAM_PAPER'">
-	  			</div>
-
 					<!-- 视频 -->
-					<video class="g-mb10" controls="controls" v-if="resource.sourceFile && resource.sourceFile.type === 'VIDEO'" :poster="coverLink">
-						<source :src="resource.sourceFile.path"></source>
+					<video class="g-mb10" controls="controls" v-if="resource.sourceFile && resource.sourceFile.type === 'VIDEO'" :src="sourceFilePath">
+						<!-- <source :src="sourceFilePath"></source> -->
 						Your browser does not support the video tag.
 					</video>
 
 					<!-- 音频 -->
-					<audio class="g-mb10" v-if="resource.sourceFile && resource.sourceFile.type === 'AUDIO'" :src="resource.sourceFile.path" controls="controls">
+					<audio class="g-mb10" v-if="resource.sourceFile && resource.sourceFile.type === 'AUDIO'" :src="sourceFilePath" controls="controls">
 						Your browser does not support the audio element.
 					</audio>
 
-  				<el-upload :action="uploadFileUrl" :on-success="uploadSuccess" :on-error="uploadFail" :with-credentials="true" :on-remove="removeFile" class="upload-btn">
+  				<el-upload v-if="resourceDictId !== 'EXAM_PAPER'" :action="uploadFileUrl" :on-success="uploadSuccess" :accept="acceptTypes" :on-error="uploadFail" :with-credentials="true" :on-progress="uploading" :before-remove="beforeRemove" :before-upload="beforeUploadCheck" :on-remove="removeFile" class="upload-btn" ref="uploadResource">
 						<a href="#" class="btn btn-s btn-green">重新上传</a>
 						<span class="emphasis">*选择前，请对文档进行规范命名</span>
 					</el-upload>
@@ -114,7 +131,7 @@
 			        </el-col>
 			        <el-col>
 			          <el-radio class="radio" label="REJECTED">退回修改</el-radio>
-			          <el-input v-if="auditeStatus === 'REJECTED'" type="textarea" class="remark g-mt5" v-model="remark"></el-input>
+			          <el-input v-if="auditeStatus === 'REJECTED'" type="textarea" class="txtarea-remark g-mt5" :maxlength=128 v-model="remark"></el-input>
 			        </el-col>
 			      </el-radio-group>
 			    </el-col>
@@ -129,18 +146,20 @@
 	  <!-- 资源审核操作\ -->
 
 	</el-form>
+
+	<div class="totext g-hidden"></div>
 </div>
 </template>
 <script>
 import apiUrl from '@/api/url.js'
-import util from '@/utils/index.js'
+import utils from '@/utils/index.js'
 import urlConfig from '../../../../config/url.config.js'
 
 //引入过滤器
 import filters from '@/components/Filters'
 //习题模板
 import exercise from '@/components/Exercise/main'
-
+import examdetail from '@/components/examdetail'
 //引入系统常量数据
 import GL_CONST from '@/confdata/constant'
 
@@ -148,13 +167,14 @@ export default {
 	components: {
 		filters,
 		exercise,
+    examdetail
 	},
 	props: ['backUrl'],
 	data: function() {
 		return {
 			uploadFileUrl: urlConfig.baseUrl + '/manage/file/upload',
 			resourceId: '',
-			resource: '',
+			resource: {},
 			statusLog:{},
 			status:'',
 			resourceDictId: '',
@@ -163,15 +183,8 @@ export default {
 			textbookCatalogId: '', //章节ID，可选
 			knowledgePointCatalogIds: [], //知识点ID，可选
 			description: '', //描述，可选
-			sourceFileId: '', //视频源文件ID，可选
-			sourceFilePath: '',//视频源文件路径
-			backgroundFileId: '',
-			previewLink: '',
 			name: '',//上传的文件名
-			coverLink: '',
 			childDictId: '',
-			//office文档预览地址
-			previewDocLink: '',
 			isOfficeDoc: false,
 			auditeStatus: 'APPROVED',
       //退回说明
@@ -186,24 +199,79 @@ export default {
       form: {},
       quesData: '',
       backUrlChild: 'myunaudited.html',
+      //可接受的图片上传格式
+      acceptImageTypes: GL_CONST.MEDIATYPES.acceptImageTypes,
+      acceptTypes: '',
+      resourceDictIndex: '',
+      //PDF预览地址
+      officeViewLink: '',
+      isUploaded: false,
+      isBeforeUploadError: false,
+      sourceFileTemp: '',
+      officeViewLinkTemp: '',
+      sourceFileTemp: '',
+      sourceFileId: '', //视频源文件ID，可选
+			sourceFilePath: '',//视频源文件路径
+			backgroundFile: '',
+			backgroundFileTemp: '',
+			coverLink: '',
+			//默认封面
+			defaultChecked: false,
+			//正在上传
+			isUploading: false,
 		};
 	},
-	/*computed: {
-		backUrlChild() {
-			return this.backUrl || 'myunaudited.html';
-		},
-	},*/
 	watch: {
 		backUrl(url) {
-			this.backUrlChild = url;
+      //如果是从编辑试卷过来的子题目
+      //id为子题目id resource_id为试卷的id
+      var childId = utils.getUrlParams('id'),
+          resourceId = utils.getUrlParams('resource_id');
+
+      if (resourceId) {
+        this.backUrlChild = '/views/resource/editres.html?status=' + this.pageStatus + '&id=' + resourceId;
+      } else {
+        this.backUrlChild = url;
+      }	
+		},
+		resourceDictIndex() {
+			this.acceptTypes = this.getAcceptTypes();
 		},
 	},
 	methods: {
+		//设置微课、课堂实录封面
+		selectCover(backgroundId) {
+      if (backgroundId) {
+        this.defaultChecked = true;
+      } else {
+        this.defaultChecked = false;
+      }
+      this.backgroundFileId = backgroundId;
+    },
+		//上传文件可用类型
+		getAcceptTypes() {
+			var _type = this.resourceDictIndex,
+					MEDIATYPES = GL_CONST.MEDIATYPES;
+			//教案，课件，导学案
+      if (_type == 0 || _type == 1 || _type == 2) {
+        return MEDIATYPES.acceptDocTypes;
+      } else if (_type == 3 || _type == 4) {
+    	//微课，课堂实录
+        return MEDIATYPES.acceptVideoTypes;
+      } else if (_type == 7) {
+      //素材
+        return Object.values(MEDIATYPES).join();
+        // return '*';
+      } else {
+        return MEDIATYPES.acceptExamTypes
+      }
+		},
 		exerChanged(exerObj) {
       //this.form = Object.assign({}, this.form, exerObj);
       for (var i in exerObj) {
         if (exerObj[i] || typeof(exerObj[i]) === 'boolean' && !exerObj[i]) {
           this.form[i] = exerObj[i];
+          this.quesData[i] = exerObj[i];
         }
       }
     },
@@ -219,8 +287,71 @@ export default {
         this.update();
       }
     },
+    //过滤html空格
+    trimHTMLSpace(str) {
+    	var domElem = document.querySelector('.totext');
+    	domElem.innerHTML = str;
+    	str = domElem.innerText;
+      if (typeof(str) === 'string') {
+        return str.replace(/\s+/ig,'');
+      }
+      return str;
+    },
+    //过滤空格
+    checkTrim(arrs) {
+      return typeof(arrs) === 'object' && arrs === null || typeof(arrs) === 'object' && Object.values(arrs).filter((item) => {return this.trimHTMLSpace(item) === ''}).length !== 0 || Array.isArray(arrs) && arrs.filter((item) => {return this.trimHTMLSpace(item) === ''}).length !== 0 || this.trimHTMLSpace(arrs) === '' || Array.isArray(arrs) && arrs.length === 0
+    },
+    //表单校验
     checkForm() {
-    	return true;
+      //TODO
+      //章节或知识点
+      if (this.knowledgePointCatalogIds.length < 1 && !this.textbookCatalogId) {
+        this.$message.error('章节或知识点至少要选择一个!');
+        return false;
+      }
+
+      //习题的校验
+      if (this.resourceDictId === 'EXERCISES') {
+        //难度级别
+        if (!this.form.difficultyLevel) {
+          this.$message.error('请设置当前问题的难度级别!');
+          return false;
+        }
+
+        //题干
+        if (!this.trimHTMLSpace(this.form.name)) {
+          this.$message.error('题干不能为空!');
+          return false;
+        }
+
+        if (this.template !== 'SYNTHESIS') {
+          if (this.template !== 'JUDGE') {
+            if(this.checkTrim(this.form.topics)) {
+              this.$message.error('请完善题目信息')
+              return false
+            }
+          }
+          if (this.checkTrim(this.form.answers)) {
+            this.$message.error('答案不能为空！')
+            return false;
+          }
+        } else {
+          if (this.form.children.filter((item) => {return this.trimHTMLSpace(item.name) === ''}).length !== 0 ) {
+            this.$message.error('子题目标题不能为空！')
+            return false;
+          }
+          if (this.form.children.filter((item) => {if(item.template !== 'JUDGE') {return this.checkTrim(item.topics)}}).length !== 0 ) {
+            this.$message.error('子题目信息不能为空！')
+            return false;
+          }
+          if (this.form.children.filter((item) => {return this.checkTrim(item.answers)}).length !== 0 ) {
+            this.$message.error('子题目答案不能为空！')
+            return false;
+          }
+        }
+      }
+
+      return true;
     },
 		changedData(info) {
 			this.gradeId = info.gradeId;
@@ -228,26 +359,31 @@ export default {
 			this.textbookCatalogId = info.textbookCatalogId;
 			this.knowledgePointCatalogIds = info.knowledgePointCatalogIds ? info.knowledgePointCatalogIds.split(',') : '';
 			this.childDictId = info.childDictId;
+			this.resourceDictIndex = info.resourceDictIndex;
 		},
 		getResource: function(id, status) {
 			var self = this;
+
 			apiUrl.getResourceDetail(id, status).then(function(res) {
 				var data = res.data,
 						_resource = data.resource;
-				self.resource = _resource;
-				self.name = self.resource.name;
 				self.resourceDictId = _resource.resourceDictId;
+				self.resource = _resource;
+
+				self.name = self.resource.name;
 				self.statusLog = data.statusLog;
 				self.status = _resource.status;
 				self.resourceDictName = GL_CONST.RESOURCETYPESOBJ[_resource.resourceDictId];
 				self.description = _resource.description || '';
-				self.backgroundFileId = _resource.backgroundFileId || '';
 
-				if (self.resource.sourceFile) {
-					self.previewLink = _resource.sourceFile.path;
+				if (_resource.sourceFile) {
+					self.sourceFileTemp = _resource.sourceFile;
+					self.sourceFilePath = _resource.sourceFile.path;
 					self.sourceFileId = _resource.sourceFile.id || '';
 				}
-				if (self.backgroundFileId) {
+				if (_resource.backgroundFile) {
+					self.backgroundFile = utils.cloneObj(_resource.backgroundFile) || '';
+					self.backgroundFileTemp = _resource.backgroundFile;
 					self.coverLink = _resource.backgroundFile.path;
 				}
 
@@ -261,15 +397,19 @@ export default {
 				self.quesData.analysis = _resource.analysis;
 				self.quesData.children = _resource.children;
 
-				//office文档预览
-        if (_resource.sourceFile && (_resource.sourceFile.type === 'WORD' || _resource.sourceFile.type === 'PPT' || _resource.sourceFile.type === 'EXCEL')) {
-          self.previewDocLink = "javascript:POBrowser.openWindow('" + _resource.sourceFile.path + "', 'width=1200px;height=800px;')";
-          self.isOfficeDoc = true;
-        }
         //PDF预览
-        if (_resource.sourceFile && _resource.sourceFile.type === 'PDF') {
-          self.previewPDF(_resource.sourceFile.path);
+        var path;
+        //office转成的pdf文件
+        if (_resource.officeViewSourceFile && _resource.officeViewSourceFile.type === 'PDF') {
+        	path = _resource.officeViewSourceFile.path;
+          self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(path);
         }
+        //本身是pdf的文件
+        if (_resource.sourceFile && _resource.sourceFile.type === 'PDF') {
+        	path = _resource.sourceFile.path;
+          self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(path);
+        }
+        self.officeViewLinkTemp = self.officeViewLink;
 
 				//资源审核
 				if (self.resource.status === 'UNAUDITED' && (self.pageStatus === 'unauited' || self.pageStatus === 'rejected')) {
@@ -280,39 +420,7 @@ export default {
 
 			});
 		},
-		//预览文档
-		previewPDF: function (path) {
-      var DEFAULT_SCALE = 1;
-
-      var container = document.getElementById('pageContainer');
-      container.innerHTML = '';
-      // Fetch the PDF document from the URL using promises.
-      PDFJS.getDocument(path).then(function (doc) {
-        // Use a promise to fetch and render the next page.
-        var promise = Promise.resolve();
-
-        for (var i = 1; i <= doc.numPages; i++) {
-          promise = promise.then(function (pageNum) {
-            return doc.getPage(pageNum).then(function (pdfPage) {
-              // Create the page view.
-              var pdfPageView = new PDFJS.PDFPageView({
-                container: container,
-                id: pageNum,
-                scale: DEFAULT_SCALE,
-                defaultViewport: pdfPage.getViewport(DEFAULT_SCALE),
-                annotationLayerFactory: new PDFJS.DefaultAnnotationLayerFactory(),
-                renderInteractiveForms: true,
-              });
-
-              // Associate the actual page with the view and draw it.
-              pdfPageView.setPdfPage(pdfPage);
-              return pdfPageView.draw();
-            });
-          }.bind(null, i));
-        }
-      });
-
-		},
+		//图片上传成功
 		uploadImgSuccess: function(res, file) {
 			var self = this;
 			if (res.resultCode == 'SUCCESS') {
@@ -323,21 +431,118 @@ export default {
 				self.$message.error(res.message);
 			}
 		},
+		uploading(e, file, fileList) {
+      if (e.percent < 100) {
+        this.isUploading = true;
+      } else {
+        this.isUploading = false;
+      }
+    },
+    beforeRemove() {
+      if(this.isUploading) return false;
+    },
 		//删除上传文件
 		removeFile: function(file, filelist) {
-			this.sourceFileId = '';
+			//上传检查类型不匹配时，不做任何操作
+			if (this.isBeforeUploadError) {
+				this.isBeforeUploadError = false;
+				return;
+			}
+
+			//this.sourceFileId = '';
 			this.name = this.resource.name;
+
+			//pdf文件预览地址
+			this.officeViewLink = this.officeViewLinkTemp;
+
+			if (this.sourceFileTemp) {
+				//源文件id
+				this.sourceFileId = this.sourceFileTemp.id;
+				this.sourceFilePath = this.sourceFileTemp.path;
+			}
+
+			if (this.backgroundFileTemp) {
+				//背景图id
+				this.backgroundFileId = this.backgroundFileTemp.id;
+				//封面图地址
+				this.coverLink = this.backgroundFileTemp.path;
+			}
+
+			this.isUploaded = false;
 		},
+		// 文件上传
+    checkType: function (arr, filetype) {
+      if (arr.indexOf(filetype) != -1) {
+        return true;
+      } else {
+        this.$message.error('暂时不支持该类型的文件');
+        return false;
+      }
+    },
+    beforeUploadCheck: function (file) {
+      var _type = file.type;
+        // console.log(file.type);
+      if (!_type || this.acceptTypes.indexOf(_type) == -1) {
+        this.$message.error('暂时不支持该类型的文件');
+        this.isBeforeUploadError = true;
+        return false;
+      }
+      if (this.isUploaded) {
+        this.$message.error('只能上传一个文件，若要重新上传，请先删除已经上传的');
+        this.isBeforeUploadError = true;
+        return false;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        this.$message.error('文件过大，请重新上传');
+        this.isBeforeUploadError = true;
+        return false;
+      }
+      return true;
+    },
+    //上传成功
 		uploadSuccess: function(res, file) {
 			var self = this,
-					sourceFile;
+					_result,
+					backgroundFile,
+					sourceFile,
+					officeViewSourceFile;
+
 			self.name = file.name.substring(0,file.name.lastIndexOf('.'));
+
 			if (res.resultCode == 'SUCCESS') {
-				sourceFile = res.data.sourceFile;
-				self.sourceFileId = sourceFile.id;
-				self.sourceFilePath = sourceFile.path;
-				self.previewDocLink = "POBrowser.openWindow(self.sourceFilePath, 'width=1200px;height=800px;')";
+				_result = res.data;
+
+				//有背景图
+				backgroundFile = _result.backgroundFile;
+			  if(backgroundFile) {
+          self.coverLink = backgroundFile.path;
+          self.backgroundFileId = backgroundFile.id;
+				}
+
+				//有源文件
+				sourceFile = _result.sourceFile;
+				if (sourceFile) {
+					self.sourceFileId = sourceFile.id;
+					self.sourceFilePath = sourceFile.path;
+					if (sourceFile.type === 'PDF') {
+						self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(self.sourceFilePath);
+					}
+				}
+
+				//有office文件
+				officeViewSourceFile = _result.officeViewSourceFile;
+				if (officeViewSourceFile) {
+					if (officeViewSourceFile.type === 'PDF') {
+						self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(officeViewSourceFile.path);
+					}
+				}
+
+				self.isUploaded = true;
+
 			} else {
+				//删除文件
+				self.$refs.uploadResource.clearFiles();
+				self.name = self.resource.name;
 				self.$message.error(res.message);
 			}
 		},
@@ -370,6 +575,10 @@ export default {
 					postUrl = 'updateResources',//自己的资源更新
 					type;
 
+			if (!this.checkForm()) {
+        return;
+      }
+
 			//资源审核时
 			if (this.hasAuditeAuth) {
 				postUrl = 'auditResources';
@@ -391,8 +600,8 @@ export default {
 			}
 
 			apiUrl[postUrl](self.resourceId, params, type).then(function() {
-				self.$alert('修改成功', '提示', {
-          confirmButtonText: '返回列表',
+				self.$alert('成功', '提示', {
+          confirmButtonText: '返回',
           callback: action => {
             window.location.href = self.backUrlChild;
           }
@@ -418,10 +627,12 @@ export default {
     },
 	},
 	mounted: function() {
-		this.resourceId = util.getUrlParams('id');
+		this.resourceId = utils.getUrlParams('id');
 		//状态值
-    this.pageStatus = util.getUrlParams('status');
-		this.getResource(this.resourceId, this.pageStatus);
+    this.pageStatus = utils.getUrlParams('status');
+		this.$nextTick(() => {
+			this.getResource(this.resourceId, this.pageStatus);
+		})
 	}
 };
 </script>
@@ -506,8 +717,9 @@ export default {
 }
 
 .imgPreview {
-	width: 70px;
-	height: 70px;
+	width: 100px;
+	height: 100px;
+	border-radius: 8px;
 	display: inline-block;
 }
 .upload-pic {
@@ -557,10 +769,10 @@ export default {
   top: 0px;
 }
 .aud-div{
-	background: url(../../../../static/images/magnifier_green.png) no-repeat 660px 20px;
+	background: url(../../../../static/images/magnifier_green.png) no-repeat 660px 10px;
 	margin-bottom: 10px;
 	padding: 10px 0;
-  min-height: 252px;
+  min-height: 200px;
 }
 .up-info {
   margin-top: 30px;
@@ -602,5 +814,38 @@ export default {
 }
 video {
 	max-width: 100%;
+}
+.txtarea-remark {
+	width: 880px;
+	min-height: 100px!important;
+	textarea {
+		width: 880px;
+		min-height: 100px!important;
+	}
+}
+
+.res-edit {
+	.cover_area {
+	  position: relative;
+	  display: inline-block;
+	  cursor: pointer;
+	}
+	.cover_area img {
+		margin-right: 10px;
+	  width: 120px;
+	  height: 120px;
+	  border-radius: 8px;
+	}
+	.i-tick {
+	  color: white;
+	  background: #00d487;
+	  border-radius: 20px;
+	  border: 1px solid white;
+	  font-size: 12px;
+	  padding: 4px;
+	  position: absolute;
+	  bottom: 8px;
+	  right: 15px;
+	}
 }
 </style>

@@ -45,7 +45,7 @@ export default {
       this.$emit('toggleEditor', model, item)
     },
     analysischange(e) {
-      this.contents.analysis = e.target.innerText;
+      this.contents.analysis = e.target.innerHTML;
       this.$emit('contentchange', this.contents);
     },
   }

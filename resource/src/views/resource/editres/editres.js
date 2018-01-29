@@ -28,7 +28,7 @@ new Vue({
       curMenuId: 'lb-myunaudited',
     },
     //默认返回"正在候审"列表
-    backUrl: 'myunaudited.html',
+    backUrl: 'myunaudited.html?',
     //二级返回地址
     backSubTabUrl: '',
     //默认一级名
@@ -74,6 +74,11 @@ new Vue({
         this.leftbarData.curMenuId = 'lb-tempres';
         this.backUrl = 'tempres.html';
         this.tabName = '暂存资源';
+      } else if (status === 'upload') {
+      //上传资源
+        this.leftbarData.curMenuId = 'lb-upload';
+        this.backUrl = 'upload.html?resource_id=' + util.getUrlParams('resource_id');
+        this.tabName = '上传资源';
       }/* else {
       //默认为"正在候审"
         this.leftbarData.curMenuId = 'lb-myunaudited';
@@ -85,6 +90,6 @@ new Vue({
   mounted: function () {
     this.$nextTick(function () {
       this.resetRenderData();
-    });   
+    });
   }
 });

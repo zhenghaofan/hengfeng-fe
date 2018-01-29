@@ -65,11 +65,6 @@ export default {
   components: {
     editorDialog,
   },
-  // props: [
-  //   //原始值，编辑的时候传过来的
-  //   'sourceData',
-  //   'checkTemplate',
-  // ],
   props: {
     titleIndex: {
       default: -1,
@@ -98,18 +93,13 @@ export default {
       analysis: '',
       defaultOptionsLen: 4,
       initcontent: '',
-      editorId: 'shortanswer',
+      editorId: 'shortanswer-' + (+new Date()),
       showEditor: false,
       optionsInfo: {},
       modelName: '',
     }
   },
   watch: {
-    // checkTemplate(template) {
-    //   if (template === 'SINGLE_CHOICE') {
-    //     this.checkForm();
-    //   }
-    // },
     topics() {
       this.returnQuestionInfo();
     },
@@ -124,7 +114,7 @@ export default {
   },
   methods: {
     namechange(e, index) {
-      this.$emit('namechange', e.target.innerText, index);
+      this.$emit('namechange', e.target.innerHTML, index);
     },
     //显示编辑器
     toggleEditor(model, value, index) {
@@ -141,7 +131,6 @@ export default {
     //更新
     updateContent(model, value, otherInfo) {
       this.closeEditor();
-      this[model][otherInfo.index] = value;
       if (model === '_name') {
         this.$emit('namechange', value, otherInfo.index);
         this.$emit('contentchange', otherInfo.index, {
@@ -151,6 +140,7 @@ export default {
         });
         return;
       }
+      this[model][otherInfo.index] = value;
       // Vue.set(this[model], otherInfo.index, value)
       this.initcontent = '';
 
@@ -184,13 +174,16 @@ export default {
     add(index) {
       var nextIndex = index + 1,
         len = this.topics.length,
-        rightList = this.topics.splice(nextIndex, len - index);
+        rightTopicList = this.topics.splice(nextIndex, len - index),
+        rightAnswerList = this.answers.splice(nextIndex, len - index),
+        rightAnalysisList = this.analysis.splice(nextIndex, len - index);
 
       this.topics[index + 1] = '';
       this.answers[index + 1] = '';
       this.analysis[index + 1] = '';
-      this.topics = this.topics.concat(rightList);
-
+      this.topics = this.topics.concat(rightTopicList);
+      this.answers = this.answers.concat(rightAnswerList);
+      this.analysis = this.analysis.concat(rightAnalysisList);
     },
     //删除选项
     del(index) {
@@ -283,11 +276,11 @@ export default {
       if (this.sourceData && Object.keys(this.sourceData).length > 1) {
         var data = this.sourceData;
 
-        this.topics = data.topics;
+        this.topics = data.topics || [];
         //答案
         this.answers = data.answers || [];
         //解析
-        this.analysis = data.analysis;
+        this.analysis = data.analysis || '';
       } else {
         //默认全新的初始化，相当于新建
 
@@ -306,7 +299,6 @@ export default {
     this.$nextTick(function () {
       //页面初始化
       this.initData();
-      // console.log(this.checkTemplate);
     });
   },
 }

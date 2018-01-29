@@ -31,7 +31,7 @@
           </span>
           <!-- 右边的修改名称用的输入框 -->
           <span v-show="first.isEditName">
-            <el-input v-model="first.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+            <el-input v-model="first.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
             <i class="el-icon-check" @click.prevent.stop="confirmNameEdit(first)"></i>
             <span v-if="!first.isProtogenic">
               <i class="el-icon-close" @click.prevent.stop="deleteNode1(fIndex, list)"></i>
@@ -40,13 +40,13 @@
         </h2>
         <!-- 底下弹出的添加框 -->
         <div v-if="first.isAddNode">
-          <el-input v-model="first.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+          <el-input v-model="first.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
           <i class="el-icon-check" @click.prevent.stop="confirmAddNode(0, fIndex, list)"></i>
           <i class="el-icon-close" @click.prevent.stop="cancelAddNode(first)"></i>
         </div>
         <!-- 第一级添加子节点的框 -->
         <div v-if="first.isAddChildNode">
-          <el-input v-model="first.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;"  :maxlength="50"></el-input>
+          <el-input v-model="first.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;"  :maxlength="128"></el-input>
           <i class="el-icon-check" @click.prevent.stop="confirmAddChildNode(1, fIndex, list)"></i>
           <i class="el-icon-close" @click.prevent.stop="cancelAddChildNode(first)"></i>
         </div>
@@ -75,7 +75,7 @@
               </span>
               <!-- 右边的修改名称用的输入框 -->
               <span v-show="sec.isEditName">
-                <el-input v-model="sec.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                <el-input v-model="sec.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                 <i class="el-icon-check" @click.prevent.stop="confirmNameEdit(sec)"></i>
                 <span v-if="!sec.isProtogenic">
                   <i class="el-icon-close" @click.prevent.stop="deleteNode2(fIndex, sIndex, list)"></i>
@@ -84,13 +84,13 @@
             </h3>
             <!-- 底下弹出的添加框 -->
             <div v-if="sec.isAddNode">
-              <el-input v-model="sec.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+              <el-input v-model="sec.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
               <i class="el-icon-check" @click.prevent.stop="confirmAddNode(1, sIndex, first.children)"></i>
               <i class="el-icon-close" @click.prevent.stop="cancelAddNode(sec)"></i>
             </div>
             <!-- 第二级添加子节点的框 -->
             <div v-if="sec.isAddChildNode">
-              <el-input v-model="sec.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="50"></el-input>
+              <el-input v-model="sec.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="128"></el-input>
               <i class="el-icon-check" @click.prevent.stop="confirmAddChildNode(2, sIndex, first.children)"></i>
               <i class="el-icon-close" @click.prevent.stop="cancelAddChildNode(sec)"></i>
             </div>
@@ -119,7 +119,7 @@
                   </span>
                   <!-- 右边的修改名称用的输入框 -->
                   <span v-show="thr.isEditName">
-                    <el-input v-model="thr.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                    <el-input v-model="thr.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                     <i class="el-icon-check" @click.prevent.stop="confirmNameEdit(thr)"></i>
                     <span v-if="!thr.isProtogenic">
                       <i class="el-icon-close" @click.prevent.stop="deleteNode3(sIndex, tIndex, first.children)"></i>
@@ -128,13 +128,13 @@
                 </h4>
                 <!-- 底下弹出的添加框 -->
                 <div v-if="thr.isAddNode">
-                  <el-input v-model="thr.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                  <el-input v-model="thr.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                   <i class="el-icon-check" @click.prevent.stop="confirmAddNode(2, tIndex, sec.children)"></i>
                   <i class="el-icon-close" @click.prevent.stop="cancelAddNode(thr)"></i>
                 </div>
                 <!-- 第三级添加子节点的框 -->
                 <div v-if="thr.isAddChildNode">
-                  <el-input v-model="thr.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="50"></el-input>
+                  <el-input v-model="thr.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="128"></el-input>
                   <i class="el-icon-check" @click.prevent.stop="confirmAddChildNode(3, tIndex, sec.children)"></i>
                   <i class="el-icon-close" @click.prevent.stop="cancelAddChildNode(thr)"></i>
                 </div>
@@ -163,7 +163,7 @@
                       </span>
                       <!-- 右边的修改名称用的输入框 -->
                       <span v-show="four.isEditName">
-                        <el-input v-model="four.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                        <el-input v-model="four.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                         <i class="el-icon-check" @click.prevent.stop="confirmNameEdit(four)"></i>
                         <span v-if="!four.isProtogenic">
                           <i class="el-icon-close" @click.prevent.stop="deleteNode4(tIndex, fourIndex, sec.children)"></i>
@@ -172,13 +172,13 @@
                     </h4>
                     <!-- 底下弹出的添加框 -->
                     <div v-if="four.isAddNode">
-                      <el-input v-model="four.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                      <el-input v-model="four.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                       <i class="el-icon-check" @click.prevent.stop="confirmAddNode(3, fourIndex, thr.children)"></i>
                       <i class="el-icon-close" @click.prevent.stop="cancelAddNode(four)"></i>
                     </div>
                     <!-- 第四级添加子节点的框 -->
                     <div v-if="four.isAddChildNode">
-                      <el-input v-model="four.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="50"></el-input>
+                      <el-input v-model="four.newChildNodeName" class="elInput" placeholder="（空）" clearable style="padding-left:25px;" :maxlength="128"></el-input>
                       <i class="el-icon-check" @click.prevent.stop="confirmAddChildNode(4, fourIndex, thr.children)"></i>
                       <i class="el-icon-close" @click.prevent.stop="cancelAddChildNode(four)"></i>
                     </div>
@@ -206,7 +206,7 @@
                           </span>
                           <!-- 右边的修改名称用的输入框 -->
                           <span v-show="fif.isEditName">
-                            <el-input v-model="fif.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                            <el-input v-model="fif.newEditName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                             <i class="el-icon-check" @click.prevent.stop="confirmNameEdit(fif)"></i>
                             <span v-if="!fif.isProtogenic">
                               <i class="el-icon-close" @click.prevent.stop="deleteNode5(fourIndex, fifIndex, thr.children)"></i>
@@ -215,7 +215,7 @@
                         </h4>
                         <!-- 底下弹出的添加框 -->
                         <div v-if="fif.isAddNode">
-                          <el-input v-model="fif.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="50"></el-input>
+                          <el-input v-model="fif.newNodeName" class="elInput" placeholder="（空）" clearable :maxlength="128"></el-input>
                           <i class="el-icon-check" @click.prevent.stop="confirmAddNode(4, fifIndex, four.children)"></i>
                           <i class="el-icon-close" @click.prevent.stop="cancelAddNode(fif)"></i>
                         </div>
@@ -233,7 +233,7 @@
     <div class="el_botton">
       <el-button type="primary" @click="previewTree">预览</el-button>
       <a href="#" @click.prevent="save">
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" :disabled="!isAllDone">保存</el-button>
       </a>
     </div>
     <!-- 预览区 -->
@@ -258,7 +258,7 @@
               <i class="i-arr-rb"></i>
             </i>
             <div class="iconHolder-pre" v-show="!first.children"></div>
-            {{first.name}}
+            <span class="nodeName">{{first.name}}</span>
           </h2>
           <!-- 第二级 -->
           <div v-show="!first.isCollapsed">
@@ -269,7 +269,7 @@
                   <i class="i-arr-rb"></i>
                 </i>
                 <div class="iconHolder-pre" v-show="!sec.children"></div>
-                {{sec.name}}
+                <span class="nodeName">{{sec.name}}</span>
               </h3>
               <!-- 第三级 -->
               <div v-show="!sec.isCollapsed">
@@ -280,7 +280,7 @@
                       <i class="i-arr-rb"></i>
                     </i>
                     <div class="iconHolder-pre" v-show="!thr.children"></div>
-                    {{thr.name}}
+                    <span class="nodeName">{{thr.name}}</span>
                   </h4>
                   <!-- 第四级 -->
                   <div v-show="!thr.isCollapsed">
@@ -291,14 +291,14 @@
                           <i class="i-arr-rb"></i>
                         </i>
                         <div class="iconHolder-pre" v-show="!four.children"></div>
-                        {{four.name}}
+                        <span class="nodeName">{{four.name}}</span>
                       </h4>
                       <!-- 第五级 -->
                       <div v-show="!four.isCollapsed">
                         <div class="con-h2" v-if="four.children.length > 0" v-for="(fif, fifIndex) in four.children" @click.prevent.stop="toggleCollapse(four.children, fifIndex)">
                           <h4 class="tit-h4">
                             <div class="iconHolder-pre" v-show="!fif.children"></div>
-                            {{fif.name}}
+                            <span class="nodeName">{{fif.name}}</span>
                           </h4>
                         </div>
                       </div>
@@ -338,7 +338,11 @@ export default {
 
       //add的时候允许修改学段和科目
       learnstageId: "",
-      subjectId: ""
+      subjectId: "",
+
+      //是否完成能够保存了
+      isAllDone: true,
+      editNum: 0,
     }
   },
   props: ['type', 'knwId','lstageName','subName'],
@@ -347,6 +351,13 @@ export default {
   watch: {
     lstageId: function() {
       this.learnstageId = this.lstageId;
+    },
+    editNum: function() {
+      if(this.editNum > 0) {
+        this.isAllDone = false;
+      }else {
+        this.isAllDone = true;
+      }
     }
   },
   methods: {
@@ -499,6 +510,11 @@ export default {
     NameEdit: function(list) {
       list.newEditName = list.name;
       list.isEditName = !list.isEditName;
+      if(list.isEditName) {
+        this.editNum++;
+      }else {
+        this.editNum--;
+      }
     },
     //确认修改名称
     confirmNameEdit: function(list) {
@@ -513,6 +529,7 @@ export default {
         list.name = list.newEditName;
         list.newEditName = "";
         list.isEditName = !list.isEditName;
+        this.editNum--;
       }else {
         this.$message.error("节点名称不能为空");
       }
@@ -566,6 +583,7 @@ export default {
     //添加同级节点
     AddNode: function(list) {
       list.isAddNode = !list.isAddNode;
+      this.editNum++;
     },
     //确认添加同级节点
     confirmAddNode: function(flag, index, list) {
@@ -608,6 +626,7 @@ export default {
       list[index].isAddNode = !list[index].isAddNode;
       list = list.sort(this.sortList);
       list[index].newNodeName = "";
+      this.editNum--;
       
       switch(flag) {
         case 0:
@@ -632,6 +651,7 @@ export default {
       item.isAddNode = !item.isAddNode;
       console.log("取消增加节点");
       item.newNodeName = "";
+      this.editNum--;
     },
 
 
@@ -639,6 +659,7 @@ export default {
     AddChildNode: function(item) {
       item.isAddChildNode = !item.isAddChildNode;
       item.isCollapsed = false;
+      this.editNum++;
     },
     //确认添加子节点
     confirmAddChildNode: function(flag, index, list) {
@@ -689,6 +710,7 @@ export default {
       list[index].isAddChildNode = !list[index].isAddChildNode;
       list[index].children = childList.sort(this.sortList);
       list[index].newChildNodeName = "";
+      this.editNum--;
 
       switch(flag) {
         case 1:
@@ -711,9 +733,30 @@ export default {
       item.isCollapsed = !item.isCollapsed;
       console.log("取消增加子节点");
       item.newNodeName = "";
+      this.editNum--;
     },
 
     //删除节点
+    //删除时找找有没有还在编辑状态的子节点
+    findEditChild: function (item) {
+      if (item.children === 0) {
+        return;
+      }
+      for (var j in item.children) {
+        //分成三个是因为担心有人在同一个节点同时进行这三种操作
+        if(item.children[j].isEditName) {
+          this.editNum--;
+        }
+        if(item.children[j].isAddNode) {
+          this.editNum--;
+        }
+        if(item.children[j].isAddChildNode) {
+          this.editNum--;
+        }
+        //递归子节点
+        this.findEditChild(item.children[j]);
+      }
+    },
     //删除第一级的节点
     deleteNode1: function(fIndex, list) {
       var count1 = 1, count2 = 0, count3 = 0, count4 = 0, count5 = 0;
@@ -744,6 +787,11 @@ export default {
       for(var i = list.length - 1; i > fIndex; i--) {
         list[i].serialNumber--;
       }
+      //若该节点存在子节点
+      if(list[fIndex].children) {
+        this.findEditChild(list[fIndex]);
+      }
+
       list.splice(fIndex, 1);
 
       this.firstLevelCount -= count1;
@@ -755,6 +803,7 @@ export default {
         message: '删除成功',
         type: 'success'
       });
+      this.editNum--;
     },
     //删除第二级的节点
     deleteNode2: function(fIndex, sIndex, list) {
@@ -781,6 +830,10 @@ export default {
       for(var i = fChildList.length - 1; i > sIndex; i--) {
         fChildList[i].serialNumber--;
       }
+      //若该节点存在子节点
+      if(fChildList[sIndex].children) {
+        this.findEditChild(fChildList[sIndex]);
+      }
 
       fChildList.splice(sIndex, count2);
       //若删除了节点后children为空，要删除该属性
@@ -795,6 +848,7 @@ export default {
         message: '删除成功',
         type: 'success'
       });
+      this.editNum--;
     },
     //删除第三级节点
     deleteNode3: function(sIndex, tIndex, fChildList) {
@@ -816,6 +870,11 @@ export default {
         sChildList[i].serialNumber--;
       }
 
+      //若该节点存在子节点
+      if(sChildList[tIndex].children) {
+        this.findEditChild(sChildList[tIndex]);
+      }
+
       sChildList.splice(tIndex, count3);
       //若删除了节点后children为空，要删除该属性
       if(sChildList.length == 0) {
@@ -828,6 +887,7 @@ export default {
         message: '删除成功',
         type: 'success'
       });
+      this.editNum--;
     },
     //删除第四级节点
     deleteNode4: function(tIndex, fourIndex, sChildList) {
@@ -842,6 +902,10 @@ export default {
       for(var i = tChildList.length - 1; i > fourIndex; i--) {
         tChildList[i].serialNumber--;
       }
+      //若该节点存在子节点
+      if(tChildList[fourIndex].children) {
+        this.findEditChild(tChildList[fourIndex]);
+      }
 
       tChildList.splice(fourIndex, count4);
       //若删除了节点后children为空，要删除该属性
@@ -854,6 +918,7 @@ export default {
         message: '删除成功',
         type: 'success'
       });
+      this.editNum--;
     },
     //删除第五级节点
     deleteNode5: function(fourIndex, fifIndex, tChildList) {
@@ -874,6 +939,7 @@ export default {
         message: '删除成功',
         type: 'success'
       });
+      this.editNum--;
     },
 
     //点击向上/向下事件
@@ -1005,6 +1071,12 @@ export default {
 .el_botton .el-button {
   width: 160px;
   margin: 0 20px;
+}
+
+.nodeName {
+  display: inline-block;
+  max-width: 80%;
+  vertical-align: top;
 }
 
 .iconBox {

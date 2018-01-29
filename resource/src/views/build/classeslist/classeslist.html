@@ -7,6 +7,14 @@
     <meta name="viewport" content="<%= htmlWebpackPlugin.options.viewport %>" />
     <title>首页-建设管理-课本信息</title>
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
+    <style>
+      .m-select .el-select .el-input__inner{
+        height: 40px !important;
+      }
+      .el-cascader{
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
     <div class="g-app" v-cloak>
@@ -31,42 +39,28 @@
                   :value="textbook.id">
                 </el-option>
               </el-select>
-              <el-select @change="getGradeList" :disabled="!requireInfo.textbookDictId" v-model="requireInfo.learnStageId" placeholder="选择学段">
-                <el-option
-                  v-for="learnstage in learnStageList"
-                  :key="learnstage.id"
-                  :label="learnstage.name"
-                  :value="learnstage.id">
-                </el-option>
-              </el-select>
-              <el-select @change="getSubjectList" :disabled="!requireInfo.learnStageId"  v-model="requireInfo.gradeId" placeholder="选择年级">
-                <el-option
-                  v-for="grade in gradeList"
-                  :key="grade.id"
-                  :label="grade.name"
-                  :value="grade.id">
-                </el-option>
-              </el-select>
-              <el-select @change="getTermList" :disabled="!requireInfo.gradeId" v-model="requireInfo.subjectId" placeholder="选择学科">
-                <el-option
-                  v-for="subject in subjectList"
-                  :key="subject.id"
-                  :label="subject.name"
-                  :value="subject.id">
-                </el-option>
-              </el-select>
+
+              <el-cascader
+                :disabled="!requireInfo.textbookDictId"
+                expand-trigger="hover"
+                :options="stageGdeSubList"
+                v-model="stageGdeSub"
+                placeholder="选择学段/年级/学科"
+                @change="getStageGdeSub">
+              </el-cascader>
+
               <el-select @change="getPublisherList" :disabled="!requireInfo.subjectId" v-model="requireInfo.termDictId" placeholder="选择学期">
                 <el-option
-                  v-for="term in termList"
-                  :key="term.id"
+                  v-for="(term,index) in termList"
+                  :key="index"
                   :label="term.name"
                   :value="term.id">
                 </el-option>
               </el-select>
-              <el-select :disabled="!requireInfo.termDictId" v-model="requireInfo.publisher" placeholder="选择出版社">
+              <el-select :disabled="!requireInfo.subjectId || (!requireInfo.termDictId && requireInfo.termDictId !== '')" v-model="requireInfo.publisher" placeholder="选择出版社">
                 <el-option
-                  v-for="publ in publisherList"
-                  :key="publ"
+                  v-for="(publ,index) in publisherList"
+                  :key="index"
                   :label="publ"
                   :value="publ">
                 </el-option>

@@ -63,7 +63,7 @@ export default {
       //解析
       analysis: '',
       initcontent: '',
-      editorId: 'judge',
+      editorId: 'judge-' + (+new Date()),
       showEditor: false,
       modelName: '',
       optionsInfo: {}
@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     namechange(e, index) {
-      var value = e.target.innerText;
+      var value = e.target.innerHTML;
 
       // this.name = value;
       // this.emitExerObj({
@@ -121,7 +121,7 @@ export default {
 
     //解析有变
     analysischange(e) {
-      this.analysis = e.target.innerText;
+      this.analysis = e.target.innerHTML;
     },
 
     //返回题目信息
@@ -145,9 +145,9 @@ export default {
         var data = this.sourceData;
 
         //答案
-        this.answers = data.answers;
+        this.answers = data.answers || false;
         //解析
-        this.analysis = data.analysis;
+        this.analysis = data.analysis || '';
       } else {
         //默认全新的初始化，相当于新建
 

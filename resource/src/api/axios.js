@@ -8,6 +8,8 @@ import util from '../utils/index.js';
 import Vue from 'vue';
 //引入弹窗
 import msg from '@/components/MessageBox.js';
+//引入登录弹窗
+import loginBox from '@/components/LoginBox/';
 
 //API接口地址配置
 import urlConfig from '../../config/url.config.js';
@@ -53,8 +55,14 @@ axios.interceptors.request.use(requestInterceptSuc, requestInterceptErr);
 //返回状态判断(添加响应拦截器)
 var responseInterceptSuc = function (res) {
   var flag = res.data.resultCode,
-      popMsg = ['FAIL', 'NO_AUTH', 'SYSTEM_ERROR', 'DUPLICATION', 'NO_EXISTS'];
-      // 操作失败 权限不够 系统出错 数据重复、重复操作 数据不存在
+      popMsg = ['FAIL', // 操作失败
+                'NO_AUTH', //权限不够
+                'SYSTEM_ERROR', //系统出错
+                'DUPLICATION', //数据重复、重复操作
+                'NO_EXISTS',//数据不存在
+                'REMOTE_LOGIN'//异地登录，被挤下线
+                ];
+          
   //登录成功
   if (popMsg.indexOf(flag) !== -1) {
   //操作失败等
@@ -68,21 +76,43 @@ var responseInterceptSuc = function (res) {
       message: res.data.message,
       confirmTxt: '返回资源审核列表',
       confirm: function () {
-        //登录页
-        window.location.href = '/views/resourcelibs/resourcemanage/auditres.html';
-      }
+        //资源审核页
+        window.location.href = '/views/resource/auditres.html';
+      },
+      close: function () {
+        //资源审核页
+        window.location.href = '/views/resource/auditres.html';
+      },
     });//要配置
     return Promise.reject(res.data);
   } else if (flag === 'NO_LOGIN') {
   //未登录或者登陆已超时
+    
     msg.showMessage({
       message: res.data.message,
-      confirmTxt: '去登录页重新登录',
+      confirmTxt: '去重新登录',
       confirm: function () {
         //登录页
-        window.location.href = '/views/login.html';
+        //window.location.href = '/views/login.html';
+        document.body.removeChild(document.getElementById('g-msg'));
+        loginBox.showBox();
       }
-    });//要配置
+    });
+    //要配置
+    return Promise.reject(res.data);
+  } else if (flag === 'REMOTE_LOGIN') {
+  //异地登录，被挤下线
+    msg.showMessage({
+      message: res.data.message,
+      confirmTxt: '去重新登录',
+      confirm: function () {
+        //登录页
+        //window.location.href = '/views/login.html';
+        document.body.removeChild(document.getElementById('g-msg'));
+        loginBox.showBox();
+      }
+    });
+    //要配置
     return Promise.reject(res.data);
   } else if (flag === 'PARAM_ERROR') {
   //参数有误，参数违背协议要求

@@ -28,11 +28,23 @@ new Vue({
       curMenuId: 'lb-role',
     },
     hasPageAuth: false,
-    rolescount: 0
+    rolescount: 0,
+    //是否有查看权限
+    hasViewAuth: '',
+    //是否有编辑权限
+    hasEditAuth: '',
+    //是否有新建权限
+    hasAddAuth: '',
   },
   methods: {
     //检测权限
     checkAuth: function () {
+      //是否有查看权限
+      this.hasViewAuth = this.authTempList.indexOf('ACCOUNT_ROLE_VIEW') !== -1;
+      //是否有编辑权限
+      this.hasEditAuth = this.authTempList.indexOf('ACCOUNT_ROLE_EDIT') !== -1;
+      //是否有新建权限
+      this.hasAddAuth = this.authTempList.indexOf('ACCOUNT_ROLE_ADD') !== -1;
       //角色
       if (this.authList.role) {
         this.hasPageAuth = true;
@@ -40,7 +52,6 @@ new Vue({
         //无权限，返回首页
         window.location.href = this.baseUrl + '/views/home.html';
       }
-
     },
     getRolesCount: function (num) {
       this.rolescount = num;

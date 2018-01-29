@@ -5,7 +5,7 @@
       <p>
         <i class="iconf i-resource"></i>{{item.name}}
         <i class="iconf i-delete f-r iconb" @click="deleteText(item, index)"></i>
-        <i class="iconf i-preview f-r iconb g-mr10" @click="previewText(item.sourceFile)"></i>
+        <i class="iconf i-preview f-r iconb g-mr10" @click="item.officeViewSourceFile ? previewText(item.officeViewSourceFile) : previewText(item.sourceFile)"></i>
       </p>
       <el-input type="textarea" placeholder="请在此填写资源描述" :maxlength="500" v-model="description[index]" :rows="6"></el-input>
     </div>
@@ -24,12 +24,6 @@ export default {
   props: {
     datas: {
       require: true,
-      // default: function() {
-      //   return [
-      //     {id: 'aaa',
-      //   name: '文件名'}
-      //   ]
-      // }
     },
   },
   watch: {
@@ -39,12 +33,7 @@ export default {
   },
   methods: {
     previewText(file) {
-      if (file && (file.type === 'WORD' || file.type === 'PPT' || file.type === 'EXCEL')) {
-        window.location.href = "javascript:POBrowser.openWindow('" + file.path + "', 'width=1200px;height=800px;')";
-        // window.open("javascript:POBrowser.openWindow(" + file.path + ", 'width=1200px;height=800px;')");
-      } else {
-        this.$emit('previewHandle', file)
-      }
+      this.$emit('previewHandle', file)
     },
     deleteText(item, index) {
       this.datas.splice(index, 1);

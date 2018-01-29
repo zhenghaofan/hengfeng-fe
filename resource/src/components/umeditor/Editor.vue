@@ -25,12 +25,23 @@ export default {
 		initContent: {
 			default: '',
 			require: false
-		}
+		},
+    watchInitContent: {
+      default: true,
+      require: false
+    }
 	},
   watch: {
     initContent(content) {
+      if (!this.watchInitContent) {
+        return;
+      }
       var um = UM.getEditor(this.editorId);
       um.setContent(content);
+    },
+    watchInitContent() {
+      var um = UM.getEditor(this.editorId);
+      um.setContent(this.initContent);
     },
   },
 	// ['editorId', 'initContent'],
@@ -73,6 +84,6 @@ export default {
 <style>
 .editor {
   width: 100%;
-  height: 100px;
+  height: 300px;
 }
 </style>

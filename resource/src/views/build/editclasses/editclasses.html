@@ -31,6 +31,9 @@
       .m-select .el-select .el-input__inner {
         height: 40px !important;
       }
+      .g-filters .m-select .el-select {
+        width: 100px;
+      }
       .el-cascader__label span {
         color: #b4bccc !important;
       }
@@ -45,11 +48,10 @@
         width: 260px !important;
       }
       .el_publisher {
-        width: 120px !important;
+        width: 150px !important;
       }
       .el_version {
-        width: 80px !important;
-        margin: 0 10px;
+        width: 90px !important;
       }
       .el_bookname {
         width: 150px !important;
@@ -89,9 +91,10 @@
             <span class="tit">教材命名：</span>
             <el-input
               class="el_displayName"
-              placeholder="无数据"
+              placeholder="请输入教材命名"
               v-model="textbook.displayName"
-              clearable>
+              clearable
+              :maxlength="50">
             </el-input>
           </div>
           <!-- 基本信息 -->
@@ -107,41 +110,56 @@
                   placeholder="无数据"
                   expand-trigger="hover"
                   :change-on-select="true"
-                  @change="handleChange"
-                  :disabled="true">
+                  disabled>
                 </el-cascader>
                 <!-- 学期 -->
-                <el-select v-model="tmpTextbook.tmpTermDictId" disabled placeholder="无数据">
+                <el-select v-model="tmpTextbook.tmpTermDictId" placeholder="不限">
                   <el-option
                     v-for="term in termOption"
                     :key="term.value"
-                    :label="term.value"
+                    :label="term.label"
                     :value="term.value">
                   </el-option>
                 </el-select>
                 <!-- 册数 -->
-                <el-select v-model="tmpTextbook.tmpVolumeDictId" disabled placeholder="无数据">
+                <el-select v-model="tmpTextbook.tmpVolumeDictId" placeholder="无数据">
                   <el-option
                     v-for="term in VolumeOption"
                     :key="term.value"
-                    :label="term.value"
+                    :label="term.label"
                     :value="term.value">
                   </el-option>
                 </el-select>
-                <!-- 出版社 -->
-                <el-input
+                <!-- 出版社，可以添加 -->
+                <el-select
                   class="el_publisher"
+                  v-model="tmpTextbook.tmpPublisher"
+                  filterable
+                  allow-create
                   placeholder="无数据"
-                  v-model="textbook.publisher"
-                  :disabled="true">
-                </el-input>
-                <!-- 版本，如2006 -->
-                <el-input
+                  @change="choicePublisher">
+                  <el-option
+                    v-for="(item, index) in publishers"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
+                <!-- 版本，如2006，可以添加 -->
+                <el-select
                   class="el_version"
-                  placeholder="无数据"
-                  v-model="textbook.version"
-                  :disabled="true">
-                </el-input>
+                  v-model="tmpTextbook.tmpVersion"
+                  filterable
+                  allow-create
+                  placeholder="不限"
+                  @change="choiceVersion">
+                  <el-option
+                    v-for="(item, index) in versions"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-select>
                 <!-- 课本题名 -->
                 <el-input
                   class="el_bookname"
@@ -156,7 +174,7 @@
           <div class="cengji">
             <span class="tit">课本层级：</span>
             <!-- 树 -->
-            <edit-tree :b-id="bId" :display-name="textbook.displayName" v-on:save-tree="getChildTree"></edit-tree>
+            <edit-tree :b-id="bId" :term-name="GL_CONST.TERMOBJ[tmpTextbook.tmpTermDictId]" :valume-name="GL_CONST.VOLUMETYPE[tmpTextbook.tmpVolumeDictId]" :version="tmpTextbook.tmpVersion" :publisher="tmpTextbook.tmpPublisher" :display-name="textbook.displayName" v-on:save-tree="getChildTree"></edit-tree>
           </div>
         </div>
         <!-- 右边内容区/ -->

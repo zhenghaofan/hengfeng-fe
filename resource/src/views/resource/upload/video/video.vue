@@ -20,12 +20,13 @@
 
       <div class="cover g-mt20">
         <p class="g-mb10">微课封面</p>
-        <div class="cover_area" @click="selectCover(index, item.backgroundFile.path)">
+        <div class="cover_area" @click="selectCover(index, item.backgroundFile.id)">
           <img :src="item.backgroundFile.path" alt="">
           <i v-if="defaultChecked" class="iconf i-tick"></i>
         </div>
         <div class="cover_area" @click="selectCover(index)">
-          <img src="../img/default_cover.jpg" alt="">
+          <img v-if="type == 3" src="../img/cover_micro.jpg" alt="">
+          <img v-if="type == 4" src="../img/cover_coursevideo.jpg" alt="">
           <i v-if="!defaultChecked" class="iconf i-tick"></i>
         </div>
       </div>
@@ -39,6 +40,7 @@
 export default {
   data() {
     return {
+      // description: new Array(this.datas.length).fill(""),
       description: [],
       hasRepeat: true,
       defaultChecked: true
@@ -52,6 +54,9 @@ export default {
   props: {
     datas: {
       require: true
+    },
+    type: {
+      default: 3
     }
   },
   methods: {

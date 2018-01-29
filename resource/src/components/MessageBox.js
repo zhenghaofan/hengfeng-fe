@@ -5,6 +5,10 @@ import messageBox from './PopupBox.vue'
 var tmpVue;
 //提示弹窗
 function showMessage (obj) {
+  //暂时
+  /*if (document.getElementById('g-login')) {
+    return;
+  }*/
   var html, msgBox;
   //已有
   if (document.getElementById('g-msg')) {
@@ -21,9 +25,10 @@ function showMessage (obj) {
     tmpVue.confirm = obj.confirm || tmpVue.confirm;
   } else {
     //第一次用
-    html = '<div id="g-msg"><message-box :popup-box-options="messageBox" @confirm="confirm" @close="close"></message-box></div>';
+    html = '<message-box :popup-box-options="messageBox" @confirm="confirm" @close="close"></message-box>';
     var div = document.createElement('div');
     div.innerHTML = html;
+    div.id = 'g-msg';
     document.body.appendChild(div);
 
     tmpVue = new Vue({

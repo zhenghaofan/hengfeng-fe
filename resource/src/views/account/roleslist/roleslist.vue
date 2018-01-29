@@ -19,7 +19,7 @@
         <span class="item con-item5">{{item.oweUserCount}}</span>
         <span class="item con-item6" :title="item.oweUserNameList"><span class="g-mr10" v-for="person in item.oweUserNameList">{{person}}</span></span>
         <span class="item con-item7">
-          <a v-if="authList.authority && authList.authority.role" title="角色权限配置" :href=" 'editrole.html?roleId=' + item.id" class="g-mr10"><i class="icon i-key"></i></a>
+          <a v-if="authList.authority && authList.authority.role && hasConfigAuth && hasEditAuth" title="角色权限配置" :href=" 'editrole.html?roleId=' + item.id" class="g-mr10"><i class="icon i-key"></i></a>
         </span>
       </li>
     </ul>
@@ -43,7 +43,8 @@ export default {
       pageInfo: {
         totalPage: 1,
         curPage: 1
-      }
+      },
+      hasEditAuth: '',
     };
   },
   components: {
@@ -75,11 +76,16 @@ export default {
         console.log('gogo:'+ p);
 
       }, function (res) {
+        self.$message.error(res);
         console.log('getRolesList error:' + res.message);
       });
     }
   },
   mounted: function () {
+    //是否有编辑权限
+    this.hasEditAuth = this.authTempList.indexOf('ACCOUNT_ROLE_EDIT') !== -1;
+    //是否有配置权限
+    this.hasConfigAuth = this.authTempList.indexOf('ACCOUNT_AUTHORITY_ROLE') !== -1;
     var self = this;
     this.$nextTick(function () {
       self.gotoPage(1);

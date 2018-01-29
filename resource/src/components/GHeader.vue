@@ -49,6 +49,9 @@ import apiUrl from '@/api/url.js'
 import MyMsgBox from '@/components/MyMsgBox/index.js'
 Vue.use(MyMsgBox);
 
+//引入登录弹窗
+import loginBox from '@/components/LoginBox/';
+
 //引入element组件 start (整体引入会出错　后面再解决)
 import ElementUI from 'element-ui'
 import '../../static/css/elem-theme-diy/index.css'
@@ -72,7 +75,11 @@ Vue.prototype.authList = {
   /* 资源属性 */
   textbook: null,
   category: null,
-  knowledge: null
+  knowledge: null,
+  /* 资源管理 */
+  avairesource: null,
+  resoff: null,
+  tempresource: null,
 };
 export default {
   data: function () {
@@ -133,7 +140,11 @@ export default {
             textbookAuthId: 'RESOURCE_BUILD_TEXTBOOK',
             textbook: {
               //查看
-              view: 'RESOURCE_BUILD_TEXTBOOK_VIEW'
+              view: 'RESOURCE_BUILD_TEXTBOOK_VIEW',
+              //编辑
+              edit: 'RESOURCE_BUILD_TEXTBOOK_EDIT',
+              //新建、导入
+              edit: 'RESOURCE_BUILD_TEXTBOOK_ADD',
             },
             /* 资源类别 */
             categoryAuthId: 'RESOURCE_BUILD_CATEGORY',
@@ -186,11 +197,39 @@ export default {
               person: 'ACCOUNT_AUTHORITY_PERSON',
               //角色授权
               role: 'ACCOUNT_AUTHORITY_ROLE'
-            }
+            },
+            /* 资源管理 */
+            //可用资源
+            avairesourceAuthId: 'RESOURCE_AVAILABLE',
+            avairesource: {
+              //查看
+              view: 'RESOURCE_AVAILABLE_VIEW',
+              //下载
+              download: 'RESOURCE_AVAILABLE_DOWNLOAD',
+              //下架
+              close: 'RESOURCE_AVAILABLE_CLOSED'
+            },
+            //下架资源
+            resoffAuthId: 'RESOURCE_AVAILABLE',
+            resoff: {
+              //查看
+              view: 'RESOURCE_CLOSED_VIEW',
+              //上架
+              reshel: 'RESOURCE_CLOSED_RESHELF'
+            },
+            //暂存资源
+            tempresourceAuthId: 'RESOURCE_AVAILABLE',
+            tempresource: {
+              //查看
+              view: 'RESOURCE_TEMPORARY_VIEW',
+              //编辑
+              edit: 'RESOURCE_TEMPORARY_EDIT',
+            },
           };
 
       var labels = ['textbook', 'category', 'knowledge',
-                    'account', 'role', 'authority'],
+                    'account', 'role', 'authority', 'avairesource',
+                    'resoff', 'tempresource'],
           label, childAuthList;
 
       for (var i = 0, len = labels.length; i < len; i++) {
@@ -240,8 +279,10 @@ export default {
         //this.checkLogin();
         //清理用户信息
         this.clearUserInfo();
+        //显示登录弹窗
+        loginBox.showBox(true);
         //返回登录页
-        window.location.href = this.baseUrl + '/views/login.html';
+        //window.location.href = this.baseUrl + '/views/login.html';
       }
     });
   }

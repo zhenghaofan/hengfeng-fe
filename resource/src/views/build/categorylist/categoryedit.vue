@@ -17,7 +17,7 @@
         <input type="text" class="g-form-iptxt g-catetxtlabel" placeholder="请输入拟增加的二级属性标签，支持一次性输入多个，以':'作隔" v-model.trim="newLabel" @keyup.enter="addLabel" />
         <span class="btn btn-m btn-normal g-ml10" @click="addLabel"><i class="g-mr10">+</i>添加</span>
         <div class="g-mt10 m-labels g-tl m-catelabels">
-          <div class="g-inblock g-mr10" v-for="(label, index) in item.childDictList"><span>{{label.name}}</span><i class="icon i-close" @click="delLabel(index)"></i></div>
+          <div class="g-inblock g-mr10" v-for="(label, index) in item.childDictList"><span>{{label.name}}</span><i class="icon i-close" @click="delLabel(index, label)"></i></div>
         </div>
       </div>
 
@@ -48,7 +48,8 @@ export default {
         for (var i = 0, len = childDictList.length; i < len; i++) {
           labels.push({
             id: childDictList[i].id,
-            name: childDictList[i].name
+            name: childDictList[i].name,
+            canDel: childDictList[i].canDel
           });
         }
         self.item = {
@@ -95,6 +96,29 @@ export default {
       var labels = this.newLabel.split(':'),
           temp = [];
 
+      // var noneFlag = false;
+      // for(var i = 0; i < labels.length; i++) {
+      //   if(labels[i] !== "") {
+      //     noneFlag = true;
+      //   }
+      // }
+      // if(!noneFlag) {
+      //   this.$message.error("标签不能为空");
+      //   return;
+      // }
+
+      for(var i = 0; i < labels.length; i++) {
+        //限制16字符
+        if(labels[i].length > 16) {
+          this.$message.error("单个标签不能超过16个字符");
+          return;
+        }
+        if(labels[i].length === 0) {
+          this.$message.error("标签不能为空");
+          return;
+        }
+      }
+
       for (var i = 0, len = labels.length; i < len; i++) {
         //过滤相同的标签
         if (!isInList(this.item.childDictList, labels[i])) {
@@ -117,7 +141,12 @@ export default {
       this.newLabel = '';
     },
     //删除标签
-    delLabel: function (index) {   
+    delLabel: function (index, label) { 
+      console.log(label);
+      if(label.canDel == false) {
+        this.$message.error("对不起，该标签【" + label.name + "】已被占用，暂时无法删除！");
+        return;
+      }
       this.item.delLabels = this.item.delLabels || [];
       this.item.delLabels.push({
         id: this.item.childDictList[index].id

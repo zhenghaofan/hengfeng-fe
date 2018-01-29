@@ -16,8 +16,8 @@
         <span class="item con-item4">{{item.createTime|fixTime}}/{{item.creatorName}}</span>
         <span class="item con-item5">{{item.lastUpdateTime|| item.createTime|fixTime}}/{{item.lastUpdateUserName||item.creatorName}}</span>
         <span class="item con-item6">
-        <i title="预览知识点树" class="icon i-prew g-ml20" v-if="authList.knowledge && authList.knowledge.view" @click="preview(item, 1)"></i>
-        <a :href="'editknwlgtree.html?type=edit&knwId='+item.id" v-if="authList.knowledge && authList.knowledge.edit" title="编辑知识点树"><i class="icon i-edit g-ml20"></i></a>
+        <i title="预览知识点树" class="icon i-prew g-ml20" v-if="authList.knowledge && authList.knowledge.view && hasViewAuth" @click="preview(item, 1)"></i>
+        <a :href="'editknwlgtree.html?type=edit&knwId='+item.id" v-if="authList.knowledge && authList.knowledge.edit && hasEditAuth" title="编辑知识点树"><i class="icon i-edit1 g-ml20"></i></a>
         </span>
       </li>
     </ul>
@@ -52,7 +52,9 @@ export default {
       },
       knwId: '',
       popBox: {},
-      perPageCount: 10
+      perPageCount: 10,
+      hasViewAuth: '',
+      hasEditAuth: '',
     };
   },
   components: {
@@ -119,8 +121,14 @@ export default {
         
         console.log('gogo:'+ p);
 
+       }).catch(function (res) {
+        self.$message.error(res);
        });
-
+      self.hasViewAuth = self.authTempList.indexOf('RESOURCE_BUILD_KNOWLEDGE_POINT_VIEW') !== -1;
+      if(!self.hasViewAuth) {
+        self.$message.error("对不起，你没有查看该资源的权限");
+      }
+      self.hasEditAuth = self.authTempList.indexOf('RESOURCE_BUILD_KNOWLEDGE_POINT_EDIT') !== -1;
     }
   },
   mounted: function () {

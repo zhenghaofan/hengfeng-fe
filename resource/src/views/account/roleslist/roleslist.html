@@ -24,7 +24,7 @@
             <a class="g-tab-item z-selected" href="#" @click.prevent>角色列表</a>
             <span class="f-r">
               <span class="txt-roles">已有角色({{rolescount}})</span>
-              <a href="createrole.html" v-if="hasPageAuth && authList.role && authList.role.add" class="btn btn-m btn-green">新建角色</a>
+              <a href="createrole.html" v-show="hasPageAuth && hasViewAuth && hasAddAuth" class="btn btn-m btn-green">新建角色</a>
             </span>
           </div>
 

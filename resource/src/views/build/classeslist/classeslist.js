@@ -42,6 +42,9 @@ new Vue({
     },
     //类别
     textbookDictList: [],
+    //学段/年级/学科
+    stageGdeSubList: [],
+    stageGdeSub: [],
     //学段
     learnStageList: [],
     //年级
@@ -56,7 +59,6 @@ new Vue({
     publisherList: [],
     tmpPublisherList: [],
     IsPopupShow: false,
-    info: ''
   },
   methods: {
     //检测权限
@@ -70,7 +72,6 @@ new Vue({
         //无权限，返回首页
         window.location.href = this.baseUrl + '/views/home.html';
       }
-
     },
     //获取类别下拉信息
     getTextbook: function () {
@@ -96,12 +97,11 @@ new Vue({
           });
         }
         //self.textbookDictList = res.data.textbookDictList;//
-        
       });
     },
 
-    //获取学段信息
-    getLearnStageList: function (index) {
+    //获取学段/年级/学科信息
+    getLearnStageList: function () {
       var self = this,
           params = {
             function: 'K12',
@@ -110,70 +110,100 @@ new Vue({
 
       apiUrl.getTextbookTypes(params).then(function (res) {
         var _data = res.data,
-            learnStageList = _data.learnStageList,//学段
-            gradeList = _data.gradeList,//年级
-            subjectList = _data.subjectList;//学科
+            learnStageList = _data.learnStageList,  //学段
+            gradeList = _data.gradeList,            //年级
+            subjectList = _data.subjectList;        //学科
 
-        self.learnStageList = learnStageList;
-        self.learnStageList.push({
-          id: '',
-          name: '不限'
-        });
-        self.tmpGradeList = gradeList;
-        self.tmpSubjectList = subjectList;
-        //重置学段信息
-        self.resetLearnStageInfo();
-        //重置学期出版社信息
-        self.resetTermInfo();
+        //将subject插入到grade中
+        for(var i in subjectList) {
+          var sub = {
+            value: subjectList[i].id,
+            label: subjectList[i].name,
+          };
+          var gradeId = subjectList[i].gradeId
+          for(var j in gradeList) {
+            if(gradeId == gradeList[j].id) {
+              if(!gradeList[j].children) {
+                gradeList[j].children = [{
+                  value: '',
+                  label: '不限'
+                }];
+              }
+              gradeList[j].children.push(sub);
+              break;
+            }
+          }
+        }
+        //将grade插入到learnstage中
+        for(var i in gradeList) {
+          if(gradeList[i].children) {
+            var gde = {
+              value: gradeList[i].id,
+              label: gradeList[i].name,
+              children: gradeList[i].children
+            };
+          }else {
+            var gde = {
+              value: gradeList[i].id,
+              label: gradeList[i].name
+            };
+          }
+          var learnStageId = gradeList[i].learnStageId;
+          for(var j in learnStageList) {
+            if(learnStageId == learnStageList[j].id) {
+              if(!learnStageList[j].children) {
+                learnStageList[j].children = [{
+                  value: '',
+                  label: '不限'
+                }];
+              }
+              learnStageList[j].children.push(gde);
+              break;
+            }
+          }
+        }
+        //改一改learnstage的属性名
+        self.stageGdeSubList.push({
+          value: "",
+          label: "不限"
+        })
+        for(var i in learnStageList) {
+          self.stageGdeSubList.push({
+            value: learnStageList[i].id,
+            label: learnStageList[i].name,
+            children: learnStageList[i].children
+          })
+        }
+        console.log(self.stageGdeSubList);
+      }).catch(function (res) {
+        self.$message.error(res.message);
       });
+      //重置年级学段信息
+      self.resetLearnStageInfo();
+      //重置学期出版社信息
+      self.resetTermInfo();
     },
+    //选择完学段/年级/学科
+    getStageGdeSub: function () {
+      this.requireInfo.learnStageId = this.stageGdeSub[0];
+      this.requireInfo.gradeId = this.stageGdeSub[1];
+      this.requireInfo.subjectId = this.stageGdeSub[2];
+      //重置学期出版社信息
+      this.resetTermInfo();
+      if(this.stageGdeSub[2] !== "") {
+        //若选了学科，则获取学期
+        this.getTermList();
+      }
+    },
+
     //重置学段信息
     resetLearnStageInfo: function () {
       this.requireInfo.learnStageId = '';
-      this.gradeList = [];
-      this.requireInfo.gradeId = '';
-      this.subjectList = [];
-      this.requireInfo.subjectId = '';
-    },
-    //获取年级信息
-    getGradeList: function () {
-      var list = this.tmpGradeList;
-      this.gradeList = [];
-      for (var i = 0, len = list.length; i < len; i++) {
-        if (list[i].learnStageId === this.requireInfo.learnStageId) {
-          this.gradeList.push(list[i]);
-        }
-      }
-      this.gradeList.push({
-        id: '',
-        name: '不限'
-      });
       this.requireInfo.gradeId = '';
       this.requireInfo.subjectId = '';
-      //重置学期出版社信息
-      this.resetTermInfo(); 
+      this.stageGdeSub = [];
+      this.stageGdeSubList = [];
     },
-    //获取学科信息
-    getSubjectList: function () {
-      var list = this.tmpSubjectList;
-      this.subjectList = [];
-      for (var i = 0, len = list.length; i < len; i++) {
-        if (list[i].gradeId === this.requireInfo.gradeId) {
-          this.subjectList.push(list[i]);
-        }
-      }
-      this.subjectList.push({
-        id: '',
-        name: '不限'
-      });
-      this.requireInfo.subjectId = '';
-      //重置学期出版社信息
-      this.resetTermInfo();    
-    },
-
-
-
-
 
     //获取学期
     getTermList: function () {
@@ -193,27 +223,25 @@ new Vue({
 
       //获取学期出版社
       apiUrl.getTextbookTypes(params).then(function (res) {
-        /*self.termList = res.data.termList;
-        self.termList.push({
-          id: '',
-          name: '不限',
-          publisherList: []
-        });*/
+        /*self.termList = res.data.termList;*/
+        console.log(res.data);
         var list, item;
         if (res && res.data) {
           list = res.data;
           for (var i = 0, len = list.length; i < len; i++) {
             item = list[i];
-            self.termList.push({
-              id: item.id,
-              name: GL_CONST.TERMOBJ[item.id],
-              publisherList: item.publisherList,
-            });
-            self.tmpPublisherList.push({
-              id: item.id,
-              name: GL_CONST.TERMOBJ[item.id],
-              publisherList: item.publisherList,
-            });
+            if(item.id !== "" && item.id !== null) {
+              self.termList.push({
+                id: item.id,
+                name: GL_CONST.TERMOBJ[item.id],
+                publisherList: item.publisherList,
+              });
+              self.tmpPublisherList.push({
+                id: item.id,
+                name: GL_CONST.TERMOBJ[item.id],
+                publisherList: item.publisherList,
+              });
+            }
           }
           self.termList.push({
             id: '',
@@ -221,12 +249,15 @@ new Vue({
             publisherList: [],
           });
         }
-        //self.tmpPublisherList = self.termList;
 
         self.requireInfo.termDictId = '';
         //重置出版社信息
         self.requireInfo.publisher = '';
         self.publisherList = [];
+
+        if(self.requireInfo.termDictId === '') {
+          self.getPublisherList();
+        }
       });
         
     },
@@ -237,6 +268,15 @@ new Vue({
       for (var i = 0, len = list.length; i < len; i++) {
         if (list[i].id === this.requireInfo.termDictId) {
           this.publisherList = list[i].publisherList;
+        }
+      }
+      if(this.requireInfo.termDictId === '') {
+        for (var i = 0, len = list.length; i < len; i++) {
+          for(var j in list[i].publisherList) {
+            if (list[i].publisherList[j] !== '不限') {
+              this.publisherList.push(list[i].publisherList[j]);
+            }
+          }
         }
       }
       if (this.publisherList.indexOf('不限') === -1) {

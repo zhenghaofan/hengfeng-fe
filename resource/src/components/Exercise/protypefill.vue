@@ -84,7 +84,7 @@ export default {
       analysis: [],
       defaultOptionsLen: 4,
       initcontent: '',
-      editorId: 'protypefill',
+      editorId: 'protypefill-' + (+new Date()),
       showEditor: false,
       optionsInfo: {},
       modelName: '',
@@ -111,7 +111,7 @@ export default {
   },
   methods: {
     namechange(e, index) {
-      this.$emit('namechange', e.target.innerText, index);
+      this.$emit('namechange', e.target.innerHTML, index);
     },
     optionClick() {
       return;
@@ -174,7 +174,9 @@ export default {
     add(index) {
       var nextIndex = index + 1,
         len = this.topics.length,
-        rightList = this.topics.splice(nextIndex, len - index);
+        rightTopicList = this.topics.splice(nextIndex, len - index),
+        rightAnswerList = this.answers.splice(nextIndex, len - index),
+        rightAnalysisList = this.analysis.splice(nextIndex, len - index);
 
       this.topics[index + 1] = {
         "A": "",
@@ -184,7 +186,9 @@ export default {
       };
       this.answers[index + 1] = 'A';
       this.analysis[index + 1] = '';
-      this.topics = this.topics.concat(rightList);
+      this.topics = this.topics.concat(rightTopicList);
+      this.answers = this.answers.concat(rightAnswerList);
+      this.analysis = this.analysis.concat(rightAnalysisList);
     },
     //删除选项
     del(index) {
@@ -273,11 +277,11 @@ export default {
 
         //初始化选项
         // this.initOptions(data.topics);
-        this.topics = data.topics;
+        this.topics = data.topics || [];
         //答案
-        this.answers = data.answers;
+        this.answers = data.answers || [];
         //解析
-        this.analysis = data.analysis;
+        this.analysis = data.analysis || [];
       } else {
         //默认全新的初始化，相当于新建
 

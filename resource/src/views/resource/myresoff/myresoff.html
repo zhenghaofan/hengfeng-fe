@@ -27,7 +27,11 @@
               <a class="g-tab-item" :class="{'z-selected': !chapterEnabled}" href="#" @click.prevent="toggleList(false)">按知识树筛选</a>
             </div>
 
-            <search @getkeywords="setFilters"></search>
+            <!-- <search @getkeywords="setFilters"></search> -->
+            <div class="g-search f-r">
+              <input type="search" class="g-ipt-search" v-model="keyword" placeholder="支持输入资源名称/上传者/资源描述进行搜索" @keyup.enter="searchCondition.keyword=keyword" @blur="searchCondition.keyword=keyword" maxlength="50" />
+              <a href="#" class="btn-search" @click.prevent="searchCondition.keyword=keyword"><i class="icon i-search1"></i></a>
+            </div>
           </div>
           
           <filters @filtered="search" :search-type="searchType"></filters>

@@ -37,7 +37,7 @@
       <div class="g-mb20" v-if="item.template == 'MULTIPLE_CHOICE'">
         <multichoice :titleIndex="index" :name="item.name" :sourceData="item" @namechange="namechange" @contentchange="contentchange"></multichoice>
       </div>
-      <div class="g-mb20" v-show="item.template == 'GENERAL_GAP_FILLING'">
+      <div class="g-mb20" v-if="item.template == 'GENERAL_GAP_FILLING'">
         <generalfill :titleIndex="index" :name="item.name" :sourceData="item" @namechange="namechange" @contentchange="contentchange"></generalfill>
       </div>
       <div class="g-mb20" v-if="item.template == 'CLOZE_GAP_FILLING'">
@@ -50,7 +50,7 @@
         <shortanswer :titleIndex="index" :name="item.name" :sourceData="item" @namechange="namechange" @contentchange="contentchange"></shortanswer>
       </div>
       <div class="g-mb20" v-if="item.template == 'LIGATURE'">
-        <ligature :titleIndex="index"></ligature>
+        <ligature :titleIndex="index" :name="item.name" :check-template="checkTemplate" :sourceData="item" @afterChecked="getCheckResult" @namechange="namechange" @contentchange="contentchange"></ligature>
       </div>
       <!-- <div class="g-mb20" v-if="item.template == 'SYNTHESIS'">
         <synthesis></synthesis>
@@ -129,7 +129,7 @@ export default {
 
       // name: [],
       initcontent: '',
-      editorId: 'synthesis',
+      editorId: 'synthesis-' + (+new Date()),
       showEditor: false,
       modelName: '',
       optionsInfo: {},
@@ -143,6 +143,9 @@ export default {
     }
   },
   methods: {
+    getCheckResult(value) {
+      this.$emit('afterChecked', value);
+    },
     contentchange(index, obj) {
       for (var key in obj) {
         Vue.set(this.templateList[index], key, obj[key]);
@@ -151,7 +154,7 @@ export default {
     namechange(val, index) {
       // this.templateList[index].name = val;
       Vue.set(this.templateList[index], 'name', val)
-      console.log(this.templateList);
+      // console.log(this.templateList);
     },
     toggleEditor(model, value, index) {
       this.modelName = model;
@@ -178,6 +181,9 @@ export default {
     addTemplate() {
       let obj = {
         template: this.templateName
+      }
+      if (!this.templateName) {
+        return;
       }
       this.templateList.push(obj);
     },

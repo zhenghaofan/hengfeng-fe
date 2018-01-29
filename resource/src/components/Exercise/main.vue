@@ -10,8 +10,8 @@
   <div class="control editor-container" v-if="template != 'GENERAL_GAP_FILLING'">
     <label class="label g-vertop">题干：</label>
     <div class="txts">
-      <div v-html="name" contenteditable="true" @blur="namechange($event)"></div>
-      <div class="tip" @click="toggleEditor({model: 'name', value: name})">
+      <div v-html="name" id="main_name" contenteditable="true" @blur="namechange($event)" @click="focusDiv('main_name')"></div>
+      <div class="tip" @click="toggleEditor({model: 'name', value: name, id: 'main_name'})">
         <i class="iconf i-toggle"></i>
         <span>高级模式</span>
       </div>
@@ -21,11 +21,11 @@
   <!-- 习题类型 -->
   <div v-if="quesData">
     <!-- 单选 -->
-    <singlechoice v-if="template == 'SINGLE_CHOICE'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></singlechoice>
+    <singlechoice v-if="template == 'SINGLE_CHOICE'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange" @focused="focusDiv" @markDiv="markDiv"></singlechoice>
     <!-- 多选 -->
     <multichoice v-if="template == 'MULTIPLE_CHOICE'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></multichoice>
     <!-- 填空 -->
-    <generalfill v-show="template == 'GENERAL_GAP_FILLING'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></generalfill>
+    <generalfill v-if="template == 'GENERAL_GAP_FILLING'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></generalfill>
     <!-- 完型填空 -->
     <protypefill v-if="template == 'CLOZE_GAP_FILLING'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></protypefill>
     <!-- 判断 -->
@@ -33,9 +33,9 @@
     <!-- 问答 -->
     <shortanswer v-if="template == 'ESSAY'" :source-data="quesData" @contentchange="contentchange"></shortanswer>
     <!-- 连线 -->
-    <ligature v-if="template == 'LIGATURE'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></ligature>
+    <ligature v-if="template == 'LIGATURE'" :user-class="'edit-liga'" :check-template="checkTemplate" @afterChecked="getCheckResult" :source-data="quesData" @contentchange="contentchange"></ligature>
     <!-- 综合 -->
-    <synthesis v-if="template == 'SYNTHESIS'" :check-template="checkTemplate" :source-data="quesData" @contentchange="contentchange"></synthesis>
+    <synthesis v-if="template == 'SYNTHESIS'" :check-template="checkTemplate" :source-data="quesData" @afterChecked="getCheckResult" @contentchange="contentchange"></synthesis>
   </div>
 
   <!-- 习题类型\ -->
@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <editor-dialog :modelName="inputModel" :editorId="editorId" :initcontent="initcontent" :showEditor="showEditor" @fillRichText="fillInput" @closeEditor="closeEditor"></editor-dialog>
+  <editor-dialog :modelName="inputModel" :editorId="editorId" :initcontent="initcontent" :showEditor="showEditor" @fillRichText="fillInput" @closeEditor="closeEditor" :optionsInfo="otherInfo"></editor-dialog>
 </div>
 </template>
 <script>
@@ -94,8 +94,9 @@ export default {
   		analysis: '',
       //是否显示编辑器
       showEditor: false,
-      editorId: 'main',
+      editorId: 'main-' + (+new Date()),
       inputModel: '',
+      otherInfo: {},
       operatingObj: '',
       //
       initcontent: '',
@@ -108,7 +109,7 @@ export default {
       ligatureData: {},
       synthesisData: {},*/
       obj: {},
-      quesData: '',
+      quesData: null,
     }
   },
   watch: {
@@ -119,6 +120,9 @@ export default {
       },
       deep: true,
     },*/
+    // sourceData(val) {
+    //   this.quesData = val;
+    // },
     difficultyLevel(val) {
       this.emitExerObj({
       	difficultyLevel: val
@@ -140,7 +144,7 @@ export default {
   		this.$emit('afterChecked', value);
   	},
     namechange(e) {
-    	var value = e.target.innerText;
+    	var value = e.target.innerHTML;
 
     	this.name = value;
       this.emitExerObj({
@@ -154,16 +158,34 @@ export default {
       this.showEditor = true;
       this.inputModel = info.model;
       this.initcontent = info.value;
+      this.otherInfo.id = info.id;
+    },
+    markDiv(str, id) {
+      let targetDiv = document.getElementById(id);
+      if (str.indexOf('mathquill-embedded-latex') != -1) {
+        this.$nextTick(() => {
+          $(targetDiv).find('.mathquill-embedded-latex').mathquill();
+          $(targetDiv).attr('contenteditable', 'false');
+        })
+      } else {
+        $(targetDiv).attr('contenteditable', 'true');
+      }
+    },
+    focusDiv(id) {
+      if (document.getElementById(id) && document.getElementById(id).contentEditable !== "true") {
+        this.$message.warning('包含公式须在高级模式下编辑')
+      }
     },
     closeEditor() {
       this.showEditor = false;
     },
-    fillInput(model, text) {
+    fillInput(model, text, otherInfo) {
       this.closeEditor();
 
       var resultObj = {};
       resultObj[model] = text;
       this[model] = text;
+      this.markDiv(text, otherInfo.id);
 
       this.emitExerObj(resultObj);
     },
@@ -194,8 +216,12 @@ export default {
         this.shortanswerData[i] = this.sourceData[i];
         this.ligatureData[i] = this.sourceData[i];
         this.synthesisData[i] = this.sourceData[i];*/
+
 	  		this[i] = this.sourceData[i];
 	  	}
+      this.$nextTick(() => {
+        this.markDiv(this.name, 'main_name')
+      })
 	  },
   },
   mounted: function () {
@@ -224,7 +250,7 @@ export default {
   height: 60px;
   margin-bottom: 10px;
 }
-div[contenteditable="true"] {
+div[contenteditable] {
 	box-sizing: border-box;
 	background-color: #fff;
 	border: 1px solid #ccc;

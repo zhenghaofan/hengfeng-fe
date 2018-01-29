@@ -8,20 +8,18 @@
   <title>首页-资源管理-上传资源</title>
   <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/css/global.css?v=<%= htmlWebpackPlugin.options.version %>" />
   <!-- PDF -->
-  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf_viewer.css" />
+  <!-- <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf_viewer.css" />
   <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf.min.js"></script>
   <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf_viewer.js"></script>
-  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf.worker.min.js"></script>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/pdfjs/pdf.worker.min.js"></script> -->
   <!-- PDF\ -->
-  <!-- office -->
-  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/jquery.min.js"></script>
-  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/pageoffice.js" id="po_js_main"></script>
-  <link rel="stylesheet" type="text/css" href="<%= htmlWebpackPlugin.options.baseUrl %>/static/libs/preview/pobstyle.css">
   <!-- 编辑器 -->
   <link rel="stylesheet" href="../../../static/libs/umeditor/themes/default/css/umeditor.css" />
   <script type="text/javascript" src="../../../static/libs/umeditor/third-party/jquery.min.js"></script>
-  <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.config.js"></script>
+  <script type="text/javascript" src="../../../static/libs/umeditor/third-party/mathquill/mathquill.js"></script>
+  <link rel="stylesheet" href="../../../static/libs/umeditor/third-party/mathquill/mathquill.css" />
   <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.js"></script>
+  <script type="text/javascript" src="../../../static/libs/umeditor/umeditor.config.js"></script>
   <script type="text/javascript" src="../../../static/libs/umeditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 
@@ -29,7 +27,6 @@
   <div class="g-app" id="g-app" v-cloak>
     <!-- 头部 -->
     <g-header :sel-class="headerSel"></g-header>
-
     <!-- 主内容区 -->
     <div class="g-wrap g-mt30 f-clearfix">
       <!-- 左边栏 -->

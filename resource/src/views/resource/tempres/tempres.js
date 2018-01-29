@@ -65,6 +65,7 @@ new Vue({
 
       //重置搜索条件
       this.resetCondition();
+      this.keyword = '';
     },
     //设置搜索条件
     setFilters: function (filterInfo) {

@@ -148,7 +148,7 @@ const accountLeftbarCls =  {
 								        'lb-role': 'i-role',
 								        'lb-authority': 'i-permission',
 								        'lb-personal': 'i-acct2',
-								        'lb-editpwd': 'i-edit'
+								        'lb-editpwd': 'i-edit1'
 									    };
 export default {
 	//资源管理

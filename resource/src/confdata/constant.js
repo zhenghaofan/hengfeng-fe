@@ -120,7 +120,16 @@ const GL_CONST = {
 		'LAST_VOLUME': '上册',
 		'NEXT_VOLUME': '下册',
 		'WHOLE_VOLUME': '全册',
+		'REQUIRED': '必修',
 		'ELECTIVE': '选修',
+	},
+	//文件类型
+	MEDIATYPES: {
+		acceptDocTypes: 'application/vnd.ms-excel,application/msword,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	  acceptExamTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	  acceptVideoTypes: 'video/mp4,video/ogg,video/webm',
+	  acceptImageTypes: 'image/jpg,image/png,image/jpeg,image/bmp',
+	  otherTypes: 'image/jpg,image/png,image/jpeg,application/x-shockwave-flash,application/octet-stream,audio/x-mpeg,audio/mpeg3,flv-application/octet-stream,audio/mp3'
 	},
 };
 

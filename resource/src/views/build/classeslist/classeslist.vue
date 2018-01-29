@@ -26,8 +26,8 @@
         <span class="item con-item9">{{item.name}} {{item.subtitle}}</span>
         <span class="item con-item10">{{item.displayName}}</span>
         <span class="item con-item11" v-if="authList.textbook && authList.textbook.view">
-          <i title="预览课本" class="icon i-prew" @click="preview(item)" v-bind:data-id="item.id"></i>
-          <a :href="'editclasses.html?bookId='+item.id" title="编辑课本信息"><i class="icon i-edit g-ml20"></i></a>
+          <i title="预览课本" class="icon i-prew" v-show="hasViewAuth" @click="preview(item)" v-bind:data-id="item.id"></i>
+          <a :href="'editclasses.html?bookId='+item.id" v-show="hasEditAuth" title="编辑课本信息"><i class="icon i-edit1 g-ml20"></i></a>
         </span>
         </span>
       </li>
@@ -66,6 +66,8 @@ export default {
       },
       bookId: '',
       GL_CONST: GL_CONST,
+      hasViewAuth: '',
+      hasEditAuth: '',
     };
   },
   components: {
@@ -129,6 +131,11 @@ export default {
         
         console.log('gogo:'+ p);
       });
+      self.hasViewAuth = self.authTempList.indexOf('RESOURCE_BUILD_TEXTBOOK_VIEW') !== -1;
+      if(!self.hasViewAuth) {
+        self.$message.error("对不起，你没有查看该资源的权限");
+      }
+      self.hasEditAuth = self.authTempList.indexOf('RESOURCE_BUILD_TEXTBOOK_EDIT') !== -1;
     }
   },
   mounted: function () {

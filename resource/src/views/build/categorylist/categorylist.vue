@@ -15,7 +15,7 @@
         <span class="item con-item4 m-labels g-tc">
           <span v-for="label in item.childDictList">{{label.name}}</span>
         </span>
-        <span class="item con-item5"><i class="icon i-edit g-ml20" v-if="authList.category && authList.category.edit && (item.name !== '习题')" @click="edit(item)"></i></span>
+        <span class="item con-item5"><i class="icon i-edit1 g-ml20" v-if="authList.category && authList.category.edit && (item.name !== '习题' && hasEditAuth)" @click="edit(item)"></i></span>
       </li>
     </ul>
 
@@ -57,7 +57,8 @@ export default {
       },
       selectItem: '',
       editItem: '',
-      changedData: {} //编辑时需提交的数据
+      changedData: {}, //编辑时需提交的数据
+      hasEditAuth: this.authTempList.indexOf('RESOURCE_BUILD_CATEGORY_EDIT') !== -1
     };
   },
   components: {
@@ -82,7 +83,6 @@ export default {
         confirmTxt: '保存并关闭',
         title: '编辑资源类别'
       };
-
     },
     childEdited: function (item) {
       this.changedData = item;
@@ -113,7 +113,7 @@ export default {
         //self.selectItem.remark = item.remark;
         //self.selectItem.childDictList = item.childDictList;
       }, function (res) {
-        self.$message.error('editerr:' + res.message);
+        self.$message.error(res.message);
         // setTimeout("window.location.href = 'categorylist.html';", 3000);
       });
     },
@@ -151,7 +151,7 @@ export default {
 
           console.log('gogo:'+ p);
        }, function (res) {
-         console.log('getResourceCategoryList:' + res.message);
+          self.$message.error(res.message);
        });
     }
   },

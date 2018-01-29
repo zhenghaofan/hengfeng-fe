@@ -20,6 +20,8 @@ Vue.use(MyMsgBox)
 
 //能解析域名的东西？
 import utils from '@/utils/'
+//引入系统常量数据
+import GL_CONST from '@/confdata/constant.js'
 
 new Vue({
   el: '.g-app',
@@ -46,15 +48,16 @@ new Vue({
     bookId: "",
     //给树提供的id
     bId: "",
-    //本书的课本基本数据，修改后的也都存在这里面了
+    //最开始本书的课本基本数据
     textbook: {},
-    //用来中途统计的，修改好后都会存进textbook
+    //修改后保存的
     tmpTextbook: {
       tmpTermDictId: "",
       tmpVolumeDictId: "",
-      learnStageChoice: []
+      learnStageChoice: [],
+      tmpVersion: -1,
+      tmpPublisher: "",
     },
-  //所有选项
     //学段/年级/学科所有选项
     learnStageOption: [
       {
@@ -114,12 +117,16 @@ new Vue({
       }
     ],
     //学期所有选项
-    termOption: [{ value: '上学期' },{ value: '下学期' }],
+    termOption: [{ label: '不限', value: '' },{ label: '上学期', value: 'LAST_TERM' },{ label: '下学期', value: 'NEXT_TERM' }],
     //册数所有选项
-    VolumeOption: [{ value: '上册' },{ value: '下册' },{ value: '全册' },{ value: '必修' },{ value: '选修' }],
-  //
-    popBox: {},
+    VolumeOption: [{ label: '上册', value: 'LAST_VOLUME' },{ label: '下册', value: 'NEXT_VOLUME' },{ label: '全册', value: 'WHOLE_VOLUME' },{ label: '必修', value: 'REQUIRED' },{ label: '选修', value: 'ELECTIVE' }],
+  //学期出版社所有选项
+    publishers: [],
+    versions: [],
+
     content: {},
+    //常量
+    GL_CONST: GL_CONST,
   },
   watch: {
     'bookId': {
@@ -127,7 +134,8 @@ new Vue({
         var self = this,
             params = self.bookId;
         self.bId = self.bookId;
-        apiUrl.getTextbookPreview(params).then(function (res) {         
+        apiUrl.getTextbookPreview(params).then(function (res) {  
+          console.log(res.data);       
           var _result = res.data;
           self.content = res.data;
           self.textbook = _result.textbook;
@@ -136,33 +144,6 @@ new Vue({
       },
       deep: true
     },
-    // 'tmpTextbook.tmpTermDictId': function(val) {
-    //   if(val == "上学期") {
-    //     this.textbook.termDictId = "LAST_TERM";
-    //   }
-    //   if(val == "下学期") {
-    //     this.textbook.termDictId = "NEXT_TERM";
-    //   }
-    //   console.log(this.textbook.termDictId);
-    // },
-    // 'tmpTextbook.tmpVolumeDictId': function(val) {
-    //   if(val == "上册") {
-    //     this.textbook.VolumeDictId = "LAST_VOLUME";
-    //   }
-    //   if(val == "下册") {
-    //     this.textbook.VolumeDictId = "NEXT_VOLUME";
-    //   }
-    //   if(val == "全册") {
-    //     this.textbook.VolumeDictId = "WHOLE_VOLUME";
-    //   }
-    //   if(val == "必修") {
-    //     this.textbook.VolumeDictId = "REQUIRED";
-    //   }
-    //   if(val == "选修") {
-    //     this.textbook.VolumeDictId = "ELECTIVE";
-    //   }
-    //   console.log(this.textbook.VolumeDictId);
-    // },
   },
   methods: {
     //检测权限
@@ -182,64 +163,81 @@ new Vue({
       this.tmpTextbook.learnStageChoice.push(this.textbook.grade.name);
       this.tmpTextbook.learnStageChoice.push(this.textbook.subject.name);
       //学期
-      if(this.textbook.termDictId == "LAST_TERM") {
-        this.tmpTextbook.tmpTermDictId = "上学期";
-      }
-      if(this.textbook.termDictId == "NEXT_TERM") {
-        this.tmpTextbook.tmpTermDictId = "下学期";
-      }
+      this.tmpTextbook.tmpTermDictId = this.textbook.termDictId || '';
       //册数
-      if(this.textbook.volumeDictId == "LAST_VOLUME") {
-        this.tmpTextbook.tmpVolumeDictId = "上册";
-      }
-      if(this.textbook.volumeDictId == "NEXT_VOLUME") {
-        this.tmpTextbook.tmpVolumeDictId = "下册";
-      }
-      if(this.textbook.volumeDictId == "WHOLE_VOLUME") {
-        this.tmpTextbook.tmpVolumeDictId = "全册";
-      }
-      if(this.textbook.volumeDictId == "REQUIRED") {
-        this.tmpTextbook.tmpVolumeDictId = "必修";
-      }
-      if(this.textbook.volumeDictId == "ELECTIVE") {
-        this.tmpTextbook.tmpVolumeDictId = "选修";
-      }
+      this.tmpTextbook.tmpVolumeDictId = this.textbook.volumeDictId;
+      //出版社版本
+      this.tmpTextbook.tmpPublisher = this.textbook.publisher;
+      this.tmpTextbook.tmpVersion = this.textbook.version;
+      var self = this,
+          params = { function: "PV" };
+      apiUrl.getTextbookTypes(params).then(function(res) {
+        console.log(res.data);
+        self.publishers = res.data.publishers;
+        self.versions = res.data.versions;
+      }).catch(function(res) {
+        self.$message.error("获取出版社及版本数据失败");
+      });
     },
     //处理学段年级学科改变
-    handleChange: function () {
+    // handleChange: function () {
       // this.textbook.learnStage.name = this.tmpTextbook.learnStageChoice[0];
       // this.textbook.grade.name = this.tmpTextbook.learnStageChoice[1];
       // this.textbook.subject.name = this.tmpTextbook.learnStageChoice[2];
       // console.log(this.textbook.learnStage.name,this.textbook.grade.name,this.textbook.subject.name);
+    // },
+    // 判断输入是不是超过长度
+    choicePublisher: function () {
+      if(this.tmpTextbook.tmpPublisher.length > 32) {
+        this.$message.error("出版社长度不能大于32");
+        this.tmpTextbook.tmpPublisher = this.textbook.publisher;
+      }
     },
-    //预览
-    preview: function () {
-      var list = this.rootNode.children;
-      this.content.knowledgePointCatalogList = list;
-      this.content.point = {
-        learnStageName: this.requireInfo.learnStageId,
-        subjectName: this.requireInfo.learnStageId,
-        name: this.rootNode.name,
-        firstLevelCount: this.rootNode.children.length,
-        secondLevelCount: this.rootNode.children.length,
-        thirdLevelCount: this.rootNode.children.length
-      };
-      this.popBox = {
-        show: true,
-        confirmTxt: '保存知识点',
-        cancelTxt: '返回编辑',
-        title: '知识树预览'
-      };
+    // 判断输入的是否是数字,以及输入是不是超过长度
+    choiceVersion: function () {
+      //是否超长
+      if(this.tmpTextbook.tmpVersion < 1000 || this.tmpTextbook.tmpVersion > 3000) {
+        this.$message.error("版本号只能输入数字且范围在1000到3000");
+        this.tmpTextbook.tmpVersion = this.textbook.version;
+      }
+      //是否数字
+      var re = /^\d+$/;
+      if(!re.test(this.tmpTextbook.tmpVersion)) {
+        this.$message.error("版本只能输入数字");
+        this.tmpTextbook.tmpVersion = this.textbook.version;
+      }
+    },
+    //判断教材命名是否为空
+    isDisplayNameNone: function () {
+      if(this.textbook.displayName === "") {
+        return true;
+      }
+      return false;
     },
     //接收从子组件传来的树,再整合displayName传到后台
     getChildTree: function (treeList) {
       var self = this;
+      if(self.isDisplayNameNone()) {
+        self.$message.error("教材命名不能为空");
+        return;
+      }
       console.log(treeList);
+      var termId = this.tmpTextbook.tmpTermDictId;
+      // if(termId === '') {
+      //   termId = "NULL";
+      // }
       var params = {
         id: this.textbook.id,
         displayName: this.textbook.displayName,
-        textbookCatalogs: treeList
+        termDictId: termId,
+        volumeDictId: this.tmpTextbook.tmpVolumeDictId,
+        version: this.tmpTextbook.tmpVersion,
+        publisher: this.tmpTextbook.tmpPublisher,
+        textbookCatalogs: treeList,
       };
+      console.log("传给后台的参数：");
+      console.log(params);
+      // return;
       apiUrl.getTextbookUpdate(params).then(function (res) {
         self.$message({
           message: '保存成功',
@@ -247,7 +245,7 @@ new Vue({
         });
         setTimeout("window.location.href = 'classeslist.html';", 3000);
       }).catch(function (res) {
-        self.$message.error('editclasses err:' + res.message);
+        self.$message.error('编辑课本信息失败:' + res.message);
       });
     }
   },

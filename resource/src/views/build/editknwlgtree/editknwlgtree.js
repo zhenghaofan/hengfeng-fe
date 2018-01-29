@@ -68,7 +68,7 @@ new Vue({
   methods: {
     //检测权限
     checkAuth: function () {
-      if(this.type == 'add'){
+      if(this.type === 'add'){
         //新增知识点
         if (this.authList.knowledge.add) {
           this.hasPageAuth = true;
@@ -79,7 +79,7 @@ new Vue({
           window.location.href = this.baseUrl + '/views/home.html';
         }
       }
-      if(this.type == 'edit'){
+      if(this.type === 'edit'){
         //编辑知识点
         if (this.authList.knowledge.edit) {
           this.hasPageAuth = true;
@@ -105,7 +105,7 @@ new Vue({
         self.addSubjectList = _data.subjectList;
 
         //知识树为编辑的时候
-        if(self.type == "edit") {
+        if(self.type === "edit") {
           var params = self.knwId;
           apiUrl.getKnwlgtreePreview(params).then(function (res) {
             var _data = res.data; 
@@ -163,7 +163,7 @@ new Vue({
       var self = this,
           treeList = self.content.knowledgePointCatalogList;
       //新建知识点树保存
-      if(this.type == 'add') {
+      if(this.type === 'add') {
         var self = this,
           params = {
             learnStageId: self.addLearnStageId,
@@ -187,12 +187,12 @@ new Vue({
         }).catch(function (res) {
           self.errorTips = res.message;
           self.hasError = true;
-          self.$message.error('addKnwlgtree err:' + res.message);
+          self.$message.error('新建知识点树失败:' + res.message);
           self.getLearnStageList();
         });
       }
       //编辑知识点树保存
-      if(this.type == 'edit') {
+      if(this.type === 'edit') {
         var self = this,
           params = {
             id: self.knwId,
@@ -207,8 +207,9 @@ new Vue({
         }).catch(function (res) {
           self.errorTips = res.message;
           self.hasError = true;
-          self.$message.error('editKnwlgtree err:' + res.message);
-          setTimeout("window.location.href = 'editknwlgtree.html?type=edit&knwId=' + self.knwId;", 2000);
+          self.$message.error('编辑知识点树失败:' + res.message);
+
+          setTimeout("window.location.href = 'editknwlgtree.html?type=edit&knwId=' + " + self.knwId + ";", 2000);
         })
       }
     }

@@ -1,5 +1,5 @@
 <template lang="html">
-  <el-dialog title="高级模式" :visible.sync="showEditor" :before-close="closeEditor" :close-on-click-modal="false">
+  <el-dialog title="高级模式" :visible.sync="showEditor" :before-close="closeEditor" :close-on-click-modal="false" width="60%">
     <editor :editor-id="editorId" @contentchange="contentchange" :init-content="initcontent" :options-info="optionsInfo"></editor>
     <span slot="footer" class="dialog-footer">
       <el-button @click="closeEditor">取 消</el-button>
@@ -46,7 +46,7 @@ export default {
       this.$emit('closeEditor');
     },
     fillRichText() {
-      this.$emit('fillRichText', this.modelName, this.richTextHtml, this.optionsInfo);
+      this.$emit('fillRichText', this.modelName, this.richTextHtml || this.initcontent, this.optionsInfo);
     }
   }
 }

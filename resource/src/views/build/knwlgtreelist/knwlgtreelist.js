@@ -27,7 +27,6 @@ new Vue({
       leftbar: lefbarData.build,
       curMenuId: 'lb-knwlgtree',
     },
-    hasPageAuth: false,
     requireInfo: {
       learnStageId: '',
       subjectId: ''
@@ -36,7 +35,10 @@ new Vue({
     learnStageList: [],
     //学科
     subjectList: [],
-    tmpSubjectList: []
+    tmpSubjectList: [],
+    //权限
+    hasPageAuth: '',
+    hasAddAuth: '',
   },
   methods: {
     //检测权限
@@ -50,6 +52,16 @@ new Vue({
         //无权限，返回首页
         window.location.href = this.baseUrl + '/views/home.html';
       }
+      this.hasPageAuth = this.authTempList.indexOf('RESOURCE_BUILD_KNOWLEDGE_POINT_VIEW') !== -1;
+      if(!this.hasPageAuth) {
+        this.$message.error("对不起，你没有查看该资源的权限");
+      }
+      this.hasAddAuth = this.authTempList.indexOf('RESOURCE_BUILD_KNOWLEDGE_POINT_ADD') !== -1;
+
+      // console.log("查看：" + this.hasPageAuth);
+      // console.log("新增：" + this.hasAddAuth);
+      // this.hasEditAuth = this.authTempList.indexOf('RESOURCE_BUILD_KNOWLEDGE_POINT_EDIT') !== -1;
+      // console.log("编辑：" + this.hasEditAuth);
     },
     //获取学段信息
     getLearnStageList: function (index) {

@@ -2,7 +2,7 @@
 <div>
   <div class="m-tips" v-if="authList.authority && authList.authority.person && authList.authority.role">
     温馨提醒：本表用于帮助管理者快速定位个管理权限的责任人；如需进行管理权限调整或赋予，请去往
-    <span><a href="accountlist.html">账号权限配置</a></span>页面操作。
+    <span><a href="accountlist.html">账号权限配置</a></span>页面操作。（暂只支持三级）
   </div>
 	<div class="m-list" v-if="true">
     <div class="authList">
@@ -17,6 +17,7 @@
           <span class="mouseBox" @mouseover="showStaff(first)" @mouseout="hideStaff(first)">
             {{first.name}}
             <div class="staffBox staffBox-f" v-if="first.isShowStaff">
+            <!-- <div class="staffBox staffBox-f" v-if="true"> -->
               <span class="staffItem" v-for="fItem in first.staff">{{fItem}}</span>
             </div>
           </span>
@@ -54,6 +55,7 @@
                     <i class="iconf i-duoren"></i>
                     {{thr.name}}
                     <div class="staffBox staffBox-t" v-if="thr.isShowStaff">
+                    <!-- <div class="staffBox staffBox-t" v-if="true"> -->
                       <span class="staffItem" v-for="tItem in thr.staff">{{tItem}}</span>
                     </div>
                   </span>
@@ -125,7 +127,7 @@ export default {
         var staff = res.data;
         Vue.set(item, 'staff', staff);
       }).catch(function (res) {
-        self.$message.error("拿取" + item.id + "的staff数据失败：" + res.message);
+        self.$message.error("拿取用户数据失败：" + res.message);
       });
     },
     showStaff: function(item) {
@@ -173,96 +175,105 @@ export default {
 }
 </script>
 <style>
-/*提示*/
-.m-tips {
-  color: #999;
-}
-.m-tips span a {
-  color: #00d478;
-  font-size: 16px;
-}
+  /*提示*/
+  .m-tips {
+    color: #999;
+  }
+  .m-tips span a {
+    color: #00d478;
+    font-size: 16px;
+  }
+  
+  .authList {
+    width: 100%;
+    height: 220px;
+    padding-bottom: 300px;
+    padding-left: 100px;
+    overflow-y: scroll;
+    color: #232323;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 
-.authList {
-  width: 100%;
-  min-height: 500px;
-  padding-left: 100px;
-  overflow-y: scroll;
-  color: #232323;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-.title {
-  text-align: center;
-}
-.tit-h2:hover,
-.tit-h3:hover,
-.tit-h4:hover {
-  color: #00d487;
-}
+  .title {
+    text-align: center;
+  }
+  .tit-h2,.tit-h3,.tit-h4 {
+    position: relative;
+  }
+  .tit-h2:hover,
+  .tit-h3:hover,
+  .tit-h4:hover {
+    color: #00d487;
+  }
+  
+  .hovering {
+    color: #00d487;
+  }
+  .authList .tit-h2 {
+    margin: 20px 0;
+    font-size: .8rem;
+    cursor: pointer;
+  }
+  .authList .tit-h3 {
+    margin: 10px 0;
+    font-size: .75rem;
+    cursor: pointer;
+  }
+  .authList .tit-h4 {
+    display: inline-block;
+    margin: 5px 0;
+    font-size: .75rem;
+    cursor: pointer;
+  }
+  .authList .con-h2 {
+    padding-left: 25px;
+  }
+  .authList .con-h3 {
+    position: relative;
+    padding-left: 30px;
+  }
+  .iconHolder {
+    display: inline-block;
+    width: 18px;
+  }
 
-.hovering {
-  color: #00d487;
-}
-.authList .tit-h2 {
-  margin: 20px 0;
-  font-size: .8rem;
-  cursor: pointer;
-}
-.authList .tit-h3 {
-  margin: 10px 0;
-  font-size: .75rem;
-  cursor: pointer;
-}
-.authList .tit-h4 {
-  display: inline-block;
-  margin: 5px 0;
-  font-size: .75rem;
-  cursor: pointer;
-}
-.authList .con-h2 {
-  padding-left: 25px;
-}
-.authList .con-h3 {
-  position: relative;
-  padding-left: 30px;
-}
-.iconHolder {
-  display: inline-block;
-  width: 18px;
-}
-/*staff盒子*/
-.staffBox {
-  position: absolute;
-  display:inline-block;
-  vertical-align: middle;
-  max-width: 670px;
-  min-width: 500px;
-  min-height: 60px;
-  padding: 10px;
-  border: 1px solid #f3ecec;
-  border-radius: 5px;
-  background: white;
-  font-size: .8rem;
-  color: black;
-  font-size: 16px;
-}
-.staffBox-f {
-  left: 27%;
-}
-.staffBox-s {
-  left: 25%;
-}
-.staffBox-t {
-  left: 16%;
-}
-.staffItem {
-  display: inline-block;
-  margin: 10px 20px;
-}
-.mouseBox {
-  display: inline-block;
-  width: 200px;
-}
+  /*staff盒子*/
+  .staffBox {
+    position: absolute;
+    display:inline-block;
+    vertical-align: middle;
+    width: 670px;
+    min-height: 60px;
+    padding: 10px;
+    border: 1px solid #f3ecec;
+    border-radius: 5px;
+    background: white;
+    font-size: .8rem;
+    color: black;
+    font-size: 16px;
+  }
+  .staffBox-f {
+    top: -18px;
+    left: 19%;
+  }
+  .staffBox-s {
+    top: -18px;
+    left: 18%;
+  }
+  .staffBox-t {
+    top: -18px;
+    left: 130px;
+  }
+  /*每个人名*/
+  .staffItem {
+    display: inline-block;
+    margin: 10px;
+  }
+  .mouseBox {
+    display: inline-block;
+    width: 170px;
+  }
 
 </style>

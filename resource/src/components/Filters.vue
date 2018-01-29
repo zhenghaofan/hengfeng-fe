@@ -10,12 +10,12 @@
             ref="popoverSubject"
             placement="bottom-start"
             popper-class="g-form popover-tab g-filters-resource-inner"
-            trigger="click">
+            trigger="hover">
             <div class="control">
               <label class="label">学段：</label>
               <div class="txts">
-                <span 
-                  class="btn-learn" 
+                <span
+                  class="btn-learn"
                   v-for="(item, index) in learnStageList"
                   :id="item.id"
                   :class="{'z-selected': learnStageId === item.id}"
@@ -38,7 +38,7 @@
               </div>
             </div>
           </el-popover>
-          <div 
+          <div
             class="select-btn"
             v-popover:popoverSubject>
             <template v-if="learnStageName">{{learnStageName}}{{subjectName}}</template>
@@ -75,10 +75,10 @@
       <div class="control">
         <label class="label g-vertop">类型：</label>
         <div class="txts">
-          <a href="#" 
-            class="btn-tab" 
-            @click.prevent="setChildDict(index)" 
-            :class="{'btn-selected': childDictId == dict.id, 'btn-disabled': isEditPage && childDictId == dict.id && resourceDictId === 'EXERCISES'}" 
+          <a href="#"
+            class="btn-tab"
+            @click.prevent="setChildDict(index)"
+            :class="{'btn-selected': childDictId == dict.id, 'btn-disabled': isEditPage && childDictId == dict.id && resourceDictId === 'EXERCISES'}"
              v-for="(dict, index) in childDictList">{{dict.name}}</a>
         </div>
       </div>
@@ -89,10 +89,10 @@
       <div class="control">
         <label class="label g-vertop">年级：</label>
         <div class="txts">
-          <a href="#" 
-            class="btn-tab" 
-            @click.prevent="setGradeId(grade.id, true)" 
-            :class="{'btn-selected': gradeId == grade.id}" 
+          <a href="#"
+            class="btn-tab"
+            @click.prevent="setGradeId(grade.id, true)"
+            :class="{'btn-selected': gradeId == grade.id}"
              v-for="(grade, index) in gradeList">{{grade.name}}</a>
         </div>
       </div>
@@ -103,10 +103,10 @@
       <div class="control">
         <label class="label g-vertop">学期：</label>
         <div class="txts">
-          <a href="#" 
-            class="btn-tab" 
-            @click.prevent="setTermId(term.id, true)" 
-            :class="{'btn-selected': termId == term.id}" 
+          <a href="#"
+            class="btn-tab"
+            @click.prevent="setTermId(term.id, true)"
+            :class="{'btn-selected': termId == term.id}"
              v-for="(term, index) in termList">{{term.name}}</a>
         </div>
       </div>
@@ -184,19 +184,24 @@
                   <el-tree
                     class="filter-tree"
                     :highlight-current="true"
+                    :show-checkbox="true"
                     :data="knwlegTree"
                     :props="defaultProps"
                     :filter-node-method="filterKnwleg"
+                    :default-checked-keys="knowledgePointCatalogIds"
                     auto-expand-parent
                     accordion
-                    @node-click="getKnwlegChildren"
-                    @node-expand="filterKnwlegLeaf"
+                    node-key="id"
                     ref="tree">
                   </el-tree>
                 </div>
               </div>
+              <div class="knwleg-opts">
+                <a href="#" class="btn btn-green btn-s" @click.prevent="getCheckedNodes">确定</a>
+                <a href="#" @click.prevent="cancelSet" class="btn btn-green btn-s g-ml20">取消</a>
+              </div>
               <!-- 弹出框右边 -->
-              <div class="knwleg-r">
+              <!-- <div class="knwleg-r">
                 <p class="knwleg-tit"><i class="iconf i-light"></i>可选知识点</p>
                 <div class="knwleg-level g-ml10" v-if="leafList.length > 0">
                   <span class="item" v-for="(item, index) in levelList">
@@ -204,23 +209,27 @@
                   </span>
                 </div>
                 <div class="leaf-box">
-                  <el-checkbox 
+                  <el-checkbox
                     v-for="(leaf, index) in leafList"
-                    v-model="leaf.isChecked" 
+                    v-model="leaf.isChecked"
                     :key="leaf.id"
                     @change="toggleLeafList(index)">{{leaf.name}}</el-checkbox>
                   <span v-if="isLeaf" class="t-error">请选择倒数第二级节点</span>
                 </div>
+
                 <div class="knwleg-opts">
                   <el-checkbox  v-if="leafList.length > 0" v-model="checkAllKnwleg" @change="toggleCheckAll">全选</el-checkbox>
-                  <div class="f-r"><a href="#" class="btn-knwleg" @click.prevent="setSelectedKnwlegList">确定</a><a href="#" @click.prevent="cancelSet" class="btn-knwleg g-ml20 g-mr20">取消</a></div>
+                  <div class="f-r">
+                    <a href="#"class="btn-knwleg g-ml20 g-mr20" @click.prevent="getCheckedNodes">确定</a>
+                    <a href="#" @click.prevent="cancelSet" class="btn-knwleg g-ml20 g-mr20">取消</a>
+                  </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </el-popover>
 
           <div>
-            <span 
+            <span
               class="select-btn"
               @click="getKnwlegOptions(false)"
               v-popover:popoverTree>
@@ -233,23 +242,24 @@
 
           <!-- 展示已选知识点 -->
           <div class="knwleg-selected-tab" v-if="selectedKnwlegList.length > 0 && isKnwlegSelTabShow">
-            <div class="knwleg-selected-item" v-for="(list, listIndex) in selectedKnwlegList">
-              <div class="knwleg-level">
-                <span class="item" v-for="(item, index) in list.parent">
-                  <i v-if="index > 0">&gt;</i>{{item.name}}
+            <div class="knwleg-selected-item" v-for="(item, index) in selectedKnwlegList">
+              <div class="knwleg-level" v-if="item.parentNames.length > 0">
+                <span class="item" v-for="(name, index) in item.parentNames">
+                  <i v-if="index > 0">&gt;</i>{{name}}
                 </span>
               </div>
 
               <div class="knwleg-leaf">
                 <span
                   class="item"
-                  v-for="(item, index) in list.leaf">
-                  {{item.name}}
-                  <i class="iconf i-delete" @click="delSelectedKnwleg(listIndex, index)"></i>
+                  v-for="(child, childIndex) in item.children">
+                  {{child.name}}
+                  <i class="iconf i-delete" @click="delSelectedKnwleg(index, childIndex)"></i>
                 </span>
               </div>
 
-              <div class="btn-del-selknwleg" @click="delSelectedKnwleg(listIndex)"><i class="iconf i-delete"></i></div>
+              <div class="btn-del-selknwleg" v-if="item.parentNames.length > 0" @click="delSelectedKnwleg(index)"><i class="iconf i-delete"></i></div>
+
             </div>
           </div>
 
@@ -474,7 +484,7 @@ export default {
       allhas: {
         id: '',
         name: '不限',
-      }, 
+      },
       temp: {},
     };
   },
@@ -501,12 +511,12 @@ export default {
         //获取年级
         this.getGrade();
       }*/
-      
+
       /*if (this.searchType === 'textbook' || this.searchType === 'all') {
         //获取教材
         this.getTextbook();
       }*/
-      
+
       //把筛选信息返回给父组件
       this.returnFilterInfo();
     },
@@ -630,7 +640,7 @@ export default {
         //从登录接口里获取信息，或搜索过滤过
         if (self.resource && self.resource.learnStage && self.resource.learnStage.id || self.learnStageId && self.subjectId) {
           var learnStageList = self.learnStageList;
-          
+
           //编辑页
           if (self.isEditPage) {
             self.learnStageId = self.resource.learnStage.id;
@@ -644,12 +654,12 @@ export default {
               break;
             }
           }
-          
+
         } else {
         //登录中未给，且未选择过，默认选中第一个
           self.setLearnStage(0, self.subjectId);
         }
-        
+
       });
     },
     //获取科目
@@ -670,7 +680,7 @@ export default {
           if (list[i].id === subjectId) {
             this.subjectName = list[i].name;
           }
-        }    
+        }
       }
 
       //无默认值，选中第一个
@@ -695,10 +705,10 @@ export default {
       if (this.learnStageId === list[index].id) {
         //默认值时
         //获取对应学段下的科目
-        subjectId && this.getSubject(subjectId, needClearTextbookId);        
+        subjectId && this.getSubject(subjectId, needClearTextbookId);
         return;
       }
-      
+
       //点击选中时
       this.learnStageId = list[index].id;
       //保存至localStorage
@@ -718,7 +728,7 @@ export default {
       if (this.subjectId === list[index].id) {
         return;
       }
-      
+
       //点击选中时
       this.subjectId = list[index].id;
       //保存至localStorage
@@ -726,12 +736,12 @@ export default {
 
       //学段也选了，隐藏tab
       if (this.learnStageId) {
-        this.$refs.popoverSubject.showPopper = false;
+        //this.$refs.popoverSubject.showPopper = false;
         //this.isSubjectTabShow = false;
         //是知识点筛选||上传页面时
         if (this.searchType === 'knwleg') {
           //获取知识树结构
-          this.getKnwlegOptions();
+          this.getKnwlegOptions(true);
         } else if (this.searchType === 'textbook') {
           //获取课本
           this.getTextbook(true);
@@ -851,7 +861,7 @@ export default {
           } else {
             //默认选中第一个
             self.setChildDict(0);
-          }    
+          }
         } else {
           self.childDictList.unshift(self.allhas);
         }
@@ -890,7 +900,7 @@ export default {
         } else {
           self.gradeList.unshift(self.allhas);
         }
-        
+
       });
     },
     //重置章节信息
@@ -953,7 +963,7 @@ export default {
 
         if (self.isEditPage && self.temp.textbookId) {
           self.textbookId = self.resource.textbook.id;
-          self.temp.textbookId = '';                
+          self.temp.textbookId = '';
         }
 
       });
@@ -976,19 +986,19 @@ export default {
         if (!res.data) {
           return;
         }
-        
+
         self.unitList = _result.textbookCatalogList || [];
 
         if (self.isEditPage && self.temp.unitId) {
           self.unitId = self.temp.unitId;
-          self.temp.unitId = '';        
+          self.temp.unitId = '';
         } else {
           self.unitId = '';
           //重置章节信息
           self.resetTextInfo('unit');
         }
 
-        
+
       });
     },
     //获取章
@@ -999,10 +1009,10 @@ export default {
       for (var i = 0, len = list.length; i < len; i++) {
         if (list[i].id === self.unitId) {
           self.chapterList = list[i].children || [];
-          
+
           if (self.isEditPage && self.temp.chapterId) {
-            self.chapterId = self.temp.chapterId; 
-            self.temp.chapterId = '';         
+            self.chapterId = self.temp.chapterId;
+            self.temp.chapterId = '';
           } else {
             self.chapterId = '';
             //重置章节信息
@@ -1023,8 +1033,8 @@ export default {
           self.courseList = list[i].children || [];
 
           if (self.isEditPage && self.temp.courseId) {
-            self.courseId = self.temp.courseId; 
-            self.temp.courseId = '';         
+            self.courseId = self.temp.courseId;
+            self.temp.courseId = '';
           } else {
             self.courseId = '';
             //重置章节信息
@@ -1043,10 +1053,10 @@ export default {
       for (var i = 0, len = list.length; i < len; i++) {
         if (list[i].id === self.courseId) {
           self.classHourList = list[i].children || [];
-          
+
           if (self.isEditPage && self.temp.classHourId) {
             self.classHourId = self.temp.classHourId;
-            self.temp.classHourId = '';        
+            self.temp.classHourId = '';
           } else {
             self.classHourId = '';
           }
@@ -1072,6 +1082,8 @@ export default {
       if (needClearSeltedKnwInfo) {
         this.selectedKnwlegList = [];
         this.selectedKnwlegCount = 0;
+        this.knowledgePointCatalogIds = [];
+        this.$refs.tree.setCheckedKeys([], true);
       }
 
       var self = this,
@@ -1089,74 +1101,173 @@ export default {
         }
 
         self.knwlegTree = _result.knowledgePointCatalogList;
-        self.knowledgePointId = _result.knowledgePointId;
-        self.$refs.tree.props.isLeaf = self.isVisualLeaf;
+        self.knowledgePointId = _result.id;
+        //self.$refs.tree.props.isLeaf = self.isVisualLeaf;
       });
     },
-    //搜索知识点时的过滤，叶子节点不返回
-    filterKnwleg(value, data, node) {
-      //节点被展开时进行筛选，为false该节点不显示
-      if (!value) {
-        //加个判断，判断是否是根节点，若是根节点则不隐藏
-        if(this.isRoot(data.name)) {
-          return true;
+    getNodes(data, checked, indeterminate) {
+      //console.log(data, checked, indeterminate);
+    },
+    getCheckedKeys() {
+      var checkedKeys = this.$refs.tree.getCheckedKeys(true);
+      this.knowledgePointCatalogIds = checkedKeys;
+      this.selectedKnwlegCount = checkedKeys.length;
+    },
+    getCheckedNodes() {
+      this.getCheckedKeys();
+
+      var checkedNodes = this.$refs.tree.getCheckedNodes(true);
+      //this.selectedKnwlegList = [];
+      this.selectedKnwlegList = this.changeToSelectedKnwleglist(checkedNodes);
+      this.selectedKnwlegCount = checkedNodes.length;
+      this.$refs.popoverTree.showPopper = false;
+    },
+    //数据转化为selectedKnwlegList
+    changeToSelectedKnwleglist (checkedNodes) {
+      var knwlegTree = this.knwlegTree,
+          selectedKnwlegList = [],
+          hasThisRecord = false,
+          index = -1,
+          parentId = '',
+          parentName = '',
+          ids = [],
+          names = [],
+          curId, curName, record;
+
+      for (var i = 0, len = checkedNodes.length; i < len; i++) {
+        ids = [];
+        names = [];
+        record = getSelectedKnwlegRecord(knwlegTree, checkedNodes[i], ids, names);
+        index = this.findRecordIndex(selectedKnwlegList, record.id);
+        //没有这条记录
+        if (index === -1) {
+          //塞入
+          selectedKnwlegList.push({
+            id: record.id,
+            name: record.name,
+            parentNames: record.parentNames,
+            children: [record.child]
+          });
+        } else {
+        //有这条记录，把拿到的记录子集放到对应index里
+          selectedKnwlegList[index].children.push(record.child);
         }
-        return !node.isLeaf;
+        
       }
 
-      //搜索时对节点进行筛选时执行
-      if(this.isRoot(data.name)) {
-        return data.name.indexOf(value) !== -1;
-      }
-      return data.name.indexOf(value) !== -1 && !node.isLeaf;
-    },
-    //通过name判断是否是根节点（一级知识点）
-    isRoot(name) {
-      for(var i in this.knwlegTree) {
-        //加个判断，判断是否是根节点，若是根节点则不隐藏
-        if(name == this.knwlegTree[i].name) {
-          // 若为根节点则显示
-          return true;
+      //获取selectedKnwlegList记录
+      function getSelectedKnwlegRecord(knwlegTree, checkedNode, ids, names) {
+        var result = '',
+            parentId = '',
+            parentName = '',
+            //ids = [],
+            //names = [],
+            curId = checkedNode.id, 
+            curName = checkedNode.name, record;
+
+        if (checkedNode.parentId === undefined) {
+        //没有父节点，是一级末节点
+          return {
+            id: curId,
+            name: curName,
+            parentNames: [curName],
+            child: {
+              id: curId,
+              name: curName,
+            },
+          };
+        }
+
+        for (var i = 0, len = knwlegTree.length; i < len; i++) {
+          parentId = knwlegTree[i].id;
+          parentName = knwlegTree[i].name;
+
+          ids.push(parentId);
+          names.push(parentName);
+
+          if (checkedNode.parentId === parentId) {
+            return {
+              id: ids.join('-'),
+              name: names.join('-'),
+              parentNames: names,
+              child: {
+                id: curId,
+                name: curName,
+              },
+            };
+          } else if (knwlegTree[i].children) {
+            record = getSelectedKnwlegRecord(knwlegTree[i].children, checkedNode, ids, names);
+            if (record) {
+              return record;
+            } else {
+            //没有这条记录，则把当前塞入的父级id及name取走
+              ids.pop();
+              names.pop();
+            }
+          } else {
+            //没有这条记录，也没有子节点，则把当前塞入的父级id及name取走
+            ids.pop();
+            names.pop();
+          }
         }
       }
-      return false;
+
+      return selectedKnwlegList;
     },
-    //搜索知识点时的过滤
-    filterKnwlegLeaf(knwlegTree, knwlegNode, node) {
-      if(this.knwlegKeyword){
-        this.$refs.tree.filter(this.knwlegKeyword);
+    //找到对应记录在selectedKnwlegList中的索引号
+    findRecordIndex (list, id) {
+      for (var i = list.length - 1; i >= 0; i--) {
+        if(list[i].id === id) {
+          return i;
+        }
       }
-      this.$refs.tree.filter('');
+      return -1;
     },
-    //是否是倒数第二层节点
-    isVisualLeaf(knwlegTree, knwlegNode) {
-      //无子节点，是真正的叶节点
-      if (!knwlegTree.children) {
-        return true;
+    initSelectedKnwleglist(list, preName, preId) {
+      var i, 
+          length,  
+          parentNames = [], 
+          id = [], 
+          children = [], 
+          record = [],
+          temp;
+
+      if (!list || list.length < 1) {
+        return;
       }
 
-      //有子节点
-      var list = knwlegTree.children;
-      for (var i = 0, len = list.length; i < len; i++) {
-        //还有子节点，说明不是倒数第二层
+      //第一次循环  没有子节点
+      if (preName) {
+        parentNames = preName;
+        id = preId;
+      }
+
+      for (i = 0, length = list.length; i < length; i++) {
+        if (!list[i].children) {
+          children.push(list[i]);
+        }
+      }
+      if (children.length) {
+        record.push({
+          children: children,
+          parentNames: parentNames.slice(0).length < 1 ? [children[0].name] : parentNames.slice(0),
+          id: id.slice(0).join('-') || children[0].id,
+        });
+        this.selectedKnwlegCount += children.length;
+      }
+
+      //第二次循环  有子节点
+      for (i = 0, length = list.length; i < length; i++) {
         if (list[i].children) {
-          return false;
+          parentNames.push(list[i].name);
+          id.push(list[i].id);
+          temp = this.initSelectedKnwleglist(list[i].children, parentNames, id);
+          if (temp.length) {
+            record = record.concat(temp);
+          }
         }
       }
-
-      //只有一层子节点，虚拟的叶节点
-      return true;
-    },
-    //重置树
-    resetKnwlegTree() {
-      //清除之前的数据
-      this.levelList = [];
-      this.leafList = [];
-      this.checkAllKnwleg = false;
-      this.isLeaf = false;
-
-      //重新加载知识点树
-      this.knwlegTree = this.knwlegTree.concat([]);
+      return record;
     },
     //获取子节点
     getKnwlegChildren(knwlegNode, treeNode, tree) {
@@ -1164,6 +1275,7 @@ export default {
         this.$refs.tree.filter(this.knwlegKeyword);
       }
       var children = knwlegNode.children,
+          treeNodeChildNodes = treeNode.childNodes,
           isLastParentNode = true,
           levelList = [],
           node = treeNode;
@@ -1177,6 +1289,7 @@ export default {
           if (children[i].children) {
             isLastParentNode = false;
           }
+          Vue.set(children[i], 'isChecked', treeNodeChildNodes[i].checked);
         }
 
         //是最后一层父节点，其子节点展示在右边
@@ -1187,6 +1300,8 @@ export default {
           }
           this.levelList = levelList.reverse();
           this.leafList = children;
+
+          this.checkAllKnwleg = treeNode.checked;
         }
       }
 
@@ -1229,7 +1344,7 @@ export default {
       //取消
         this.checkAllKnwleg = false;
       }
-
+      this.$refs.tree.setChecked(list[index].id, isChecked, true);
     },
     //切换全选
     toggleCheckAll() {
@@ -1242,62 +1357,24 @@ export default {
         } else {
           list[i].isChecked = isChecked;
         }
+        this.$refs.tree.setChecked(list[i].id, isChecked, true);
       }
 
     },
-    //确定选中
-    setSelectedKnwlegList() {
-      //未有子节点
-      if (this.levelList.length < 1 || this.leafList.length < 1) {      
-        //隐藏筛选框
-        this.$refs.popoverTree.showPopper = false;
-        //this.isKnwlegTabShow = false;
-        return;
-      }
+    //搜索知识点时的过滤，叶子节点不返回
+    filterKnwleg(value, data, node) {
+      return data.name.indexOf(value) !== -1;
+    },
+    //重置树
+    resetKnwlegTree() {
+      //清除之前的数据
+      this.levelList = [];
+      this.leafList = [];
+      this.checkAllKnwleg = false;
+      this.isLeaf = false;
 
-      var list = this.leafList,
-          levelList = this.levelList,
-          selectedList = this.selectedKnwlegList,
-          curId = levelList[levelList.length - 1].id,//取父节点的id
-          parent = levelList,
-          resultList = [];
-
-      for (var i = 0, len = list.length; i < len; i++) {
-        if (list[i].isChecked) {
-          resultList.push(list[i]);
-        }
-      }
-
-      //并未选中任何值
-      if (resultList.length < 1) {
-        //隐藏筛选框
-        this.$refs.popoverTree.showPopper = false
-        //this.isKnwlegTabShow = false;
-        return;
-      }
-
-      for (var j = 0, len2 = selectedList.length; j < len2; j++) {
-        //当前列表中有些项，则删除当前项
-        if (selectedList[j].id === curId) {
-          this.selectedKnwlegCount -= selectedList[j].leafCount;
-          selectedList.splice(j, 1);
-          break;
-        }
-      }
-      //放到最顶部
-      selectedList.unshift({
-        parent: parent,
-        id: curId,
-        leaf: resultList,
-        leafCount: resultList.length,
-      });
-      this.selectedKnwlegCount += resultList.length;
-
-      //隐藏筛选框
-      this.$refs.popoverTree.showPopper = false;
-      //this.isKnwlegTabShow = false;
-      //设置当前所选知识点目录ID
-      this.setKnowledgePointIdCatalogIds();
+      //重新加载知识点树
+      this.knwlegTree = this.knwlegTree.concat([]);
     },
     //取消选中
     cancelSet() {
@@ -1311,10 +1388,9 @@ export default {
       //删除某叶子节点
       if (leafIndex !== undefined) {
         this.selectedKnwlegCount -= 1;
-        knwlegNode.leaf.splice(leafIndex, 1);
-        knwlegNode.leafCount -= 1;
+        knwlegNode.children.splice(leafIndex, 1);
         //整枝删除了
-        if (knwlegNode.leafCount < 1) {
+        if (knwlegNode.children.length < 1) {
           this.selectedKnwlegList.splice(listIndex, 1);
         }
         //全部删除了
@@ -1323,20 +1399,24 @@ export default {
         }
       } else {
       //删除整枝
-        this.selectedKnwlegCount -= knwlegNode.leafCount;
+        this.selectedKnwlegCount -= knwlegNode.children.length;
         this.selectedKnwlegList.splice(listIndex, 1);
       }
 
-      //设置当前所选知识点目录ID
-      this.setKnowledgePointIdCatalogIds();
+      //更新当前所选知识点目录ID
+      this.updateKnowledgePointIdCatalogIds();
     },
-    //设置当前所选知识点目录ID
-    setKnowledgePointIdCatalogIds() {
+    //更新当前所选知识点目录ID
+    updateKnowledgePointIdCatalogIds() {
       var list = this.selectedKnwlegList;
       this.knowledgePointCatalogIds = [];
       for (var i = 0, len = list.length; i < len; i++) {
-        for (var j = 0, len2 = list[i].leaf.length; j < len2; j++) {
-          this.knowledgePointCatalogIds.push(list[i].leaf[j].id);
+        if (!list[i].children || list[i].children.length < 1) {
+          this.knowledgePointCatalogIds.push(list[i].id);
+          continue;
+        }
+        for (var j = 0, len2 = list[i].children.length; j < len2; j++) {
+          this.knowledgePointCatalogIds.push(list[i].children[j].id);
         }
       }
     },
@@ -1383,7 +1463,7 @@ export default {
           }
         }
       }
-      
+
     },
     //获取初始化的知识点树
     getSelectedKnwlegListInfo(knowledgePointCatalogs) {
@@ -1391,6 +1471,7 @@ export default {
         return;
       }
       this.selectedKnwlegCount = 0;
+      this.selectedKnwlegList = [];
 
       var self = this,
           knowledgePointCatalogs = knowledgePointCatalogs,
@@ -1400,14 +1481,8 @@ export default {
           parentNode;
 
       function getRes(node) {
-        var curId = node.id,
-            resultList = [],
+        var resultList = [],
             list = [];
-
-        parent.push({
-          id: node.id,
-          name: node.name,
-        });
 
         if(node.children) {
           parentNode = node;
@@ -1419,12 +1494,7 @@ export default {
             if (!node.children || node.children && node.children.length < 1) {
               resultList = parentNode.children;
               self.selectedKnwlegCount += resultList.length;
-              self.selectedKnwlegList.push({
-                parent: parent,
-                id: curId,
-                leaf: resultList,
-                leafCount: resultList.length,
-              });
+              self.selectedKnwlegList = self.selectedKnwlegList.concat(resultList);
               break;
             } else {
               getRes(node);
@@ -1437,7 +1507,7 @@ export default {
         parent = [];
         node = knowledgePointCatalogs[i];
         //curId = node.id;
-        getRes(node);        
+        getRes(node);
       }
     },
     //初始化下接及其他选项
@@ -1462,7 +1532,7 @@ export default {
 
       //编辑页
       if (this.isEditPage) {
-        if (!this.resource) {
+        if (!this.resource.resourceDictId) {
           return;
         }
 
@@ -1476,24 +1546,33 @@ export default {
         this.childDictId = initRes.childDictId;
 
         //年级
-        this.temp.gradeId = initRes.grade.id;
+        if (initRes.grade) {
+          this.temp.gradeId = initRes.grade.id;
+        }
 
         //学期
         this.termList = utils.cloneObj(GL_CONST.TERM);
+        this.termList.unshift(this.allhas);
 
-        if (initRes.textbook) {       
+        if (initRes.textbook) {
           this.termId = initRes.textbook.termDictId;
           //课本
           this.temp.textbookId = initRes.textbook.id;
         }
-        
+
         //章节
         this.getTextbookCatalogsInfo(initRes.textbookCatalogs);
-        
+
         //知识点树
-        this.getSelectedKnwlegListInfo(initRes.knowledgePointCatalogs);
-        //设置当前所选知识点目录ID
-        this.setKnowledgePointIdCatalogIds();
+        //this.getSelectedKnwlegListInfo(initRes.knowledgePointCatalogs);
+        
+        //this.knowledgePointCatalogIds = initRes.knowledgePointCatalogs;
+        //TODO
+        if (initRes.knowledgePointCatalogs) {
+          this.selectedKnwlegList = this.initSelectedKnwleglist(initRes.knowledgePointCatalogs);
+          //设置当前所选知识点目录ID
+          this.updateKnowledgePointIdCatalogIds();
+        }
 
         return;
       }
@@ -1503,9 +1582,10 @@ export default {
       this.subjectId = window.localStorage.getItem('subjectId') || '';
       //获取学科段
       this.getSubjectOptions();
-      
+
       this.resourceTypes = utils.cloneObj(GL_CONST.RESOURCETYPES);
       this.termList = utils.cloneObj(GL_CONST.TERM);
+      this.termList.unshift(this.allhas);
       this.childDictList = [];
       this.gradeList = [];
 
@@ -1517,13 +1597,13 @@ export default {
         //资源
         this.setResourceType(0);
         //学期
-        this.termId = this.termList[0].id;
+        //this.termId = this.termList[0].id;
       } else {
       //非上传页，加上不限
         this.resourceTypes.unshift(this.allhas);
         this.childDictList.unshift(this.allhas);
         //this.gradeList.unshift(this.allhas);
-        this.termList.unshift(this.allhas);
+        //this.termList.unshift(this.allhas);
       }
 
       //清除已选中知识点
@@ -1572,12 +1652,14 @@ export default {
     background-color: #00d487;
     border-radius: 5px;
     color: #fff;
-  }  
+  }
   .knwleg-tab {
     display: flex;
     box-sizing: border-box;
-    width: 880px;
-    height: 360px;
+    position: relative;
+    width: 400px;
+    /*width: 880px;*/
+    height: 400px;
     padding: 0 15px;
     overflow: hidden;
     .el-tree-node__label,
@@ -1595,7 +1677,7 @@ export default {
     box-sizing: border-box;
     height: 360px;
     padding: 20px 20px 10px 0;
-    border-right: 1px solid #e6ebf5;
+    /*border-right: 1px solid #e6ebf5;*/
   }
   .knwleg-r {
     position: relative;
@@ -1620,30 +1702,30 @@ export default {
       margin: 15px 0 0 10px;
       overflow-y: auto;
     }
-    .knwleg-opts {
-      position: absolute;
-      width: 100%;
-      left: 0;
-      bottom: 10px;
-      .el-checkbox {
-        margin-left: 40px;
-        margin-top: 5px;
-      }
+  }
+  .knwleg-opts {
+    position: absolute;
+    /*width: 100%;*/
+    right: 35px;
+    bottom: 12px;
+    .el-checkbox {
+      margin-left: 40px;
+      margin-top: 5px;
     }
-    .btn-prim {
-      color: #00d487;
-    }
-    .btn-knwleg {
-      display: inline-block;
-      padding: 4px 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      color: #999;
-    }
-    .btn-knwleg:hover {
-      border-color: #00d487;
-      color: #00d487;
-    }
+  }
+  .btn-prim {
+    color: #00d487;
+  }
+  .btn-knwleg {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #999;
+  }
+  .btn-knwleg:hover {
+    border-color: #00d487;
+    color: #00d487;
   }
 }
 .popover-tab.g-form {
@@ -1653,7 +1735,8 @@ export default {
   padding: 0 10px;
 }
 .popover-tree.g-form {
-  width: 880px;
+  width: 400px;
+  /*width: 880px;*/
 }
 .g-filters-resource {
   box-sizing: border-box;
@@ -1714,7 +1797,7 @@ export default {
   }
   .knwleg-selected-tab {
     box-sizing: border-box;
-    width: 750px;
+    width: 880px;
     max-height: 220px;
     margin: 10px 0;
     padding: 8px 15px;
@@ -1727,7 +1810,7 @@ export default {
       /*margin-bottom: 10px;*/
     }
   }
-  
+
   .knwleg-leaf {
     /*padding-left: 25px;*/
     line-height: 22px;
@@ -1792,7 +1875,7 @@ export default {
   .btn-toggle-knwleg:hover {
     color: #00d487;
   }
-  
+
 }
 .g-filters-resource-inner {
   .g-form {

@@ -71,12 +71,12 @@ var myRules = {
 	//工号
 	jobNumber: {
 		test: function(val){
-    	if(/(?!^\d+$)(?!^[a-zA-Z]+$)[0-9a-zA-Z]{3,10}/.test(val)) {
+    	if(/[0-9a-zA-Z]{4,10}/.test(val)) {///(?!^\d+$)(?!^[a-zA-Z]+$)[0-9a-zA-Z]{4,10}/
         return true;
       }
       return false;
     },
-    message: '工号应为字母+数字，长度为3-10。'
+    message: '工号应为字母或数字，长度为4-10。'
 	},
 	//角色名称
 	roleName: {

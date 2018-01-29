@@ -194,6 +194,7 @@ export default {
 
         this.list = [];
         this.checkedAll = false;
+        this.selectedIdList = [];
         this.loading = true;
 
         apiUrl.getResourceList(params, 'myin')
@@ -268,8 +269,9 @@ export default {
       this.checkedAll = !this.checkedAll;
     },
     showConfirmBox: function (id, isChecked) {
+      var length = this.selectedIdList.length;
       //是单个的，且当前复选框未被选中 || 全选处的下架
-      if (id && !isChecked || !id) {
+      if (id && !isChecked || !id && length < 1) {
         this.$message('请先选中需下架的资源~');
         return;
       }

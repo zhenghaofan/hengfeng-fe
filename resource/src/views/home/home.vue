@@ -610,7 +610,7 @@ export default {
 .ranks .page {
   text-align: center;
   position: absolute;
-  bottom: 10px;
+  bottom: -10px;
   width: 100%;
 }
 

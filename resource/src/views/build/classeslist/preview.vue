@@ -137,6 +137,9 @@ export default {
             else if(textbook[i] == "ELECTIVE") {
               labels.push("选修");
             }
+            else if(textbook[i] == "REQUIRED") {
+              labels.push("必修");
+            }
             else {
               labels.push(textbook[i]);
             }

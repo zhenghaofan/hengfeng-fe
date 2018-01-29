@@ -10,7 +10,7 @@
       </div>
 			<div class="list-content">
 				<p class="tit-resourcename">
-          <a :href="'/views/resource/'+(item.hasMark?'detail':'editres')+'.html?status=temp&id='+item.id" v-html="item.name"></a>
+          <a :href="'/views/resource/'+((item.hasMark||!hasEditAuth)?'detail':'editres')+'.html?status=temp&id='+item.id" v-html="item.name"></a>
         </p>
         <!-- 全部的时候 加个标记显示 -->
         <div class="item-opts" v-if="hasMark === ''" :class="{'t-green': item.hasMark,'t-red': !item.hasMark}">
@@ -78,9 +78,9 @@ export default {
       totalRecordCount: 0,
       //是否全选
       checkedAll: false,
-      //是否有下架权限
-      hasClosedAuth: this.authTempList.indexOf('RESOURCE_CLOSED') !== -1 ? true : false,
       loading: false,
+      //编辑权限
+      hasEditAuth: this.authTempList.indexOf('RESOURCE_TEMPORARY_EDIT') !== -1,
   	};
   },
   props: ['condition', 'hasMark'],
@@ -124,8 +124,8 @@ export default {
     //查看详情
     getDetails: function (typeId, id, hasMark) {
       var preFix = '/views/resource/editres.html?status=temp&id=';
-      //已编的只能查看
-      if (hasMark) {
+      //已编的只能查看 或者没有编辑权限的
+      if (hasMark || !this.hasEditAuth) {
         preFix = '/views/resource/detail.html?status=temp&id=';
       }
       window.location.href = preFix + id;
@@ -153,6 +153,7 @@ export default {
 
         this.list = [];
         this.checkedAll = false;
+        this.selectedIdList = [];
         this.loading = true;
 
         apiUrl.getResourceList(params, 'temporary')
@@ -171,14 +172,14 @@ export default {
           self.loading = false;
        }, function (res) {
           self.loading = false;
-          console.log('getResourceList:' + res.message);
+          self.$message.error(res.message);
        });
     },
   },
   mounted: function () {
-    var self = this;
     this.$nextTick(function () {
-      self.gotoPage(1);
+      this.hasEditAuth = this.authList.tempresource && this.authList.tempresource.edit;
+      this.gotoPage(1);
     });
   }
 };

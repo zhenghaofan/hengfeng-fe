@@ -1,7 +1,8 @@
 //TODO生产环境时 isProEnv改为true
 (function () {
-  var isProEnv =  false,//是否是生产环境
-    loginUrl = isProEnv ? '/login' : 'http://192.168.12.58/login';
+  var isProEnv =  true,//是否是生产环境
+      backUrl = window.location.search.substring(1).substring(8),
+      localUrl = isProEnv ? '' : 'http://127.0.0.1:8080';//http://192.168.12.8
 
   //测试环境需要设置跨域
   if (!isProEnv) {
@@ -14,6 +15,19 @@
       }
     });
   }
+
+  //检查是否登录
+  $.ajax({
+    url: localUrl + '/checklogin',
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded',
+    data: {}
+  }).
+  done(function (res) {
+    if (res.data) {
+      window.location.href = 'home.html';
+    }
+  });
 
   //变量定义
   var $username = $('.j-ipt-username'),//用户名输入框
@@ -106,7 +120,7 @@
 
     //请求登录
     $.ajax({
-      url: loginUrl,
+      url: localUrl + '/login',
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded',
       data: {
@@ -133,9 +147,15 @@
           //标记密码是否更新过
           localStorage.setItem('passwordUpdated', passwordUpdated);
           localStorage.setItem('authorityIds', JSON.stringify(result.authorityIds));
+          //学段学科信息
+          localStorage.setItem('subjectId', result.subjectId || '');
+          localStorage.setItem('learnStageId', result.learnStageId || '');
 
+          //如果是从其他页
+          if (backUrl) {
+            gotoUrl = backUrl;
+          } else if(!passwordUpdated){
           //如果是首次登录就需要修改密码
-          if(!passwordUpdated){
             gotoUrl = '/views/account/editpwd.html';
           }else{
             //非首次
@@ -158,13 +178,13 @@
     always(function (res) {
       self.val('登录').removeClass('btn-disabled');
     });
-
+    
   });
 
-  //判断是否敲击了Enter键
+  //判断是否敲击了Enter键 
   $(document).keyup(function(event){
-    if(event.keyCode == 13){
-      $btnLogin.trigger('click');
-    }
+    if(event.keyCode == 13){ 
+      $btnLogin.trigger('click'); 
+    } 
   });
-})();
+})(); 

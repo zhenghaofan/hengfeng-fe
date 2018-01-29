@@ -8,6 +8,9 @@ export default {
 		let url = template ? uploadPre + attr + '?template=' + template : uploadPre + attr;
 		return axios.postJson(url, params)
 	},
+	deleteExam(id) {
+		return axios.post('/manage/resource/del/' + id)
+	}
 	// batchUploadExam(params) {
 	// 	return axios.postFormData('/manage/resource/import/exercises', params)
 	// },

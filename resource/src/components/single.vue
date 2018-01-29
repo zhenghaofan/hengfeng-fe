@@ -3,7 +3,7 @@
   <div class="control" v-if="titleIndex > -1">
     <label class="label g-vertop">小题{{titleIndex + 1}}：</label>
     <div class="txts">
-      <div :id="getId('little', titleIndex)" v-html="name" contenteditable="true" @blur="namechange($event, titleIndex)" @click.capture="focusDiv($event)"></div>
+      <div v-html="name" contenteditable="true" @blur="namechange($event, titleIndex)"></div>
       <div class="tip" @click="toggleEditor('_name', name, titleIndex)">
         <i class="iconf i-toggle"></i>
         <span>高级模式</span>
@@ -14,8 +14,7 @@
     <div class="control">
       <label class="label g-vertop">选项{{item.label}}：</label>
       <div class="txts">
-        <!-- <input v-model.trim="item.value" /> -->
-        <div :id="getId('options', index)" v-html="item.value" contenteditable="true" @blur="optionschange(index, item.label, $event)" @click.capture="focusDiv($event)"></div>
+        <div v-html="item.value" contenteditable="true" @blur="optionschange(index, item.label, $event)"></div>
         <div class="tip">
           <i class="iconf i-toggle" @click="toggleEditor('topics', item.value, item.label, index)" title="高级模式"></i>
           <i @click="add(index)" class="iconf i-add g-ml10" title="添加"></i>
@@ -39,7 +38,7 @@
   <div class="control editor-container">
     <label class="label g-vertop">解析：</label>
     <div class="txts">
-      <div v-html="analysis" contenteditable="true" @blur="analysischange($event)" :id="getId('analysis', 0)" @click.capture="focusDiv($event)"></div>
+      <div v-html="analysis" contenteditable="true" @blur="analysischange($event)"></div>
       <div class="tip" @click="toggleEditor('analysis', analysis)">
         <i class="iconf i-toggle"></i>
         <span>高级模式</span>
@@ -86,30 +85,28 @@ export default {
       analysis: '',
       defaultOptionsLen: 4,
       initcontent: '',
-      editorId: 'single-' + (+new Date()),
+      editorId: 'single',
       showEditor: false,
       optionsInfo: {},
       modelName: '',
-      allData: {}
     }
   },
   watch: {
     checkTemplate(template) {
-      //是单选题 或者综合题时，检查
-      if (template === 'SINGLE_CHOICE' || template === 'SYNTHESIS') {
+      if (template === 'SINGLE_CHOICE') {
         this.checkForm();
       }
     },
+    /*'sourceData': {
+      handler(val) {
+        console.log(1);
+        this.initData();
+      },
+      deep: true,
+    },*/
     options: {
       handler(val) {
         //返回题目信息
-        // if(val.length) {
-        //   val.forEach((item, index) => {
-        //     if(item.value.indexOf('mathquill-embedded-latex') != -1) {
-        //       this.$emit('markDiv', item.value, 'options_'+index)
-        //     }
-        //   })
-        // }
         this.returnQuestionInfo();
       },
       deep: true,
@@ -124,12 +121,6 @@ export default {
     },
   },
   methods: {
-    getId(str, index) {
-      return str + '_' + index;
-    },
-    focusDiv(e) {
-      this.$emit('focused', e.target.id)
-    },
     namechange(e, index) {
       this.$emit('namechange', e.target.innerHTML, index);
     },
@@ -140,12 +131,8 @@ export default {
       if (model === 'topics') {
         this.optionsInfo.label = label;
         this.optionsInfo.index = index;
-        this.optionsInfo.editor_id = 'options_' + index;
       } else if (model === '_name') {
         this.optionsInfo.index = label;
-        this.optionsInfo.editor_id = 'little_' + label;
-      } else if (model === 'analysis') {
-        this.optionsInfo.editor_id = 'analysis_0';
       } else {
         this.optionsInfo = {};
       }
@@ -161,9 +148,6 @@ export default {
     //更新
     updateContent(model, value, otherInfo) {
       this.closeEditor();
-
-      console.log(otherInfo.editor_id);
-      this.$emit('markDiv', value, otherInfo.editor_id)
       if (model === 'topics') {
         this.options[otherInfo.index].value = value;
         this.topics[otherInfo.label] = value;
@@ -178,6 +162,7 @@ export default {
       } else {
         this[model] = value;
       }
+
       this.initcontent = '';
 
       //返回题目信息
@@ -382,21 +367,6 @@ export default {
       }
     },
 
-    markMathQuill(obj) {
-      for (var key in obj) {
-        if (Array.isArray(obj[key])) {
-          obj[key].forEach((item, index) => {
-            if(item.value.indexOf('mathquill-embedded-latex') != -1) {
-              this.$emit('markDiv', item.value, key+'_'+index)
-            }
-          })
-        } else {
-          if(obj[key].indexOf('mathquill-embedded-latex') != -1) {
-            this.$emit('markDiv', obj[key], key+'_0')
-          }
-        }
-      }
-    },
     //页面初始化
     initData() {
       //有原始值，按原始值初始化
@@ -406,17 +376,9 @@ export default {
         this.initOptions(data.topics);
         // this.name = data.name;
         //答案
-        this.answers = data.answers || '';
+        this.answers = data.answers;
         //解析
-        this.analysis = data.analysis || '';
-
-        this.allData = {
-          options: this.options,
-          analysis: this.analysis
-        }
-        this.$nextTick(() => {
-          this.markMathQuill(this.allData);
-        })
+        this.analysis = data.analysis;
       } else {
         //默认全新的初始化，相当于新建
 

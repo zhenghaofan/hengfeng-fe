@@ -38,7 +38,13 @@
   </template>
 
   <!-- 普通编辑页 start -->
-  <div class="preview-box">
+  <!-- 试卷 -->
+  <div v-if="resource.resourceDictId === 'EXAM_PAPER'">
+    <examdetail :resource="resource" :justpreview="true"></examdetail>
+  </div>
+
+  <!-- 非试卷 -->
+  <div class="preview-box" v-else>
     <div class="icon-blue-trang"></div>
     <!-- 类型,章节,科段信息等 -->
     <div class="resource-info">
@@ -57,6 +63,20 @@
           </template>
         </div>
       </div>
+      <div class="item" v-if="resource.knowledgePointCatalogs">
+        <label>知识点：</label>
+        <div class="detail">
+          <!-- <span class="knwpoint-item">{{resource.knowledgePoint.name}}</span> -->
+          <template v-for="(knwpoint, index) in resource.knowledgePointCatalogs">
+            {{knwpoint.name}}
+            <knwpoint
+              v-for="knwpoint in knwpoint.children"
+              :key="knwpoint.id"
+              :folder="knwpoint">
+            </knwpoint>
+          </template>
+        </div>
+      </div>
       <div class="item" v-if="resource.learnStage">
         <label>科段：</label>
         <div class="detail">{{resource.learnStage.name}}－{{resource.grade.name}}－{{resource.subject.name}}</div>
@@ -65,22 +85,17 @@
         <label>题型：</label>
         <div class="detail">{{resource.childDict.name}}</div>
       </div>
-      <!-- 试卷总题数 TODO -->
-      <div class="g-tr" v-if="resource.resourceDictId === 'EXAM_PAPER'">
-        试卷共{{resource.topics[0].examQuestionCount}}小题
-      </div>
     </div>
-
     <!-- 题目展示 -->
     <div class="question" v-if="resource.template" v-for="(qus, queIdx) in questionList">
       <div class="item">
         <label class="tit">题目：</label>
         <div class="detail">
           <div v-html="qus.name"></div>
-        
+
           <!-- 连线题 -->
           <div class="ligature" v-if="qus.template==='LIGATURE'">
-            <ligature :check-template="'LIGATURE'" type="preview" :source-data="{topics: qus.topics, answers: qus.answers}"></ligature>
+            <ligature :check-template="'LIGATURE'" type="preview" user-class="detail-liga" :source-data="{topics: qus.topics, answers: qus.answers}"></ligature>
           </div>
           <!-- 填空题 -->
           <template v-else-if="qus.template==='GENERAL_GAP_FILLING'"></template>
@@ -93,6 +108,14 @@
               </span>
             </div>
           </template>
+
+          <!-- 选择题 -->
+          <div class="choice" v-else-if="qus.template==='SINGLE_CHOICE' || qus.template==='MULTIPLE_CHOICE'">
+            <span class="choice-item" v-for="(value, key) in qus.topics">
+              {{key}}.<span v-html="value"></span>
+            </span>
+          </div>
+
           <!-- 其他题型 -->
           <div class="choice" v-else>
             <span class="choice-item" v-for="(value, key) in qus.topics">
@@ -100,21 +123,104 @@
             </span>
           </div>
 
+          <div class="synthesis" v-else-if="qus.template == 'SYNTHESIS'">
+            <div v-for="(childexer, index) in qus.children" class="qus-item">
+              <span>小题{{index+1}}: <span v-html="childexer.name"></span></span>
+
+              <!-- 连线题 -->
+              <div class="ligature" v-if="childexer.template==='LIGATURE'">
+                <ligature :check-template="'LIGATURE'" type="preview" :source-data="{topics: childexer.topics, answers: childexer.answers}"></ligature>
+              </div>
+              <!-- 填空题 -->
+              <template v-else-if="childexer.template==='GENERAL_GAP_FILLING'"></template>
+              <!-- 完型填空题 -->
+              <template v-else-if="childexer.template==='CLOZE_GAP_FILLING'">
+                <div class="choice" v-for="(filling, fillIdx) in childexer.topics">
+                  {{fillIdx+1}}.
+                  <span class="choice-item" v-for="(value, key) in filling">
+                    {{key}}.{{value}}
+                  </span>
+                </div>
+              </template>
+              <!-- 其他题型 -->
+              <div class="choice" v-else-if="childexer.template==='SINGLE_CHOICE' || childexer.template==='MULTIPLE_CHOICE'">
+                <span class="choice-item" v-for="(value, key) in childexer.topics">
+                  {{key}}.<span v-html="value"></span>
+                </span>
+              </div>
+              <div class="details" v-if="qus.answers!=undefined && qus.template!=='LIGATURE'">
+
+                <label>【答案】</label>
+                <div class="detail">
+                  <!-- 多选 -->
+                  <template v-if="childexer.template==='MULTIPLE_CHOICE'">
+                    <template v-for="(ans, ansIdx) in childexer_answers">
+                      <template v-if="ansIdx > 0">,</template>{{ans}}
+                    </template>
+                  </template>
+                  <!-- 填空或完型填空题 -->
+                  <template v-else-if="childexer.template==='GENERAL_GAP_FILLING'||childexer.template==='CLOZE_GAP_FILLING'">
+                    <span class="g-mr10" v-for="(ans, ansIdx) in childexer.answers">
+                      {{ansIdx+1}}.<span v-html="ans"></span><template v-if="ansIdx < childexer.answers.length-2">,</template>
+                    </span>
+                  </template>
+                  <!-- 简答题 -->
+                  <template v-else-if="childexer.template === 'ESSAY'">
+                    <span class="g-mr10" v-for="(ans, ansIdx) in childexer.answers">
+                      {{ansIdx + 1}}.<span class="inline-span" v-html="childexer.topics[ansIdx]"></span>
+                      <br>
+                      {{ansIdx + 1}}.<span class="inline-span" v-html="ans"></span>
+                    </span>
+                  </template>
+                  <!-- 判断 -->
+                  <template v-else-if="childexer.template==='JUDGE'">
+                    {{childexer.answers==false?'错':'对'}}
+                  </template>
+                  <template v-else>
+                    <div v-html="childexer.answers"></div>
+                  </template>
+                </div>
+              </div>
+              <div class="details">
+                <label>【解析】</label>
+                <div class="detail">
+                  <!--简答题||连线题||完型填空 -->
+                  <template v-if="childexer.template==='ESSAY'||childexer.template==='CLOZE_GAP_FILLING'">
+                    <div v-for="(analysis, ansIdex) in childexer.analysis">
+                      {{ansIdex+1}}.<div v-html="analysis" class="analysis"></div>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div v-html="childexer.analysis" class="analysis"></div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-      <div class="item" v-if="qus.answers!=undefined && qus.template!=='LIGATURE'">
+      <div class="item" v-if="qus.answers!=undefined && qus.template!=='LIGATURE'&&qus.template !== 'SYNTHESIS'">
         <label>【答案】</label>
         <div class="detail">
           <!-- 多选 -->
           <template v-if="qus.template==='MULTIPLE_CHOICE'">
             <template v-for="(ans, ansIdx) in qus.answers">
-              <template v-if="ansIdx > 0">,</template>{{ans}}
+              <template v-if="ansIdx > 0">,</template><span v-html="ans"></span>
             </template>
           </template>
           <!-- 填空或完型填空题 -->
           <template v-else-if="qus.template==='GENERAL_GAP_FILLING'||qus.template==='CLOZE_GAP_FILLING'">
             <span class="g-mr10" v-for="(ans, ansIdx) in qus.answers">
-              {{ansIdx+1}}.{{ans}}<template v-if="ansIdx < qus.answers.length-2">,</template>
+              {{ansIdx+1}}.<span v-html="ans"></span><template v-if="ansIdx < qus.answers.length-2">,</template>
+            </span>
+          </template>
+          <!-- 简答题 -->
+          <template v-else-if="qus.template === 'ESSAY'">
+            <span class="g-mr10" v-for="(ans, ansIdx) in qus.answers">
+              {{ansIdx + 1}}.<span class="inline-span" v-html="qus.topics[ansIdx]"></span>
+              <br>
+              {{ansIdx + 1}}.<span class="inline-span" v-html="ans"></span>
             </span>
           </template>
           <!-- 判断 -->
@@ -122,7 +228,7 @@
             {{qus.answers==false?'错':'对'}}
           </template>
           <template v-else>
-            {{qus.answers}}
+            <div v-html="qus.answers"></div>
           </template>
         </div>
       </div>
@@ -148,7 +254,7 @@
           </template>
         </div>
       </div>
-      <div class="item" v-if="qus.analysis">
+      <div class="item" v-if="qus.analysis  && qus.template != 'SYNTHESIS'">
         <label>【解析】</label>
         <div class="detail">
           <!--简答题||连线题||完型填空 -->
@@ -171,7 +277,7 @@
     </div>
 
     <!-- 教案/课件/导学案之类 -->
-    <div class="question" v-show="!resource.template">
+    <div class="question" v-else>
       <!--资源描述 教案的资源描述-->
       <template v-if="resource.description">
         <div class="item">
@@ -187,19 +293,22 @@
         <div class="item">
           <label>资源文件：</label>
           <div class="detail">
-            <div class="g-mb10" v-if="resource.sourceFile.type === 'IMAGE' || resource.sourceFile.type === 'VIDEO' || resource.sourceFile.type === 'AUDIO'">  
+            <div class="g-mb10" v-if="resource.sourceFile.type === 'IMAGE'">
               <img class="preview-img g-block" v-if="resource.sourceFile.type === 'IMAGE'" :src="resource.sourceFile.path" />
               <template v-else><i class="iconf i-image g-mr10"></i>无指定</template>
             </div>
-
+            <div class="g-mb10" v-if="resource.backgroundFileId">
+              <img class="preview-img g-block" v-if="resource.backgroundFile.path" :src="resource.backgroundFile.path" />
+              <template v-else><i class="iconf i-image g-mr10"></i>无指定</template>
+            </div>
             <div class="g-mb10">
               <i class="iconf" :class="{'i-video': resource.backgroundFileId, 'i-attach': !resource.backgroundFileId}"></i>
               <span class="preview-link">{{resourceName}}</span>
             </div>
-            
-            <!-- office 文件 -->
-            <div class="g-mb10" v-if="isOfficeDoc">
-              <a :href="previewDocLink" target="_blank" class="btn btn-green btn-s">预览</i></a>
+
+            <!-- pdf预览 -->
+            <div class="g-mb10" v-if="officeViewLink">
+              <a :href="officeViewLink" target="_blank" class="btn btn-s btn-green f-r">预览</a>
             </div>
 
             <!-- 视频 -->
@@ -209,18 +318,13 @@
             </video>
 
             <!-- 音频 -->
-            <audio class="g-mb10" v-if="resource.sourceFileId.type === 'AUDIO'" :src="resource.sourceFile.path" controls="controls">
+            <audio class="g-mb10" v-if="resource.sourceFile.type === 'AUDIO'" :src="resource.sourceFile.path" controls="controls">
               Your browser does not support the audio element.
             </audio>
 
           </div>
         </div>
       </template>
-
-      <!-- pdf预览 试卷的先加预览 -->
-      <div class="pdf-preview" id="pageContainer" v-show="resourceDictId==='TEACHING_PLAN' || resourceDictId==='LEARNING_GUIDE' || resourceDictId==='COURSEWARE' || resourceDictId ==='EXAM_PAPER'">
-
-      </div>
 
     </div>
     <!-- 教案/课件/导学案之类\ -->
@@ -237,7 +341,7 @@
 	<div class="g-tc">
     <a class="btn btn-green" :href="backUrl">返回列表</a>
   </div>
-  
+
 </el-form>
 </template>
 <script>
@@ -249,6 +353,8 @@ import GL_CONST from '@/confdata/constant'
 import apiUrl from '@/api/url.js'
 import urlConfig from '../../../../config/url.config.js'
 import MyMsgBox from '@/components/MyMsgBox/index.js'
+import examdetail from '@/components/examdetail'
+
 Vue.use(MyMsgBox);
 
 //连线题
@@ -334,11 +440,14 @@ export default {
       //office文档预览地址
       previewDocLink: '',
       isOfficeDoc: false,
+      //PDF预览地址
+      officeViewLink: '',
   	}
   },
   props: ['backUrl'],
   components: {
     ligature,
+    examdetail
   },
   methods: {
   	setTipsShow: function (type) {
@@ -371,11 +480,11 @@ export default {
           //审核时间
           self.auditTime = statusLog.auditTime;
           //审核人
-          self.auditorName = statusLog.auditorName;
+          self.auditorName = statusLog.auditor.name;
           //退回原因
           self.rejectedRemark = statusLog.remark;
         }
-        
+
         //报错处理
         self.errorLog = errorLog || null;
         if (errorLog) {
@@ -396,13 +505,13 @@ export default {
             'UPDATE': '资源更新',
             'CLOSED': '下架'
           };
-          if (errorLog.handleType !== 'UNDONE') {          
+          if (errorLog.handleType !== 'UNDONE') {
             //处理时间
             self.handleTime = errorLog.reportTime;
             //处置人
             self.handlerName = errorLog.handler.name;
             //错误判定
-            self.hasError = errorLog.hasError ? '确有错误' : '核实无误';  
+            self.hasError = errorLog.hasError ? '确有错误' : '核实无误';
           }
           //处置方式
           self.handleType = handleType[errorLog.handleType];
@@ -425,13 +534,13 @@ export default {
           self.textbookName = _resource.textbook.name;
           self.termDictName = GL_CONST.TERMOBJ[_resource.textbook.termDictId];
         }
-				
+
 				//题型类别 习题才有
         if (_resource.childDictId) {
           self.childDitTemplate = _resource.template;
           self.childDictName = GL_CONST.EXESTYPESOBJ[self.childDitTemplate];
         }
-  			
+
         //如果是填空题 或 简答题 进行数据重组
         if (_resource.childDictId && (_resource.childDictId === 'FILL_IN_THE_BLANK' || _resource.childDictId === 'SHORT_ANSWER')) {
           var curLen = 0;
@@ -442,17 +551,19 @@ export default {
           }
         }
 
-        //office文档预览
-        if (_resource.sourceFile && (_resource.sourceFile.type === 'WORD' || _resource.sourceFile.type === 'PPT' || _resource.sourceFile.type === 'EXCEL')) {
-          self.previewDocLink = "javascript:POBrowser.openWindow('" + _resource.sourceFile.path + "', 'width=1200px;height=800px;')";
-          self.isOfficeDoc = true;
+        //PDF预览
+        var path;
+        //office转成的pdf文件
+        if (_resource.officeViewSourceFile && _resource.officeViewSourceFile.type === 'PDF') {
+          path = _resource.officeViewSourceFile.path;
+          self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(path);
+        }
+        //本身是pdf的文件
+        if (_resource.sourceFile && _resource.sourceFile.type === 'PDF') {
+          path = _resource.sourceFile.path;
+          self.officeViewLink = 'pdfview.html?file=' + encodeURIComponent(path);
         }
 
-        //PDF预览
-        if (_resource.sourceFile && _resource.sourceFile.type === 'PDF') {
-          self.previewPDF(_resource.sourceFile.path);
-        }
-        
 			}, function (res) {
 			console.log('getResourceDetail err:' + res.message);
 			});
@@ -535,6 +646,7 @@ export default {
       padding: 0 20px 0 30px;
       margin-bottom: 10px;
       vertical-align: top;
+
       label {
         display: inline-block;
         color: #999;
@@ -554,6 +666,7 @@ export default {
     .item {
       display: flex;
       margin-bottom: 8px;
+      word-break: break-all;
       label {
         box-sizing: border-box;
         min-width: 90px;
@@ -561,7 +674,7 @@ export default {
       }
     }
     .tit {
-      padding-left: 8px;    
+      padding-left: 8px;
     }
     .choice {
       .choice-item {
@@ -588,7 +701,7 @@ export default {
     border-bottom: none;
   }
 }
-  
+
 
 .res-detail {
   padding-left: 20px;
@@ -612,7 +725,7 @@ export default {
   background: #fff;
   text-align: center;
   border-radius: 20px;
-  color: #f25454; 
+  color: #f25454;
 }
 /* 等待处理 */
 .res-detail .aud-box, .res-detail .waithandler-box {
@@ -806,5 +919,8 @@ video{
 .preview-img {
   max-width: 700px;
   max-height: 300px;
+}
+.inline-span p {
+  display: inline-block;
 }
 </style>

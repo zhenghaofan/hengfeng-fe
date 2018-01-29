@@ -192,6 +192,7 @@ export default {
 
         this.list = [];
         this.checkedAll = false;
+        this.selectedIdList = [];
         this.loading = true;
 
         apiUrl.getResourceList(params, 'myoff')

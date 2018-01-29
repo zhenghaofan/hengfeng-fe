@@ -3,22 +3,22 @@
     <ul class="m-lmenu">
       <li v-for="(menu, mIndex) in initData.leftbar.menus" v-if="authTempList.indexOf(menu.authId) !== -1 || menu.isNeccesary">
         <template v-if="menu.menus">
-          <div 
-            class="m-lmenu-name" 
+          <div
+            class="m-lmenu-name"
             @click="toggleCollapse(initData.leftbar.menus[mIndex])">
             <span class="g-lm"><i :class="{'i-arr-r': menu.isCollapsed,'i-arr-b': !menu.isCollapsed}"><i class="i-arr-ra"></i><i class="i-arr-rb"></i></i></span>
             <a><i class="icon i-mine g-mr10"></i>{{menu.name}}</a>
           </div>
           <ul class="m-lsubmenu" v-show="!menu.isCollapsed">
             <li v-for="(submenu, sIndex) in menu.menus"
-               v-if="authTempList.indexOf(submenu.authId) !== -1 || menu.isNeccesary">           
+               v-if="authTempList.indexOf(submenu.authId) !== -1 || menu.isNeccesary">
               <a :href="submenu.href" :class="{'z-selected': initData.curMenuId === submenu.id}">{{submenu.name}}</a>
             </li>
           </ul>
         </template>
 
         <a v-else :href="menu.href" :class="{'z-selected': initData.curMenuId == menu.id}"><i class="icon g-mr10" :class="initData.leftbar.clsNameObj[menu.id]"></i>{{menu.name}}</a>
-        
+
       </li>
     </ul>
   </div>
@@ -67,7 +67,7 @@ export default {
       }
     },
   },
-  mounted: function () {  
+  mounted: function () {
     this.init();
   },
 }
@@ -102,7 +102,7 @@ export default {
   border-radius: 5px;
   color: #999;
 }
-.m-lmenu-name { 
+.m-lmenu-name {
   margin-bottom: 5px;
   border-radius: 5px;
   padding-left: 20px;

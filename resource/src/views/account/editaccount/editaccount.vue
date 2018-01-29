@@ -50,7 +50,7 @@
       <div class="control">
         <label class="label">直接上级</label>
         <div class="txts">
-          <el-select class="select" v-model="parentId" placeholder="请选择直接上级">
+          <el-select class="select" v-model="parentId" @change="getParentRoleName" placeholder="请选择直接上级">
             <el-option
               v-for="item in highRoleList"
               :key="item.id"
@@ -127,6 +127,17 @@ export default {
     singleSelect
   },
   methods:{
+    //获取上级角色名
+    getParentRoleName() {
+      var list = this.highRoleList;
+      for (var i = 0, len = list.length; i < len; i++) {
+        if (list[i].id === this.parentId) {
+          this.parentRoleName = list[i].roleName;
+          break;
+        }
+      }
+      
+    },
     //清除错误提示
     clearErrorTips: function () {
       this.hasError = false;

@@ -68,6 +68,7 @@ new Vue({
       }
       //重置搜索条件
       this.resetCondition();
+      this.keyword = '';
     },
     //设置搜索条件
     setFilters: function (filterInfo) {
@@ -82,8 +83,8 @@ new Vue({
       var type = this.searchType;
 
       this.searchCondition = {
-        learnStageId: '',
-        subjectId: '',
+        learnStageId: window.localStorage.getItem('learnStageId'),
+        subjectId: window.localStorage.getItem('subjectId'),
         resourceDictId: '',
         childDictId: '',
         gradeId: '',

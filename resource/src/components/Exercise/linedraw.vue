@@ -1,5 +1,5 @@
 <template>
-	<div class="liga-content f-clearfix" :class="{'liga-preview': type}">
+	<div class="liga-content f-clearfix" :class="[{'liga-preview': type}, userClass]">
 		<canvas id="liga-canvas" class="liga-canvas"></canvas>
 		<div class="liga-content-inner f-clearfix" v-if="type">
 	    <div class="liga-l">
@@ -26,16 +26,7 @@
 	      <div class="liga-item" v-for="(item, lIndex) in leftArr">
 	      	<span class="liga-opts">
 	      		<i class="iconf i-add" @click="addItem(lIndex, 'left')" title="增加"></i>
-	          <i class="iconf i-image" title="传图"></i>
-	          <!-- <el-upload
-						  class="upload-demo"
-						  action="/manage/file/upload"
-						  :limit="1"
-						  :on-success=""
-						  accept="image/jpeg|image/png|image/bmp">
-						  <i class="iconf i-image" title="传图"></i>
-						  <div slot="tip" class="el-upload__tip">只能上传jpg/png/bmp文件，且不超过200kb</div>
-						</el-upload> -->
+	          <i class="iconf i-image" title="传图" @click="showUpload(lIndex, 'left')"></i>
 	          <i class="iconf i-trash" @click="delItem(lIndex, 'left')" title="删除"></i>
 	      	</span>
 	        <div class="title" contenteditable="true" @blur="topicsItemChanged($event, 'left', lIndex)" v-html="item"></div>
@@ -59,11 +50,27 @@
 	        <div class="title" contenteditable="true" @blur="topicsItemChanged($event, 'right', rIndex)" v-html="item"></div>
 	        <div class="opts">
 	          <i class="iconf i-add" @click="addItem(rIndex, 'right')" title="增加"></i>
-	          <i class="iconf i-image" title="传图"></i>
+	          <i class="iconf i-image" title="传图" @click="showUpload(rIndex, 'right')"></i>
 	          <i class="iconf i-trash" @click="delItem(rIndex, 'right')" title="删除"></i>
 	        </div>
 	      </div>
 	    </div>
+	    <el-dialog class="upload-dialog" title="上传图片" :visible.sync="isUploadShow" :close-on-click-modal="false">
+	    	<el-upload
+				  class="upload-demo g-tc"
+  				drag
+				  action="/manage/file/upload"
+				  v-show="isUploadShow"
+				  :on-success="insertToList"
+				  :on-error="uploadError"
+				  :show-file-list="false"
+				  accept="image/jpeg,image/png,image/bmp">
+				  <i class="el-icon-upload"></i>
+	  			<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				  <div class="el-upload__tip" slot="tip">只能上传jpg/png/bmp文件，且宽不超过200px，大小不超过200kb</div>
+				</el-upload>
+	    </el-dialog>
+	    
 	  </div>
   </div>
 </template>
@@ -92,12 +99,29 @@ export default {
 			itemHeight: 50,
 			leftArr: [],
 			rightArr: [],
+			isUploadShow: false,//显示上传框
+			curUploadInfo: {//当前在哪边列表上传
+				index: 0,
+				type: '',
+			},
+			userClass: '',
 		};
 	},
-	props: ['sourceData', 'checkTemplate', 'type'],
+	props: ['sourceData', 'checkTemplate', 'type', 'previewingExer'],//, 'userClass'
 	watch: {
+		/*'sourceData.topics'(val) {
+			if (this.type) {
+				this.initData();
+			}
+		},*/
+		previewingExer(val) {
+			if (val && this.type) {
+				this.initData();
+			}
+		},
 		checkTemplate(template) {
-      if (template === 'LIGATURE') {
+			//是连线题 或者综合题时，检查
+      if (template === 'LIGATURE' || template === 'SYNTHESIS') {
         this.checkForm();
       }
     },
@@ -134,6 +158,40 @@ export default {
 		},
 	},
 	methods: {
+		//显示上传框
+		showUpload(index, type) {
+			this.isUploadShow = true;
+			this.curUploadInfo.index = index;
+			this.curUploadInfo.type = type;
+		},
+		//上传成功
+		insertToList(response, file, fileList) {
+			var curUploadInfo = this.curUploadInfo,
+					type = curUploadInfo.type,
+					index = curUploadInfo.index,
+					self = this,
+					html;
+
+			html = '<img src=' + response.data.sourceFile.path + ' />';
+			//插入图片
+			this[type + 'Arr'].splice(index, 1, html);
+
+			//清除当前正在上传的数据
+			this.curUploadInfo = {};
+
+			//隐藏上传框
+			this.isUploadShow = false;
+
+			//重画(可能上传了图片后输入框高度改变了)
+			setTimeout(function() {
+				self.draw(self.leftArr.length, self.rightArr.length);		
+			}, 600);
+			//this.draw(this.leftArr.length, this.rightArr.length);		
+		},
+		//上传失败
+		uploadError(err, file, fileList) {
+			this.$message.error(err);
+		},
 		//把答案由序号变成文本
 		changeAnswersToText() {
 			var answers = {},
@@ -277,7 +335,7 @@ export default {
 			//画线规则，左到右为连线，右到左为取消
 			var leftList = this.leftArr,
 					rightList = this.rightArr;
-			console.log(this.answers);
+
 			//左边
 			if (type === 'left') {
 				//右边没选中，是要连线
@@ -365,11 +423,11 @@ export default {
 		},
 		//画图
 		draw(leftLen, rightLen) {
-			var canvas = document.querySelector('.liga-canvas'),
+			var canvas = document.querySelector('.' +  this.userClass+ ' .liga-canvas'),
 					context = canvas.getContext('2d'),
 					list = this.answers,
 					offset = Math.abs(this.lineWidth / 2),
-					drawWrap = document.querySelector('.liga-content'),
+					drawWrap = document.querySelector('.' + this.userClass + ' .liga-content-inner'),
 					pointLeft,
 					pointRight;
 
@@ -403,42 +461,49 @@ export default {
 		},
 		//获取点的位置
 		getPointPosition(index, type) {
-			var item = document.querySelectorAll('.liga-content .liga-item')[0],
-					itemOuterHeight = item.offsetHeight + 15,
+			var list = document.querySelectorAll('.' + this.userClass + ' .liga-l .liga-item'),
+					item = list[0],
 					point;
 
 			//左边时，value就是左边的index值
 			if (type === 'left') {
-				//index = value;
-				item = document.querySelectorAll('.liga-l .liga-item')[0];
 				point = {
 					x: item.offsetWidth,
-					y: item.offsetTop + itemOuterHeight * index  + item.offsetHeight / 2,
+					//y: item.offsetTop + itemOuterHeight * index  + item.offsetHeight / 2,
+					y: item.offsetTop + this.getItemListHeight(list, index)  + 20,
 				};
 			} else {
 			//右边时，是右边的值
 				//先找到右边值的序号
-				//index = this.topics[1].indexOf(value);
-				item = document.querySelectorAll('.liga-r .liga-item')[0];
-				//item = document.querySelectorAll('.liga-r .liga-item')[index];
+				list = document.querySelectorAll('.' + this.userClass + ' .liga-r .liga-item');
+				item = list[0];
 				point = {
 					x: item.offsetLeft,
-					y: item.offsetTop + itemOuterHeight * index  + item.offsetHeight / 2,
+					//y: item.offsetTop + itemOuterHeight * index  + item.offsetHeight / 2,
+					y: item.offsetTop + this.getItemListHeight(list, index)  + 20,
 				};
 			}
 			return point;
 		},
+		//获取列表的高度
+		getItemListHeight(list, endIndex) {
+			var resultHeight = 0;
+			for (var i = 0; i < endIndex; i++) {
+				resultHeight += (list[i].offsetHeight + 15);
+			}
+			return resultHeight;
+		},
 		//初始化canvas
 		initCanvas(leftLen, rightLen) {
-			var drawWrap = document.querySelector('.liga-content'),
-					canvas = document.querySelector('.liga-canvas'),
+			var drawWrap = document.querySelector('.' + this.userClass + ' .liga-content-inner'),
+					canvas = document.querySelector('.' + this.userClass + ' .liga-canvas'),
 					context = canvas.getContext('2d'),
 					itemOuterHeight;
 
 			//设置画布区域大小
 			canvas.width = drawWrap.offsetWidth;
 			if (leftLen && rightLen) {
-				itemOuterHeight = document.querySelectorAll('.liga-l .liga-item')[0].offsetHeight + 15;
+				itemOuterHeight = document.querySelectorAll('.' + this.userClass + ' .liga-l .liga-item')[0].offsetHeight + 15;
 				canvas.height = itemOuterHeight * (Math.max(leftLen, rightLen));
 			} else {
 				canvas.height = drawWrap.offsetHeight || 150;//拿不到高度先给个值
@@ -454,7 +519,8 @@ export default {
 		},
 		//页面初始化
     initData() {
-    	var data, topics, answers, item;
+    	var self = this,
+    			data, topics, answers, item;
 
     	//初始化数据
     	if (this.sourceData && this.sourceData.topics) {
@@ -470,7 +536,11 @@ export default {
     		this.initTopics();
     	}
     	//初始化canvas
-			this.initCanvas();
+    	setTimeout(function () {
+    		//self.initCanvas();
+    		self.draw();
+    	}, 1000);
+			//this.initCanvas();
     },
     //初始化topics
     initTopics(topics) {
@@ -485,6 +555,9 @@ export default {
    			var leftList = topics[0],
    					rightList = topics[1];
 
+   			this.leftArr = [];
+   			this.rightArr = [];
+
     		for (var i = 0, len1 = leftList.length; i < len1; i++) {
     			this.leftArr.push(leftList[i]);	
 	  		}
@@ -497,8 +570,9 @@ export default {
 	},
 	mounted: function () {
     this.$nextTick(function () {
+    	this.userClass = 'lined-' + (+new Date());
       //页面初始化
-      this.initData();
+    	this.initData();
     });
   },
   updated() {
@@ -526,9 +600,16 @@ export default {
     .title {
       display: inline-block;
       width: 220px;
-      height: 35px;
-      line-height: 35px;
+      /*height: 35px;*/
+      height: auto;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      line-height: 25px;
       overflow: hidden;
+      img {
+      	max-width: 200px;
+  			max-height: 200px;
+      }
     }
     .opts {
       position: absolute;
@@ -585,10 +666,17 @@ export default {
 	margin-top: 0;
 	.liga-l,
 	.liga-r {
-		width: 260px;
+		max-width: 150px;
+		.title {
+			max-width: 100px;
+			img {
+      	max-width: 100px;
+  			max-height: 100px;
+      }
+		}
 	}
 	.liga-r {
-		margin-left: 100px;
+		margin-left: 150px;
 	}
 	.iconf {
 		cursor: default;

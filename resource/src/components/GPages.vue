@@ -35,7 +35,7 @@
       <!-- <i class="i-arr-r i-arr-r4" @click.stop><i class="i-arr-ra" @click.stop></i><i class="i-arr-rb" @click.stop></i></i> -->
     </a>
 
-    <span class="g-goto" v-if="!notNeedGoto">前往第<input class="ipt-page" v-model.number="curPage" @keyup="fixPageNum" @blur="gotoPage(curPage)" maxlength="4" />页</span>
+    <span class="g-goto" v-if="!notNeedGoto">前往第<input class="ipt-page" v-model.number="curPage" @keyup="fixPageNum" @keyup.enter="gotoPage(curPage)" @blur="gotoPage(curPage)" maxlength="4" />页</span>
   </div>
 </template>
 
@@ -102,10 +102,11 @@ export default {
 .g-pages a {
   box-sizing: border-box;
   display: inline-block;
-  width: 30px;
+  min-width: 30px;
   height: 30px;
-  line-height: 30px;
+  line-height: 26px;
   margin: 0 4px;
+  padding: 2px 4px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #fff;

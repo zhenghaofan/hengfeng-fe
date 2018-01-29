@@ -10,22 +10,22 @@
           :class="{'z-selected': type.checked}"
           v-for="(type, index) in sortTypeList">{{type.name}}</a>
       </span>
-      <span class="f-r"><a href="#" @click.prevent="showConfirmBox(false)" class="g-mr20"><i class="iconf i-off-blue"></i>下架</a><!-- <a href="#" class="g-mr20"><i class="iconf i-download-blue"></i>下载</a><i class="icon i-resources"></i> --><span class="g-mr20"><i class="iconf i-resources-blue"></i>资源量：{{totalRecordCount}}</span></span>
+      <span class="f-r"><a href="#" v-if="hasClosedAuth" @click.prevent="showConfirmBox(false)" class="g-mr20"><i class="iconf i-off-blue"></i>下架</a><!-- <a href="#" class="g-mr20"><i class="iconf i-download-blue"></i>下载</a><i class="icon i-resources"></i> --><span class="g-mr20"><i class="iconf i-resources-blue"></i>资源量：{{totalRecordCount}}</span></span>
     </div>
 
 		<div class="resource-list f-clearfix" v-for="(item, index) in list" :id="item.id">
-			<div class="list-icons">
+			<div class="list-icons" v-if="hasClosedAuth">
 				<span>
 					<i class="icon i-check g-mb10" :class="{'i-check-s': item.checked}"  @click="setSelArr(item.id, index)"></i>
 				</span>
 			</div>
-			<div class="list-img" :class="getCoverClass(item.resourceDictId)" @click="getDetails(item.resourceDictId, item.id)">
+			<div class="list-img" :class="[getCoverClass(item.resourceDictId), {'g-ml10': !hasClosedAuth}]" @click="getDetails(item.resourceDictId, item.id)">
       </div>
 			<div class="list-content">
 				<p class="tit-resourcename"><a :href="'/views/resource/detail.html?status=avail&id='+item.id" v-html="item.name"></a></p>
         <div class="item-opts">
-          <a href="#" @click.prevent="showConfirmBox(item.id, item.checked)"><i class="iconf i-off-blue" title="下架"></i></a>
-          <a :href="'/manage/resource/available/download?id='+item.id" target="_blank" class="g-mlr10" title="下载"><i class="iconf i-download-blue"></i></a>
+          <a href="#" v-if="hasClosedAuth" @click.prevent="showConfirmBox(item.id, item.checked)"><i class="iconf i-off-blue" title="下架"></i></a>
+          <a v-if="hasDownloadAuth" :href="'/manage/resource/available/download?id='+item.id" target="_blank" class="g-mlr10" title="下载"><i class="iconf i-download-blue"></i></a>
         </div>
 				<p class="tit-sub">资源类型：{{getResourceName(item.resourceDictId)}}<span class="g-ml40 g-mr10">{{item.creatorName}}</span>创建于{{item.createTime}}</span></p>
 				<p class="m-labels">
@@ -102,7 +102,9 @@ export default {
       //是否全选
       checkedAll: false,
       //是否有下架权限
-      hasClosedAuth: this.authTempList.indexOf('RESOURCE_CLOSED') !== -1 ? true : false,
+      hasClosedAuth: this.authTempList.indexOf('RESOURCE_AVAILABLE_CLOSED') !== -1,
+      //是否有下载权限
+      hasDownloadAuth: this.authTempList.indexOf('RESOURCE_AVAILABLE_DOWNLOAD') !== -1,
       loading: false,
   	};
   },
@@ -191,6 +193,7 @@ export default {
 
         this.list = [];
         this.checkedAll = false;
+        this.selectedIdList = [];
         this.loading = true;
 
         apiUrl.getResourceList(params, 'avaliable')
@@ -209,7 +212,7 @@ export default {
           self.loading = false;
        }, function (res) {
           self.loading = false;
-          console.log('getResourceList:' + res.message);
+          self.$message.error(res.message);
        });
     },
     //设置选择框
@@ -322,9 +325,8 @@ export default {
     }
   },
   mounted: function () {
-    var self = this;
     this.$nextTick(function () {
-      self.gotoPage(1);
+      this.gotoPage(1);
     });
   }
 };

@@ -1,9 +1,15 @@
 <template>
 <div>
-  <div class="control">
+  <div class="control" v-if="titleIndex > -1">
+    <label class="label g-vertop">小题{{titleIndex + 1}}：</label>
+    <div class="txts">
+      <editor :editor-id="editorId" @contentchange="contentchange" @lowercrossline="addAnswerOption" @parenthese="addAnswerOption" :init-content="title" :watch-init-content="watchInitContent" :options-info="optionsInfo"></editor>
+    </div>
+  </div>
+  <div class="control" v-else>
     <label class="label g-vertop">题干：</label>
     <div class="txts">
-      <editor :editor-id="'gf-name'" @contentchange="contentchange" @lowercrossline="add(answers.length-1)" @parenthese="add(answers.length-1)" :init-content="name" :options-info="optionsInfo"></editor>
+      <editor :editor-id="editorId" @contentchange="contentchange" @lowercrossline="addAnswerOption" @parenthese="addAnswerOption" :init-content="title" :watch-init-content="watchInitContent" :options-info="optionsInfo"></editor>
     </div>
   </div>
 
@@ -34,7 +40,7 @@
     </div>
   </div>
 
-  <editor-dialog :editorId="editorId" :model-name="modelName" :options-info="optionsInfo" :initcontent="initcontent" :showEditor="showEditor" @fillRichText="updateContent" @closeEditor="closeEditor"></editor-dialog>
+  <editor-dialog :editorId="editorId2" :model-name="modelName" :options-info="optionsInfo" :initcontent="initcontent" :showEditor="showEditor" @fillRichText="updateContent" @closeEditor="closeEditor"></editor-dialog>
 
 </div>
 </template>
@@ -43,6 +49,7 @@
 import Vue from 'vue'
 import editorDialog from '@/components/editorDialog'
 import editor from '@/components/umeditor/Editor'
+import utils from '@/utils/'
 
 export default {
   components: {
@@ -65,13 +72,13 @@ export default {
     checkTemplate: {
 
     },
-    /*name: {
+    name: {
       default: ''
-    }*/
+    }
   },
   data() {
     return {
-      name: '',
+      //name: '',
       title: '',
       //选项 数组
       options: [],
@@ -83,10 +90,13 @@ export default {
       analysis: '',
       defaultOptionsLen: 1,
       initcontent: '',
-      editorId: 'generalfill',
+      editorId: 'generalfill-' + (+new Date()),
+      editorId2: 'generalfill-2-' + (+new Date()),
       showEditor: false,
       optionsInfo: {},
       modelName: '',
+      innerData: {},
+      watchInitContent: true,
     }
   },
   watch: {
@@ -95,13 +105,19 @@ export default {
         this.checkForm();
       }
     },
-    'sourceData': {
+    /*'sourceData': {
       handler(val) {
         //
+        this.innerData = utils.cloneObj(val);
+        console.log('sourceData');
         this.initData();
       },
       deep: true,
-    },
+    },*/
+    /*title() {
+      //返回题目信息
+      this.returnQuestionInfo();
+    },*/
     options: {
       handler(val) {
         //返回题目信息
@@ -119,9 +135,14 @@ export default {
     },
   },
   methods: {
+    addAnswerOption(info) {
+      this.add(this.answers.length-1);
+    },
     contentchange(info) {
       //this.name = info.html;
       this.title = info.html;
+       //返回题目信息
+      this.returnQuestionInfo();
     },
     //显示编辑器
     toggleEditor(model, value, index) {
@@ -144,11 +165,12 @@ export default {
     //更新
     updateContent(model, value, otherInfo) {
       this.closeEditor();
+
       if (model === 'topics') {
         this.answers[otherInfo.index] = value;
-      } else if (this.titleIndex > -1) {
-        this.$emit('contentchange', this.titleIndex, {
-          name: this.title,
+      } else if (model === '_name') {
+        this.$emit('namechange', value, otherInfo.index);
+        this.$emit('contentchange', otherInfo.index, {
           topics: this.topics,
           answers: this.answers,
           analysis: this.analysis,
@@ -265,19 +287,19 @@ export default {
     initData() {
       //有原始值，按原始值初始化
       if (this.sourceData && this.sourceData.topics) {
-        var data = this.sourceData;
+        var data = utils.cloneObj(this.sourceData);
         //标题
-        this.name = data.name;
-        this.title = data.name;
-        this.topics = data.topics;
+        //this.name = data.name;
+        this.title = data.name || '';
+        this.topics = data.topics || [];
         //答案
-        this.answers = data.answers;
+        this.answers = data.answers || [''];
         //解析
-        this.analysis = data.analysis;
+        this.analysis = data.analysis || '';
       } else {
         //默认全新的初始化，相当于新建
         //标题
-        this.name = '';
+        //this.name = '';
         this.title = '';
         this.topics = [];
         //答案
@@ -293,6 +315,8 @@ export default {
     this.$nextTick(function () {
       //页面初始化
       this.initData();
+      this.watchInitContent = false;
+      //let ue = UM.getEditor('gf-name')
     });
   },
 }

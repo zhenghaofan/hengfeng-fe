@@ -4,7 +4,7 @@
     <label class="label g-vertop">小题{{titleIndex + 1}}：</label>
     <div class="txts">
       <div v-html="name" contenteditable="true" @blur="namechange($event, titleIndex)"></div>
-      <div class="tip" @click="toggleEditor(_name, name, titleIndex)">
+      <div class="tip" @click="toggleEditor('_name', name, titleIndex)">
         <i class="iconf i-toggle"></i>
         <span>高级模式</span>
       </div>
@@ -88,7 +88,7 @@ export default {
       analysis: '',
       defaultOptionsLen: 4,
       initcontent: '',
-      editorId: 'multi',
+      editorId: 'multi-' + (+new Date()),
       showEditor: false,
       optionsInfo: {},
       modelName: '',
@@ -118,7 +118,7 @@ export default {
   },
   methods: {
     namechange(e, index) {
-      this.$emit('namechange', e.target.innerText, index);
+      this.$emit('namechange', e.target.innerHTML, index);
     },
     //显示编辑器
     toggleEditor(model, value, label, index) {

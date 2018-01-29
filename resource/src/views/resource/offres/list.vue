@@ -2,30 +2,30 @@
   <div v-if="list.length > 0">
     <!-- 排序方式 -->
     <div class="g-avai-sort f-clearfix">
-      <span class="g-mr40 t-gray" v-if="hasClosedAuth" @click="setSelArrAll"><i class="icon i-check g-mr5" :class="{'i-check-s': checkedAll}"></i>全选</span>
-      <span class="t-sortway" :class="{'g-ml10': !hasClosedAuth}"><i class="iconf i-sortway g-mr5"></i>排序方式：
+      <span class="g-mr40 t-gray" v-if="hasClosedAuth && !isAllSelf" @click="setSelArrAll"><i class="icon i-check g-mr5" :class="{'i-check-s': checkedAll}"></i>全选</span>
+      <span class="t-sortway" :class="{'g-ml10': !hasClosedAuth || isAllSelf}"><i class="iconf i-sortway g-mr5"></i>排序方式：
         <a href="#" 
           class="g-ml20" 
           @click.prevent="setSortType(index)"
           :class="{'z-selected': type.checked}"
           v-for="(type, index) in sortTypeList">{{type.name}}</a>
       </span>
-      <span class="f-r"><a href="#" @click.prevent="showConfirmBox(false)" class="g-mr20"><i class="iconf i-shangjia"></i>上架</a><!-- <a href="#" class="g-mr20"><i class="iconf i-download-blue"></i>下载</a><i class="icon i-resources"></i> --><span class="g-mr20"><i class="iconf i-resources-blue"></i>资源量：{{totalRecordCount}}</span></span>
+      <span class="f-r"><a v-if="hasClosedAuth && !isAllSelf" href="#" @click.prevent="showConfirmBox(false)" class="g-mr20"><i class="iconf i-shangjia"></i>上架</a><!-- <a href="#" class="g-mr20"><i class="iconf i-download-blue"></i>下载</a><i class="icon i-resources"></i> --><span class="g-mr20"><i class="iconf i-resources-blue"></i>资源量：{{totalRecordCount}}</span></span>
     </div>
 
     <div class="resource-list f-clearfix" v-for="(item, index) in list" :id="item.id">
-      <div class="list-icons">
+      <div class="list-icons" v-if="hasClosedAuth && item.creatorId != userId">
         <span>
           <i class="icon i-check g-mb10" :class="{'i-check-s': item.checked}"  @click="setSelArr(item.id, index)"></i>
         </span>
       </div>
-      <div class="list-img" :class="getCoverClass(item.resourceDictId)" @click="getDetails(item.resourceDictId, item.id)">
+      <div class="list-img" :class="[getCoverClass(item.resourceDictId), {'g-ml10': !hasClosedAuth || item.creatorId == userId}]" @click="getDetails(item.resourceDictId, item.id)">
       </div>
       <div class="list-content">
         <p class="tit-resourcename"><a :href="'/views/resource/detail.html?status=off&id='+item.id" v-html="item.name"></a></p>
         <div class="item-opts">
-          <a href="#" @click.prevent="showConfirmBox(item.id, item.checked)"><i class="iconf i-shangjia" title="上架"></i></a>
-          <a :href="'/manage/resource/available/download?id='+item.id" target="_blank" class="g-mlr10" title="下载"><i class="iconf i-download-blue"></i></a>
+          <a href="#" v-if="hasClosedAuth && item.creatorId != userId" @click.prevent="showConfirmBox(item.id, item.checked)"><i class="iconf i-shangjia" title="上架"></i></a>
+          <!-- <a :href="'/manage/resource/available/download?id='+item.id" target="_blank" class="g-mlr10" title="下载"><i class="iconf i-download-blue"></i> --></a>
         </div>
         <p class="tit-sub">资源类型：{{getResourceName(item.resourceDictId)}}<span class="g-ml40 g-mr10">{{item.creatorName}}</span>创建于{{item.createTime}}</span></p>
         <p class="m-labels">
@@ -76,6 +76,8 @@ import GL_CONST from '@/confdata/constant'
 export default {
   data: function () {
     return {
+      //当前用户id
+      userId: '',
       isCheckboxShow: false,
       list: [],
       perPageCount: 5,
@@ -102,7 +104,9 @@ export default {
       //是否全选
       checkedAll: false,
       //是否有下架权限
-      hasClosedAuth: this.authTempList.indexOf('RESOURCE_CLOSED') !== -1 ? true : false,
+      hasClosedAuth: this.authTempList.indexOf('RESOURCE_CLOSED_RESHELF') !== -1,
+      //是否全是自己的资源
+      isAllSelf: true,
       loading: false,
     };
   },
@@ -161,7 +165,7 @@ export default {
     },
     //查看详情
     getDetails: function (typeId, id) {
-      var preFix = '/views/resourcelibs/resourcemanage/detail.html?';
+      var preFix = '/views/resource/detail.html?';
       window.location.href = preFix + 'status=off&id=' + id;
     },
     //标星
@@ -191,6 +195,7 @@ export default {
 
         this.list = [];
         this.checkedAll = false;
+        this.selectedIdList = [];
         this.loading = true;
 
         apiUrl.getResourceList(params, 'off')
@@ -206,10 +211,12 @@ export default {
             totalPage: totalPage,
             curPage: p
           };
+          //判断是否可以全选上架
+          self.initList();
           self.loading = false;
        }, function (res) {
           self.loading = false;
-          console.log('getResourceList:' + res.message);
+          self.$message.error(res.message);
        });
     },
     //设置选择框
@@ -253,6 +260,11 @@ export default {
       } else {
         this.selectedIdList = [];
         for (var i = 0, len = list.length; i < len; i++) {
+          //不能下架自己的
+          if (list[i].creatorId == this.userId) {
+            continue;
+          }
+
           if (list[i].checked === undefined) {
             Vue.set(list[i], 'checked', true);
           } else {
@@ -319,12 +331,28 @@ export default {
       }, function (res) {
         console.log(res.message);
       });
-    }
+    },
+    //初始化
+    initList() {
+      var list = this.list,
+          isAllSelf = true;
+
+      //如果下架里的全是自己的
+      for (var i = 0, len = list.length; i < len; i++) {
+        //有一个不是自己的资源，则可以出现 全选上架
+        if (list[i].creatorId != this.userId) {
+          isAllSelf = false;
+        }
+      }
+
+      this.isAllSelf =  isAllSelf;
+    },
   },
   mounted: function () {
-    var self = this;
     this.$nextTick(function () {
-      self.gotoPage(1);
+      this.userId = window.localStorage.getItem('userId');
+      console.log(this.userId);
+      this.gotoPage(1);
     });
   }
 };
