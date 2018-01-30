@@ -32,13 +32,12 @@ export default {
     return {
       datalist: [],
       title: '回答题',
-      id: '',
+      params: {}
     }
   },
   mounted() {
-    api.getAnswerDetail({
-      questionId: this.id
-    }).then((data) => {
+    this.params.questionId = this.params.id;
+    api.getAnswerDetail(this.params).then((data) => {
       if (data.resultCode === 'SUCCESS') {
         let res = data.data || {};
         this.datalist = res.answeredUserList;
@@ -47,7 +46,7 @@ export default {
     })
   },
   created() {
-    this.id = this.$route.params.id;
+    this.params = this.$route.params;
   },
   components: {
     gHeader

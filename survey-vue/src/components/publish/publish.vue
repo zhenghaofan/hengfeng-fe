@@ -1,9 +1,9 @@
 <template lang="html">
   <div class="publish">
-    <g-header :title="title" ref="gheader"></g-header>
+    <g-header :title="title"></g-header>
     <!-- <div v-if="datalist.length > 0" :style="{ height: wrapperHeight + 'px' }" style="-webkit-overflow-scrolling: auto" ref="wrapper"> -->
       <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="allLoaded" ref="loadmore"> -->
-    <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="publish-list" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd" ref="lists">
+    <div v-if="datalist.length > 0" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="10" class="publish-list">
       <router-link class="item" v-for="(item, index) in datalist" :key="item.id" :to="{name: 'summary', params: {id: item.id, type: $route.params.type}}">
         <div class="item-head">
           <img src="./info.png" alt="">
@@ -58,41 +58,13 @@ export default {
         status: 1,
         pageNo: 1
       },
-      now: new Date,
-      touch: {
-
-      }
+      now: new Date
       // allLoaded: true,
       // scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
       // wrapperHeight: 0,
     }
   },
   methods: {
-    onTouchStart(e) { //记录当前y轴值
-      let firstTouch = e.touches[0];
-      this.touch.y1 = firstTouch.pageY;
-    },
-    onTouchMove(e) { //计算滚动位置
-      let listHeight = this.$refs.lists.offsetHeight;
-      let windowTop = document.documentElement.scrollTop || document.body.scrollTop;
-      let firstTouch = e.touches[0];
-      this.touch.y2 = firstTouch.pageY;
-      let delta = Math.min(0, Math.max(-50, this.touch.y2 - this.touch.y1));
-      if (windowTop < listHeight) {
-        this.$refs.gheader.$el.style.transform = `translateY(${delta/20}rem)`;
-        this.$refs.gheader.$el.style.transition = `transform 1s`;
-      }
-    },
-    onTouchEnd(e) {
-      let listHeight = this.$refs.lists.offsetHeight;
-      let windowTop = document.documentElement.scrollTop || document.body.scrollTop;
-      let delta = this.touch.y2 - this.touch.y1
-      if (windowTop < listHeight && delta > 0) {
-        this.$refs.gheader.$el.style.transform = `translateY(0px)`;
-      } else {
-      this.$refs.gheader.$el.style.transform = `translateY(-3rem)`;
-      }
-    },
     refresh() {
       this.params.pageNo = 1;
       this.getPublishList(false);
@@ -118,77 +90,6 @@ export default {
     },
     getPublishList(multi) {
       this.loading = true;
-      // this.datalist = [{
-      //     "todoNum": 1,
-      //     "asignNum": 1,
-      //     "doneNum": 0,
-      //     "disabled": true,
-      //     "vaildNum": 0,
-      //     "endDate": "2017-11-24 18:10",
-      //     "id": 29,
-      //     "qnaireTitle": "第一份问卷",
-      //     "qnaireType": 0,
-      //     "really": 1,
-      //     "startDate": "2017-11-21 15:00"
-      //   },
-      //   {
-      //     "todoNum": 1,
-      //     "asignNum": 1,
-      //     "disabled": true,
-      //     "doneNum": 0,
-      //     "vaildNum": 0,
-      //     "endDate": "2017-11-24 17:10",
-      //     "id": 28,
-      //     "qnaireType": 0,
-      //     "really": 1,
-      //     "qnaireTitle": "第二份问卷",
-      //     "startDate": "2017-11-21 15:00"
-      //   },
-      //   {
-      //     "doneNum": 0,
-      //     "vaildNum": 0,
-      //     "disabled": true,
-      //     "endDate": "2017-11-24 17:10",
-      //     "id": 32,
-      //     "qnaireType": 1,
-      //     "really": 1,
-      //     "qnaireTitle": "第一份问卷",
-      //     "startDate": "2017-11-21 15:00"
-      //   },
-      //   {
-      //     "doneNum": 0,
-      //     "vaildNum": 0,
-      //     "disabled": true,
-      //     "endDate": "2017-11-24 17:10",
-      //     "id": 32,
-      //     "qnaireType": 1,
-      //     "really": 1,
-      //     "qnaireTitle": "第一份问卷",
-      //     "startDate": "2017-11-21 15:00"
-      //   },
-      //   {
-      //     "doneNum": 0,
-      //     "vaildNum": 0,
-      //     "disabled": true,
-      //     "endDate": "2017-11-24 17:10",
-      //     "id": 32,
-      //     "qnaireType": 1,
-      //     "really": 1,
-      //     "qnaireTitle": "第一份问卷",
-      //     "startDate": "2017-11-21 15:00"
-      //   },
-      //   {
-      //     "doneNum": 0,
-      //     "vaildNum": 0,
-      //     "disabled": true,
-      //     "endDate": "2017-11-24 17:10",
-      //     "id": 32,
-      //     "qnaireType": 1,
-      //     "really": 1,
-      //     "qnaireTitle": "第一份问卷",
-      //     "startDate": "2017-11-21 15:00"
-      //   }
-      // ];
       api.getPublishList(this.params).then((data) => {
         if (data.resultCode === 'SUCCESS') {
           let res = data.data || {};
@@ -200,7 +101,6 @@ export default {
           } else {
             this.datalist = res.qnaireList
           }
-
           this.loading = false;
           // this.$nextTick(() => {
           //   this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
@@ -233,9 +133,6 @@ export default {
 </script>
 
 <style lang="css">
-body {
-  height: auto;
-}
 .publish {
     background-color: #dddddd;
 }

@@ -43,5 +43,9 @@ export default {
 
   getAnswerDetail(params) {
     return axios.postJson('/survey/stat/answerdetail', params)
+  },
+
+  getTargetGroup(params) {
+    return axios.get('/survey/qnTarget/list', params)
   }
 };
